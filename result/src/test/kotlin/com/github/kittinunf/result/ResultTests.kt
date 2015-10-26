@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
  * Created by Kittinun Vantasin on 10/27/15.
  */
 
-class ResultCreationTest {
+class ResultTests {
 
     @Test
     fun testCreateValue() {
