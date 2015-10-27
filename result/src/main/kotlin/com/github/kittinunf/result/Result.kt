@@ -4,10 +4,14 @@ package com.github.kittinunf.result
  * Created by Kittinun Vantasin on 10/26/15.
  */
 
-sealed public class Result<out V : Any, out E : Exception>(val value: V?, val error: E?) {
+sealed public class Result<out V : Any, out E : Exception> private constructor(val value: V?, val error: E?) {
 
     operator public fun component1(): V? = this.value
     operator public fun component2(): E? = this.error
+
+    public class Success<V : Any>(value: V) : Result<V, Nothing>(value, null)
+
+    public class Failure<E : Exception>(error: E) : Result<Nothing, E>(null, error)
 
     companion object {
         // Constructors
@@ -15,22 +19,33 @@ sealed public class Result<out V : Any, out E : Exception>(val value: V?, val er
 
         public fun <E : Exception> create(error: E) = Failure(error)
 
-        public fun <V : Any, E : Exception> create(value: V?, fail: () -> E) = value?.let { Success(it) } ?: Failure(fail())
+        public fun <V : Any, E : Exception> create(value: V?, fail: (() -> E)? = null) =
+                value?.let { Success(it) } ?: Failure(fail?.invoke() ?: KotlinNullPointerException())
+
+        public fun <V : Any, E : Exception> create(f: () -> V?, fail: (() -> E)? = null) =
+                f()?.let { Success(it) } ?: Failure(fail?.invoke() ?: KotlinNullPointerException())
 
         public fun <V : Any> create(f: () -> V): Result<V, Exception> {
-            try {
-                return Result.create(f())
-            } catch(e: Exception) {
-                return Result.create(e)
+            return try {
+                Result.create(f())
+            } catch(ex: Exception) {
+                Result.create(ex)
             }
         }
     }
 
-    public fun <X> get(): X {
+    public fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
+        return when (this) {
+            is Success -> success(this.value!!)
+            is Failure -> failure(this.error!!)
+        }
+    }
+
+    public fun <X : Any> get(): X? {
         @Suppress("unchecked_cast")
-        when (this) {
-            is Success -> return this.value as X
-            is Failure -> return this.error as X
+        return when (this) {
+            is Success -> this.value as X
+            is Failure -> null
         }
     }
 
@@ -41,8 +56,12 @@ sealed public class Result<out V : Any, out E : Exception>(val value: V?, val er
         }
     }
 
-    public class Success<V : Any>(value: V) : Result<V, Nothing>(value, null)
+    public fun <U : Any> map(transform: (V) -> U) = fold({ Result.Success(transform(it)) }, { Result.Failure(it) })
 
-    public class Failure<E : Exception>(error: E) : Result<Nothing, E>(null, error)
+    public fun <U : Any, E : Exception> flatMap(transform: (V) -> Result<U, E>) = fold({ transform(it) }, { Result.Failure(it) })
+
+    public fun <EE : Exception> mapError(transform: (E) -> EE) = fold({ Result.Success(it) }, { Result.Failure(transform(it)) })
+
+    public fun <V : Any, EE : Exception> flatMapError(transform: (E) -> Result<V, EE>) = fold({ Result.Success(it) }, { transform(it) })
 
 }
