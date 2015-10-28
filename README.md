@@ -54,6 +54,11 @@ val bar = Result.create(readBar)  //bar is a Result<String, Exception>
 foo.map { processData(it) }.flatMapError { bar }.mapError { logError(it.message) }
 ```
 
+## High order functions
+
+`map` and `mapError`
+
+`flatMap` and `flatMapError`
 
  
 
