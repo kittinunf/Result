@@ -48,11 +48,19 @@ class ResultTests {
             v[1]
         }
 
+        val f3 = {
+            val s: String?
+            s = null
+            s
+        }
+
         val result1 = Result.create(f1)
         val result2 = Result.create(f2)
+        val result3 = Result.create<String, Exception>(f3())
 
         assertTrue(result1 is Result.Success, "result1 is Result.Success type")
         assertTrue(result2 is Result.Failure, "result2 is Result.Failure type")
+        assertTrue(result3 is Result.Failure, "result2 is Result.Failure type")
     }
 
     @Test
@@ -65,12 +73,13 @@ class ResultTests {
 
         assertTrue(result1.dematerialize(), "result1 is true")
         assertTrue("result2 expecting to throw FileNotFoundException") {
+            var result = false
             try {
                 result2.dematerialize()
-                false
             } catch(e: FileNotFoundException) {
-                true
+                result = true
             }
+            result
         }
     }
 
@@ -144,7 +153,14 @@ class ResultTests {
 
     @Test
     fun testFlatMapError() {
+        val success = Result.create("success")
+        val failure = Result.create(Exception("failure"))
 
+        val v1 = success.flatMapError { Result.create(IllegalArgumentException()) }
+        val v2 = failure.flatMapError { Result.create(IllegalArgumentException()) }
+
+        assertTrue { v1.get<String>() == "success" }
+        assertTrue { v2.error is IllegalArgumentException }
     }
 
 }

@@ -20,10 +20,7 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
         public fun <E : Exception> create(error: E) = Failure(error)
 
         public fun <V : Any, E : Exception> create(value: V?, fail: (() -> E)? = null) =
-                value?.let { Success(it) } ?: Failure(fail?.invoke() ?: KotlinNullPointerException())
-
-        public fun <V : Any, E : Exception> create(f: () -> V?, fail: (() -> E)? = null) =
-                f()?.let { Success(it) } ?: Failure(fail?.invoke() ?: KotlinNullPointerException())
+                value?.let { Success(it) } ?: Failure(fail?.invoke() ?: Exception())
 
         public fun <V : Any> create(f: () -> V): Result<V, Exception> {
             return try {
