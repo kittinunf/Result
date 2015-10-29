@@ -23,7 +23,7 @@ fun process(): String {
         val foo = File("/path/to/file/foo.txt").readText()
         val isSuccessful = processData(foo)
         if (!isSuccessful) {
-            return "Data is corrupted and cannot be processable
+            return "Data is corrupted and cannot be processable"
         }
     } catch (e: Exception) {
         //do something if error 
