@@ -56,7 +56,7 @@ class ResultTests {
 
         val result1 = Result.create(f1)
         val result2 = Result.create(f2)
-        val result3 = Result.create<String, Exception>(f3())
+        val result3 = Result.create(f3())
 
         assertTrue(result1 is Result.Success, "result1 is Result.Success type")
         assertTrue(result2 is Result.Failure, "result2 is Result.Failure type")
@@ -161,6 +161,53 @@ class ResultTests {
 
         assertTrue { v1.get<String>() == "success" }
         assertTrue { v2.error is IllegalArgumentException }
+    }
+
+    @Test
+    fun testComposableFunctions1() {
+        val foo = { readFromAssetFileName("foo.txt") }
+        val bar = { readFromAssetFileName("bar.txt") }
+
+        val notFound = { readFromAssetFileName("fooo.txt") }
+
+        val (value1, error1) = Result.create(foo).map { it.count() }.mapError { IllegalStateException() }
+        val (value2, error2) = Result.create(notFound).map { bar }.mapError { IllegalStateException() }
+
+        assertTrue { value1 == 574 && error1 == null }
+        assertTrue { value2 == null && error2 is IllegalStateException }
+    }
+
+    @Test
+    fun testComposableFunctions2() {
+        val r1 = Result.create(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }.mapError { Exception("this should not happen") }
+        val r2 = Result.create(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }.mapError { KotlinNullPointerException() }
+
+        assertTrue { r1 is Result.Success }
+        assertTrue { r2 is Result.Failure }
+    }
+
+    @Test
+    fun testNoException() {
+        val r = concat("1", "2")
+        assertTrue { r is Result.Success }
+    }
+
+    // helper
+    fun readFromAssetFileName(name: String): String {
+        val dir = System.getProperty("user.dir")
+        val assetsDir = File(dir, "src/test/assets/")
+        return File(assetsDir, name).readText()
+    }
+
+    fun resultReadFromAssetFileName(name: String): Result<String, Exception> {
+        val operation = { readFromAssetFileName(name) }
+        return Result.create(operation)
+    }
+
+    fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
+
+    fun concat(a: String, b: String): Result<String, NoException> {
+        return Result.Success(a + b)
     }
 
 }

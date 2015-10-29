@@ -14,21 +14,20 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
     public class Failure<E : Exception>(error: E) : Result<Nothing, E>(null, error)
 
     companion object {
-        // Constructors
-        public fun <V : Any> create(value: V) = Success(value)
-
+        // Factory methods
         public fun <E : Exception> create(error: E) = Failure(error)
 
-        public fun <V : Any, E : Exception> create(value: V?, fail: (() -> E)? = null) =
+        public fun <V : Any> create(value: V?, fail: (() -> Exception)? = null) =
                 value?.let { Success(it) } ?: Failure(fail?.invoke() ?: Exception())
 
-        public fun <V : Any> create(f: () -> V): Result<V, Exception> {
+        public fun <V: Any> create(f: Function0<V>): Result<V, Exception> {
             return try {
                 Result.create(f())
             } catch(ex: Exception) {
                 Result.create(ex)
             }
         }
+
     }
 
     public fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
