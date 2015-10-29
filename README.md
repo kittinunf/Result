@@ -2,7 +2,7 @@
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-0.14.449-blue.svg)](http://kotlinlang.org)
 
-This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a `Result<V, E : Exception>`.
+This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V, E : Exception>`.
 
 ## Ideology
 
@@ -67,13 +67,13 @@ First, we break things down into a small set of model in `Result`.
 ``` Kotlin
 val fooOperation = { File("/path/to/file/foo.txt").readText() }
 
-Result.create(fooOperation)  //Result<String, FileException>
+Result.create(fooOperation)  // Result<String, FileException>
 
-normalizedData(foo) //return Result<Boolean, NormalizedException>
+normalizedData(foo) // Result<Boolean, NormalizedException>
 
-createRequestFromData(foo) // return Request
+createRequestFromData(foo) // Request
 
-database.updateFromRequest(request) //return Result<Boolean, DBException>
+database.updateFromRequest(request) // Result<Boolean, DBException>
 
 Result.create(fooOperation)
         .flatMap { normalizedData(it) }
@@ -99,6 +99,5 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 ### Failure
 `mapError` and `flatMapError`
 
-`mapError` (`(E) -> EE`) and `flatMapError` (`(E) -> Result<EE, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones need.
-
+`mapError` (`(E) -> EE`) and `flatMapError` (`(E) -> Result<EE, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones' need.
 
