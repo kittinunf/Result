@@ -81,13 +81,14 @@ Result.create(fooOperation)
         .flatMap { database.updateFromRequest(it) }
 ```
 
-## Never fail Operation
+## Never Fail Operation
 
 In some case, one wants to model an always successful operation. `Result<V, NoException>` is a good idea for that. 
 Nice thing about modelling in that way is to be able to compose it with others failable operations in `Result`.
 
-## High order functions
+## High Order functions
 
+### Success
 `map` and `flatMap`
 
 `map` transforms `Result` with given transformation `(V) -> U`. As a result, we are able to transform `V` into a new `V` in the case where `Result` is `Result.Success`.
@@ -95,15 +96,9 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 
 `flatMap` is similar to `map`, however it requires transformation in type of `(V) -> Result<U, ...>`.
  
-
+### Failure
 `mapError` and `flatMapError`
 
 `mapError` (`(E) -> EE`) and `flatMapError` (`(E) -> Result<EE, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones need.
-
- 
-
-
-
-
 
 
