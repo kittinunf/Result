@@ -23,7 +23,7 @@ fun process(): String {
         val foo = File("/path/to/file/foo.txt").readText()
         val isSuccessful = processData(foo)
         if (!isSuccessful) {
-            return "Data is corrupted and cannot be processable"
+            return "Data is corrupted and cannot be processed"
         }
     } catch (e: Exception) {
         //do something if error 
@@ -84,7 +84,14 @@ Result.create(fooOperation)
 ## Never Fail Operation
 
 In some case, one wants to model an always successful operation. `Result<V, NoException>` is a good idea for that. 
-Nice thing about modelling in that way is to be able to compose it with others failable operations in `Result`.
+`NoException` is to indicate that there is no exception to throw. E.g.
+
+``` Kotlin
+// Add operation can never be failure
+fun add(i: Int, j: Int) : Result<Int, NoException>
+```
+ 
+Nice thing about modelling in this way is to be able to compose it with others "failable" operations in `Result`.
 
 ## High Order functions
 
@@ -99,5 +106,5 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 ### Failure
 `mapError` and `flatMapError`
 
-`mapError` (`(E) -> EE`) and `flatMapError` (`(E) -> Result<EE, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones' need.
+`mapError` (`(E) -> E2`) and `flatMapError` (`(E) -> Result<E2, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones' need.
 

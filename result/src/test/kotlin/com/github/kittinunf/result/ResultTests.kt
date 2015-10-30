@@ -109,7 +109,6 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
-
     fun Nothing.getMessage() = ""
 
     @Test
@@ -206,8 +205,6 @@ class ResultTests {
 
     fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
 
-    fun concat(a: String, b: String): Result<String, NoException> {
-        return Result.Success(a + b)
-    }
+    fun concat(a: String, b: String): Result<String, NoException> = Result.Success(a + b)
 
 }
