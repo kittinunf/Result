@@ -60,4 +60,11 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
 
     public fun <V : Any, E2 : Exception> flatMapError(transform: (E) -> Result<V, E2>) = fold({ Result.Success(it) }, { transform(it) })
 
+    override fun toString(): String {
+        return fold({
+            "Success: $it"
+        }, {
+            "Failure: $it"
+        })
+    }
 }
