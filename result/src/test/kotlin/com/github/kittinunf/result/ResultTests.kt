@@ -188,7 +188,7 @@ class ResultTests {
     @Test
     fun testNoException() {
         val r = concat("1", "2")
-        assertTrue { r is Result.Success }
+        assertTrue { r is Result.Failure }
     }
 
     // helper
