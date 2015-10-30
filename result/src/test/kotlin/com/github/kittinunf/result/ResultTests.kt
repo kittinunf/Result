@@ -109,6 +109,7 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
+
     fun Nothing.getMessage() = ""
 
     @Test

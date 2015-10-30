@@ -1,6 +1,6 @@
 # Result
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-0.14.449-blue.svg)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-0.14.449-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
 
 This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V, E : Exception>`.
 
@@ -64,22 +64,41 @@ Let's see how `Result` can help us.
 
 First, we break things down into a small set of model in `Result`.
 
+* Read a file
+
 ``` Kotlin
 val fooOperation = { File("/path/to/file/foo.txt").readText() }
-
 Result.create(fooOperation)  // Result<String, FileException>
+```
 
-normalizedData(foo) // Result<Boolean, NormalizedException>
+* Normalize a data
+``` Kotlin
+fun normalizedData(foo): Result<Boolean, NormalizedException> {
+}
+```
 
-createRequestFromData(foo) // Request
+* Create a request from data
+``` Kotlin
+fun createRequestFromData(foo): Request {
+}
+```
 
-database.updateFromRequest(request) // Result<Boolean, DBException>
+* Update DB with Request
+``` Kotlin
+fun database.updateFromRequest(request): Result<Boolean, DBException> {
+}
+```
 
+The whole operation can be chained by the following;
+
+``` Kotlin
 Result.create(fooOperation)
         .flatMap { normalizedData(it) }
         .map { createRequestFromData(it) }
         .flatMap { database.updateFromRequest(it) }
 ```
+
+The creates a nice "happy path" of the whole chain, also handle error as appropriate. It looks better and cleaner, right?.
 
 ## Never Fail Operation
 
