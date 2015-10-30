@@ -67,13 +67,24 @@ First, we break things down into a small set of model in `Result`.
 ``` Kotlin
 val fooOperation = { File("/path/to/file/foo.txt").readText() }
 Result.create(fooOperation)  // Result<String, FileException>
+```
 
-normalizedData(foo) // Result<Boolean, NormalizedException>
+``` Kotlin
+fun normalizedData(foo): Result<Boolean, NormalizedException> {
+}
+```
 
-createRequestFromData(foo) // Request
+``` Kotlin
+fun createRequestFromData(foo): Request {
+}
+```
 
-database.updateFromRequest(request) // Result<Boolean, DBException>
+``` Kotlin
+fun database.updateFromRequest(request): Result<Boolean, DBException> {
+}
+```
 
+``` Kotlin
 Result.create(fooOperation)
         .flatMap { normalizedData(it) }
         .map { createRequestFromData(it) }
