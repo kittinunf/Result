@@ -109,6 +109,7 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
+
     fun Nothing.getMessage() = ""
 
     @Test
@@ -188,7 +189,7 @@ class ResultTests {
     @Test
     fun testNoException() {
         val r = concat("1", "2")
-        assertTrue { r is Result.Failure }
+        assertTrue { r is Result.Success }
     }
 
     // helper

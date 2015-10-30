@@ -37,11 +37,11 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
         }
     }
 
-    public fun <X : Any> get(): X? {
+    public inline fun <reified X : Any> get(): X? {
         @Suppress("unchecked_cast")
         return when (this) {
-            is Success -> this.value as X
-            is Failure -> null
+            is Success -> this.value as? X
+            is Failure -> this.error as? X
         }
     }
 

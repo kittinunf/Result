@@ -66,7 +66,6 @@ First, we break things down into a small set of model in `Result`.
 
 ``` Kotlin
 val fooOperation = { File("/path/to/file/foo.txt").readText() }
-
 Result.create(fooOperation)  // Result<String, FileException>
 
 normalizedData(foo) // Result<Boolean, NormalizedException>
