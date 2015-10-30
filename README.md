@@ -64,25 +64,32 @@ Let's see how `Result` can help us.
 
 First, we break things down into a small set of model in `Result`.
 
+* Read a file
+
 ``` Kotlin
 val fooOperation = { File("/path/to/file/foo.txt").readText() }
 Result.create(fooOperation)  // Result<String, FileException>
 ```
 
+* Normalize a data
 ``` Kotlin
 fun normalizedData(foo): Result<Boolean, NormalizedException> {
 }
 ```
 
+* Create a request from data
 ``` Kotlin
 fun createRequestFromData(foo): Request {
 }
 ```
 
+* Update DB with Request
 ``` Kotlin
 fun database.updateFromRequest(request): Result<Boolean, DBException> {
 }
 ```
+
+The whole operation can be chained by the following;
 
 ``` Kotlin
 Result.create(fooOperation)
@@ -90,6 +97,8 @@ Result.create(fooOperation)
         .map { createRequestFromData(it) }
         .flatMap { database.updateFromRequest(it) }
 ```
+
+The creates a nice "happy path" of the whole chain, also handle error as appropriate. It looks better and cleaner, right?.
 
 ## Never Fail Operation
 
