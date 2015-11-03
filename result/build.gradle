@@ -1,4 +1,3 @@
-
 apply plugin: 'kotlin'
 apply plugin: 'com.novoda.bintray-release'
 
@@ -35,7 +34,7 @@ publish {
     groupId = 'com.github.kittinunf.result'
     uploadName = 'Result'
     artifactId = 'result'
-    version = '0.2'
+    version = '0.1'
     description = 'The modelling for success/failure of operations in Kotlin'
     website = 'https://github.com/kittinunf/Result'
 }

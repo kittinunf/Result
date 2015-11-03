@@ -22,7 +22,7 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.github.kittinunf.result:result:0.2'
+    compile 'com.github.kittinunf.result:result:0.1'
 }
 ```
 
