@@ -26,6 +26,17 @@ dependencies {
 }
 ```
 
+## TL;DR
+
+Chains series of operation as;
+
+``` Kotlin
+Result.create(operation)
+        .flatMap { normalizedData(it) }
+        .map { createRequestFromData(it) }
+        .flatMap { database.updateFromRequest(it) }
+```
+
 ## Why
 
 One can use `Result` whenever there is a need to represent an operation that has the possibility of failure. Error handling can be cumbersome to work with. 
@@ -83,8 +94,8 @@ First, we break things down into a small set of model in `Result`.
 * Read a file
 
 ``` Kotlin
-val fooOperation = { File("/path/to/file/foo.txt").readText() }
-Result.create(fooOperation)  // Result<String, FileException>
+val operation = { File("/path/to/file/foo.txt").readText() }
+Result.create(operation)  // Result<String, FileException>
 ```
 
 * Normalize a data
@@ -108,7 +119,7 @@ fun database.updateFromRequest(request): Result<Boolean, DBException> {
 The whole operation can be chained by the following;
 
 ``` Kotlin
-Result.create(fooOperation)
+Result.create(operation)
         .flatMap { normalizedData(it) }
         .map { createRequestFromData(it) }
         .flatMap { database.updateFromRequest(it) }
