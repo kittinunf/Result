@@ -28,7 +28,9 @@ dependencies {
 
 ## TL;DR
 
-Chains series of operation as;
+This model is highly inspired by "Railway Oriented Programming" (ROP) concept. Originally, inspired by this [talk](http://fsharpforfunandprofit.com/rop/)
+
+`Result` enables one expresses series of operations as;
 
 ``` Kotlin
 Result.create(operation)
@@ -153,6 +155,16 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 `mapError` and `flatMapError`
 
 `mapError` (`(E) -> E2`) and `flatMapError` (`(E) -> Result<E2, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones' need.
+
+## Railway Oriented Programming
+
+If interested, here are more articles that one might enjoy.
+
+http://fsharpforfunandprofit.com/posts/recipe-part2/
+https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
+https://github.com/swlaschin/Railway-Oriented-Programming-Example
+
+Credit to Scott Wlaschin
 
 ## Credits
 
