@@ -28,7 +28,7 @@ dependencies {
 
 ## TL;DR
 
-This model is highly inspired by "Railway Oriented Programming" (ROP) concept. Originally, inspired by this [talk](http://fsharpforfunandprofit.com/rop/)
+This model is highly inspired by "Railway Oriented Programming" (ROP) concept. 
 
 `Result` enables one expresses series of operations as;
 
