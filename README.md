@@ -160,9 +160,9 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 
 If interested, here are more articles that one might enjoy.
 
-http://fsharpforfunandprofit.com/posts/recipe-part2/
-https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
-https://github.com/swlaschin/Railway-Oriented-Programming-Example
+* http://fsharpforfunandprofit.com/posts/recipe-part2/
+* https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
+* https://github.com/swlaschin/Railway-Oriented-Programming-Example
 
 Credit to Scott Wlaschin
 
