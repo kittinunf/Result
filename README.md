@@ -33,10 +33,10 @@ This model is highly inspired by "Railway Oriented Programming" (ROP) concept.
 `Result` enables one expresses series of operations as;
 
 ``` Kotlin
-Result.create(operation)
-        .flatMap { normalizedData(it) }
-        .map { createRequestFromData(it) }
-        .flatMap { database.updateFromRequest(it) }
+Result.of(operation)
+      .flatMap { normalizedData(it) }
+      .map { createRequestFromData(it) }
+      .flatMap { database.updateFromRequest(it) }
 ```
 
 Work with `Result` is easy
@@ -119,7 +119,7 @@ First, we break things down into a small set of model in `Result`.
 
 ``` Kotlin
 val operation = { File("/path/to/file/foo.txt").readText() }
-Result.create(operation)  // Result<String, FileException>
+Result.of(operation)  // Result<String, FileException>
 ```
 
 * Normalize a data
@@ -143,10 +143,10 @@ fun database.updateFromRequest(request): Result<Boolean, DBException> {
 The whole operation can be chained by the following;
 
 ``` Kotlin
-Result.create(operation)
-        .flatMap { normalizedData(it) }
-        .map { createRequestFromData(it) }
-        .flatMap { database.updateFromRequest(it) }
+Result.of(operation)
+      .flatMap { normalizedData(it) }
+      .map { createRequestFromData(it) }
+      .flatMap { database.updateFromRequest(it) }
 ```
 
 The creates a nice "happy path" of the whole chain, also handle error as appropriate. It looks better and cleaner, right?.
