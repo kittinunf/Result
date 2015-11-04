@@ -39,6 +39,27 @@ Result.create(operation)
         .flatMap { database.updateFromRequest(it) }
 ```
 
+Work with `Result` is easy
+
+``` Kotlin
+//multi-declaration
+val (value, error) = result
+
+//direct access
+val value = result.value
+val error = result.error
+
+//get
+val value: Int = result.get<Int>() ?: 0
+val ex: Exception = result.get<Exception>()!!
+
+//fold
+result.fold({ value ->
+
+}, { error ->
+})
+```
+
 ## Why
 
 One can use `Result` whenever there is a need to represent an operation that has the possibility of failure. Error handling can be cumbersome to work with. 

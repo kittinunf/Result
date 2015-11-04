@@ -88,7 +88,7 @@ class ResultTests {
         val result1 = Result.of(22)
         val result2 = Result.of(KotlinNullPointerException())
 
-        val v1: Int = result1.get() ?: 0
+        val v1: Int = result1.get()!!
         val (v2, err) = result2
 
         assertTrue { v1 == 22 }
@@ -109,7 +109,6 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
-
     fun Nothing.getMessage() = ""
 
     @Test
