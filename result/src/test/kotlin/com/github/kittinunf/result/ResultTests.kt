@@ -14,7 +14,7 @@ class ResultTests {
 
     @Test
     fun testCreateValue() {
-        val v = Result.create(1)
+        val v = Result.of(1)
 
         assertNotNull(v, "Result is created successfully")
         assertTrue(v is Result.Success, "v is Result.Success type")
@@ -22,7 +22,7 @@ class ResultTests {
 
     @Test
     fun testCreateError() {
-        val e = Result.create(RuntimeException())
+        val e = Result.of(RuntimeException())
 
         assertNotNull(e, "Result is created successfully")
         assertTrue(e is Result.Failure, "v is Result.Success type")
@@ -33,8 +33,8 @@ class ResultTests {
         val value1: String? = null
         val value2: String? = "1"
 
-        val result1 = Result.create(value1) { UnsupportedOperationException("value is null") }
-        val result2 = Result.create(value2) { IllegalStateException("value is null") }
+        val result1 = Result.of(value1) { UnsupportedOperationException("value is null") }
+        val result2 = Result.of(value2) { IllegalStateException("value is null") }
 
         assertTrue(result1 is Result.Failure, "result1 is Result.Failure type")
         assertTrue(result2 is Result.Success, "result2 is Result.Success type")
@@ -54,9 +54,9 @@ class ResultTests {
             s
         }
 
-        val result1 = Result.create(f1)
-        val result2 = Result.create(f2)
-        val result3 = Result.create(f3())
+        val result1 = Result.of(f1)
+        val result2 = Result.of(f2)
+        val result3 = Result.of(f3())
 
         assertTrue(result1 is Result.Success, "result1 is Result.Success type")
         assertTrue(result2 is Result.Failure, "result2 is Result.Failure type")
@@ -68,8 +68,8 @@ class ResultTests {
         val f1 = { true }
         val f2 = { File("not_found_file").readText() }
 
-        val result1 = Result.create(f1)
-        val result2 = Result.create(f2)
+        val result1 = Result.of(f1)
+        val result2 = Result.of(f2)
 
         assertTrue(result1.dematerialize(), "result1 is true")
         assertTrue("result2 expecting to throw FileNotFoundException") {
@@ -85,10 +85,10 @@ class ResultTests {
 
     @Test
     fun testGetValue() {
-        val result1 = Result.create(22)
-        val result2 = Result.create(KotlinNullPointerException())
+        val result1 = Result.of(22)
+        val result2 = Result.of(KotlinNullPointerException())
 
-        val v1: Int = result1.get() ?: 0
+        val v1: Int = result1.get()!!
         val (v2, err) = result2
 
         assertTrue { v1 == 22 }
@@ -97,8 +97,8 @@ class ResultTests {
 
     @Test
     fun testFold() {
-        val success = Result.create("success")
-        val failure = Result.create(RuntimeException("failure"))
+        val success = Result.of("success")
+        val failure = Result.of(RuntimeException("failure"))
 
         val v1 = success.fold({ 1 }, { 0 })
         val v2 = failure.fold({ 1 }, { 0 })
@@ -109,13 +109,12 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
-
     fun Nothing.getMessage() = ""
 
     @Test
     fun testMap() {
-        val success = Result.create("success")
-        val failure = Result.create(RuntimeException("failure"))
+        val success = Result.of("success")
+        val failure = Result.of(RuntimeException("failure"))
 
         val v1 = success.map { it.count() }
         val v2 = failure.map { it.count() }
@@ -126,11 +125,11 @@ class ResultTests {
 
     @Test
     fun testFlatMap() {
-        val success = Result.create("success")
-        val failure = Result.create(RuntimeException("failure"))
+        val success = Result.of("success")
+        val failure = Result.of(RuntimeException("failure"))
 
-        val v1 = success.flatMap { Result.create(it.last()) }
-        val v2 = failure.flatMap { Result.create(it.count()) }
+        val v1 = success.flatMap { Result.of(it.last()) }
+        val v2 = failure.flatMap { Result.of(it.count()) }
 
         assertTrue { v1.get<Char>() == 's' }
         assertTrue { v2.get<Char>() ?: "" == "" }
@@ -138,8 +137,8 @@ class ResultTests {
 
     @Test
     fun testMapError() {
-        val success = Result.create("success")
-        val failure = Result.create(Exception("failure"))
+        val success = Result.of("success")
+        val failure = Result.of(Exception("failure"))
 
         val v1 = success.mapError { InstantiationException(it.getMessage()) }
         val v2 = failure.mapError { InstantiationException(it.getMessage()) }
@@ -153,11 +152,11 @@ class ResultTests {
 
     @Test
     fun testFlatMapError() {
-        val success = Result.create("success")
-        val failure = Result.create(Exception("failure"))
+        val success = Result.of("success")
+        val failure = Result.of(Exception("failure"))
 
-        val v1 = success.flatMapError { Result.create(IllegalArgumentException()) }
-        val v2 = failure.flatMapError { Result.create(IllegalArgumentException()) }
+        val v1 = success.flatMapError { Result.of(IllegalArgumentException()) }
+        val v2 = failure.flatMapError { Result.of(IllegalArgumentException()) }
 
         assertTrue { v1.get<String>() == "success" }
         assertTrue { v2.error is IllegalArgumentException }
@@ -170,8 +169,8 @@ class ResultTests {
 
         val notFound = { readFromAssetFileName("fooo.txt") }
 
-        val (value1, error1) = Result.create(foo).map { it.count() }.mapError { IllegalStateException() }
-        val (value2, error2) = Result.create(notFound).map { bar }.mapError { IllegalStateException() }
+        val (value1, error1) = Result.of(foo).map { it.count() }.mapError { IllegalStateException() }
+        val (value2, error2) = Result.of(notFound).map { bar }.mapError { IllegalStateException() }
 
         assertTrue { value1 == 574 && error1 == null }
         assertTrue { value2 == null && error2 is IllegalStateException }
@@ -179,8 +178,8 @@ class ResultTests {
 
     @Test
     fun testComposableFunctions2() {
-        val r1 = Result.create(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }.mapError { Exception("this should not happen") }
-        val r2 = Result.create(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }.mapError { KotlinNullPointerException() }
+        val r1 = Result.of(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }.mapError { Exception("this should not happen") }
+        val r2 = Result.of(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }.mapError { KotlinNullPointerException() }
 
         assertTrue { r1 is Result.Success }
         assertTrue { r2 is Result.Failure }
@@ -201,7 +200,7 @@ class ResultTests {
 
     fun resultReadFromAssetFileName(name: String): Result<String, Exception> {
         val operation = { readFromAssetFileName(name) }
-        return Result.create(operation)
+        return Result.of(operation)
     }
 
     fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE

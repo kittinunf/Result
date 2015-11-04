@@ -22,7 +22,7 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.github.kittinunf.result:result:0.1'
+    compile 'com.github.kittinunf.result:result:0.2'
 }
 ```
 
@@ -37,6 +37,28 @@ Result.create(operation)
         .flatMap { normalizedData(it) }
         .map { createRequestFromData(it) }
         .flatMap { database.updateFromRequest(it) }
+```
+
+Work with `Result` is easy
+
+``` Kotlin
+//multi-declaration
+val (value, error) = result
+
+//direct access
+val value = result.value
+val error = result.error
+
+//get
+val value: Int = result.get<Int>() ?: 0
+val ex: Exception = result.get<Exception>()!!
+
+//fold
+result.fold({ value ->
+    //do something with value
+}, { error ->
+    //do something with error
+})
 ```
 
 ## Why
@@ -160,9 +182,9 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 
 If interested, here are more articles that one might enjoy.
 
-http://fsharpforfunandprofit.com/posts/recipe-part2/
-https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
-https://github.com/swlaschin/Railway-Oriented-Programming-Example
+* http://fsharpforfunandprofit.com/posts/recipe-part2/
+* https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
+* https://github.com/swlaschin/Railway-Oriented-Programming-Example
 
 Credit to Scott Wlaschin
 

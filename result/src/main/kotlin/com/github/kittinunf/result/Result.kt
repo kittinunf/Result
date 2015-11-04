@@ -15,16 +15,16 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
 
     companion object {
         // Factory methods
-        public fun <E : Exception> create(error: E) = Failure(error)
+        public fun <E : Exception> of(error: E) = Failure(error)
 
-        public fun <V : Any> create(value: V?, fail: (() -> Exception)? = null) =
+        public fun <V : Any> of(value: V?, fail: (() -> Exception)? = null) =
                 value?.let { Success(it) } ?: Failure(fail?.invoke() ?: Exception())
 
-        public fun <V: Any> create(f: Function0<V>): Result<V, Exception> {
+        public fun <V: Any> of(f: Function0<V>): Result<V, Exception> {
             return try {
-                Result.create(f())
+                Result.of(f())
             } catch(ex: Exception) {
-                Result.create(ex)
+                Result.of(ex)
             }
         }
 
@@ -37,7 +37,7 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
         }
     }
 
-    public inline fun <reified X : Any> get(): X? {
+    public inline fun <reified X> get(): X? {
         @Suppress("unchecked_cast")
         return when (this) {
             is Success -> this.value as? X
@@ -60,11 +60,6 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
 
     public fun <V : Any, E2 : Exception> flatMapError(transform: (E) -> Result<V, E2>) = fold({ Result.Success(it) }, { transform(it) })
 
-    override fun toString(): String {
-        return fold({
-            "Success: $it"
-        }, {
-            "Failure: $it"
-        })
-    }
+    override fun toString() = fold({ "[Success: $it]" }, { "[Failure: $it]" })
+
 }
