@@ -55,8 +55,9 @@ val ex: Exception = result.get<Exception>()!!
 
 //fold
 result.fold({ value ->
-
+    //do something with value
 }, { error ->
+    //do something with error
 })
 ```
 
