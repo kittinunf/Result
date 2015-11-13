@@ -28,9 +28,9 @@ dependencies {
 
 ## TL;DR
 
-This model is highly inspired by "Railway Oriented Programming" (ROP) concept. 
+This model is highly inspired by "[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/#monads)" concept. 
 
-`Result` enables one expresses series of operations as;
+`Result` allows one to express series of success/failure operations in Kotlin as;
 
 ``` Kotlin
 Result.of(operation)
@@ -63,7 +63,7 @@ result.fold({ value ->
 
 ## Why
 
-One can use `Result` whenever there is a need to represent an operation that has the possibility of failure. Error handling can be cumbersome to work with. 
+`Result` is suitable whenever there is a need to represent an operation that has the possibility of failure. Error handling can be cumbersome to work with.
 `Result` helps process the operations in a nice, functional way, while maintaining readability to your code.
 
 Let's consider a need to read data from `foo`, and to perform some further validation 
