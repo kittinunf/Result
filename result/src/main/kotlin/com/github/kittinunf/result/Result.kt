@@ -30,6 +30,23 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
 
     }
 
+    /**
+     * provide a fallback value in case of failure
+     *
+     * It is the equivalent of the elvis operator ?: for nullable types
+     *
+     * Example:
+     *
+     * val vecsize= Result.of(vec.size() or 0)
+     *
+     */
+    public inline infix fun <reified V : Any> or(fallbackValue:V):Result<V,E> {
+        return when(this) {
+            is Success -> Success(this.value as V)
+            is Failure -> Success(fallbackValue)
+        }
+    }
+
     public fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
         return when (this) {
             is Success -> success(this.value!!)
@@ -37,7 +54,7 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
         }
     }
 
-    public inline fun <reified X> get(): X? {
+    public inline fun <reified X> getAs(): X? {
         @Suppress("unchecked_cast")
         return when (this) {
             is Success -> this.value as? X
@@ -45,7 +62,7 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
         }
     }
 
-    public fun dematerialize(): V {
+    public fun get(): V {
         when (this) {
             is Success -> return this.value as V
             is Failure -> throw this.error as E

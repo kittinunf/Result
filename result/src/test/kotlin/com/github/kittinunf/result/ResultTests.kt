@@ -13,6 +13,12 @@ import kotlin.test.assertTrue
 class ResultTests {
 
     @Test
+    fun testOr()
+    {
+        val one = Result.of(null) or 1
+        assert(one.value==1)
+    }
+    @Test
     fun testCreateValue() {
         val v = Result.of(1)
 
@@ -71,11 +77,11 @@ class ResultTests {
         val result1 = Result.of(f1)
         val result2 = Result.of(f2)
 
-        assertTrue(result1.dematerialize(), "result1 is true")
+        assertTrue(result1.get(), "result1 is true")
         assertTrue("result2 expecting to throw FileNotFoundException") {
             var result = false
             try {
-                result2.dematerialize()
+                result2.get()
             } catch(e: FileNotFoundException) {
                 result = true
             }
@@ -88,7 +94,7 @@ class ResultTests {
         val result1 = Result.of(22)
         val result2 = Result.of(KotlinNullPointerException())
 
-        val v1: Int = result1.get()!!
+        val v1: Int = result1.getAs()!!
         val (v2, err) = result2
 
         assertTrue { v1 == 22 }
@@ -119,8 +125,8 @@ class ResultTests {
         val v1 = success.map { it.count() }
         val v2 = failure.map { it.count() }
 
-        assertTrue { v1.get<Int>() == 7 }
-        assertTrue { v2.get<Int>() ?: 0 == 0 }
+        assertTrue { v1.getAs<Int>() == 7 }
+        assertTrue { v2.getAs<Int>() ?: 0 == 0 }
     }
 
     @Test
@@ -131,8 +137,8 @@ class ResultTests {
         val v1 = success.flatMap { Result.of(it.last()) }
         val v2 = failure.flatMap { Result.of(it.count()) }
 
-        assertTrue { v1.get<Char>() == 's' }
-        assertTrue { v2.get<Char>() ?: "" == "" }
+        assertTrue { v1.getAs<Char>() == 's' }
+        assertTrue { v2.getAs<Char>() ?: "" == "" }
     }
 
     @Test
@@ -158,7 +164,7 @@ class ResultTests {
         val v1 = success.flatMapError { Result.of(IllegalArgumentException()) }
         val v2 = failure.flatMapError { Result.of(IllegalArgumentException()) }
 
-        assertTrue { v1.get<String>() == "success" }
+        assertTrue { v1.getAs<String>() == "success" }
         assertTrue { v2.error is IllegalArgumentException }
     }
 
