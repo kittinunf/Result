@@ -14,7 +14,7 @@ dependencies {
 
 buildscript {
     ext {
-        kotlin_version = '1.0.0-beta-1103'
+        kotlin_version = '1.0.0-beta-2423'
         junit_version = '4.12'
 
         bintray_version = '0.3.4'
@@ -32,10 +32,10 @@ buildscript {
 }
 
 publish {
-    groupId = 'com.github.kittinunf.result'
-    uploadName = 'Result'
     artifactId = 'result'
-    version = '0.2'
-    description = 'The modelling for success/failure of operations in Kotlin'
+    desc = 'The modelling for success/failure of operations in Kotlin'
+    groupId = 'com.github.kittinunf.result'
+    publishVersion = '0.2'
+    uploadName = 'Result'
     website = 'https://github.com/kittinunf/Result'
 }

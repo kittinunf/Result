@@ -146,13 +146,13 @@ class ResultTests {
         val success = Result.of("success")
         val failure = Result.of(Exception("failure"))
 
-        val v1 = success.mapError { InstantiationException(it.getMessage()) }
-        val v2 = failure.mapError { InstantiationException(it.getMessage()) }
+        val v1 = success.mapError { InstantiationException(it.message) }
+        val v2 = failure.mapError { InstantiationException(it.message) }
 
         assertTrue { v1.value == "success" && v1.error == null }
         assertTrue {
             val (value, error) = v2
-            error is InstantiationException && error.getMessage() == "failure"
+            error is InstantiationException && error.message == "failure"
         }
     }
 
