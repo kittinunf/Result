@@ -248,7 +248,7 @@ class ResultTests {
 
         val result2 = PositiveNumberResult.of(v + 8)
 
-        assertTrue { result is PositiveNumberResult.Failure }
+        assertTrue { result2 is PositiveNumberResult.Success }
     }
 
 }
