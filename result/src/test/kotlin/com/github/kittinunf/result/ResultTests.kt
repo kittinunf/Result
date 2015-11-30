@@ -115,6 +115,7 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
+
     fun Nothing.getMessage() = ""
 
     @Test
@@ -212,5 +213,42 @@ class ResultTests {
     fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
 
     fun concat(a: String, b: String): Result<String, NoException> = Result.Success(a + b)
+
+    sealed class PositiveNumberResult(override val value: Int?, override val error: IllegalArgumentException?) : ResultType<Int, IllegalArgumentException> {
+
+        public class Success(value: Int) : PositiveNumberResult(value, null)
+        public class Failure(error: IllegalArgumentException) : PositiveNumberResult(null, error)
+
+        companion object {
+            public fun of(value: Int): PositiveNumberResult {
+                return if (value > 0) {
+                    Success(value)
+                } else {
+                    Failure(IllegalArgumentException())
+                }
+            }
+        }
+
+        override fun <X> fold(success: (Int) -> X, failure: (IllegalArgumentException) -> X): X {
+            return when (this) {
+                is Success -> success(this.value!!)
+                is Failure -> failure(this.error!!)
+            }
+        }
+
+    }
+
+    @Test
+    fun testPositiveNumberResult() {
+        val v = 1 + 2 - 3 + 4 - 5 + 6 - 7
+
+        val result = PositiveNumberResult.of(v)
+
+        assertTrue { result is PositiveNumberResult.Failure }
+
+        val result2 = PositiveNumberResult.of(v + 8)
+
+        assertTrue { result is PositiveNumberResult.Failure }
+    }
 
 }
