@@ -4,13 +4,33 @@ package com.github.kittinunf.result
  * Created by Kittinun Vantasin on 10/26/15.
  */
 
-sealed public class Result<out V : Any, out E : Exception> private constructor(val value: V?, val error: E?) {
+public interface ResultType<out V : Any, out E : Exception> {
 
-    operator public fun component1(): V? = this.value
-    operator public fun component2(): E? = this.error
+    val value: V?
+    val error: E?
+
+    public operator fun component1(): V? = this.value
+    public operator fun component2(): E? = this.error
+
+    public fun <X> fold(success: (V) -> X, failure: (E) -> X): X
+
+}
+
+public inline fun <reified X> Result<*, *>.getAs() = fold({ this.value as? X }, { this.error as? X })
+public inline fun <reified V : Any, reified E : Exception> Result<V, E>.get() = fold({ this.value as V }, { throw this.error as E })
+
+public infix fun <V : Any, E : Exception> ResultType<V, E>.or(fallback: V) = fold({ Result.Success(it) }, { Result.Success(fallback) })
+
+public fun <V : Any, U : Any, E : Exception> ResultType<V, E>.map(transform: (V) -> U) = fold({ Result.Success(transform(it)) }, { Result.Failure(it) })
+public fun <V : Any, U : Any, E : Exception> ResultType<V, E>.flatMap(transform: (V) -> Result<U, E>) = fold({ transform(it) }, { Result.Failure(it) })
+
+public fun <V : Any, E : Exception, E2 : Exception> ResultType<V, E>.mapError(transform: (E) -> E2) = fold({ Result.Success(it) }, { Result.Failure(transform(it)) })
+public fun <V : Any, E : Exception, E2 : Exception> ResultType<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = fold({ Result.Success(it) }, { transform(it) })
+
+
+sealed public class Result<out V : Any, out E : Exception> private constructor(override val value: V?, override val error: E?) : ResultType<V, E> {
 
     public class Success<V : Any>(value: V) : Result<V, Nothing>(value, null)
-
     public class Failure<E : Exception>(error: E) : Result<Nothing, E>(null, error)
 
     companion object {
@@ -20,7 +40,7 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
         public fun <V : Any> of(value: V?, fail: (() -> Exception)? = null) =
                 value?.let { Success(it) } ?: Failure(fail?.invoke() ?: Exception())
 
-        public fun <V: Any> of(f: Function0<V>): Result<V, Exception> {
+        public fun <V : Any> of(f: Function0<V>): Result<V, Exception> {
             return try {
                 Result.of(f())
             } catch(ex: Exception) {
@@ -30,52 +50,12 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(v
 
     }
 
-    /**
-     * provide a fallback value in case of failure
-     *
-     * It is the equivalent of the elvis operator ?: for nullable types
-     *
-     * Example:
-     *
-     * val vecsize= Result.of(vec.size() or 0)
-     *
-     */
-    public inline infix fun <reified V : Any> or(fallbackValue:V):Result<V,E> {
-        return when(this) {
-            is Success -> Success(this.value as V)
-            is Failure -> Success(fallbackValue)
-        }
-    }
-
-    public fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
+    override fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
         return when (this) {
             is Success -> success(this.value!!)
             is Failure -> failure(this.error!!)
         }
     }
-
-    public inline fun <reified X> getAs(): X? {
-        @Suppress("unchecked_cast")
-        return when (this) {
-            is Success -> this.value as? X
-            is Failure -> this.error as? X
-        }
-    }
-
-    public fun get(): V {
-        when (this) {
-            is Success -> return this.value as V
-            is Failure -> throw this.error as E
-        }
-    }
-
-    public fun <U : Any> map(transform: (V) -> U) = fold({ Result.Success(transform(it)) }, { Result.Failure(it) })
-
-    public fun <U : Any, E : Exception> flatMap(transform: (V) -> Result<U, E>) = fold({ transform(it) }, { Result.Failure(it) })
-
-    public fun <E2 : Exception> mapError(transform: (E) -> E2) = fold({ Result.Success(it) }, { Result.Failure(transform(it)) })
-
-    public fun <V : Any, E2 : Exception> flatMapError(transform: (E) -> Result<V, E2>) = fold({ Result.Success(it) }, { transform(it) })
 
     override fun toString() = fold({ "[Success: $it]" }, { "[Failure: $it]" })
 

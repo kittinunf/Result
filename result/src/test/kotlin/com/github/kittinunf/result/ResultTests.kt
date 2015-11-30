@@ -13,12 +13,6 @@ import kotlin.test.assertTrue
 class ResultTests {
 
     @Test
-    fun testOr()
-    {
-        val one = Result.of(null) or 1
-        assert(one.value==1)
-    }
-    @Test
     fun testCreateValue() {
         val v = Result.of(1)
 
@@ -70,7 +64,13 @@ class ResultTests {
     }
 
     @Test
-    fun testDematerialize() {
+    fun testOr() {
+        val one = Result.of(null) or 1
+        assert(one.value == 1)
+    }
+
+    @Test
+    fun testGet() {
         val f1 = { true }
         val f2 = { File("not_found_file").readText() }
 
@@ -90,7 +90,7 @@ class ResultTests {
     }
 
     @Test
-    fun testGetValue() {
+    fun testGetAsValue() {
         val result1 = Result.of(22)
         val result2 = Result.of(KotlinNullPointerException())
 
@@ -115,6 +115,7 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
+
     fun Nothing.getMessage() = ""
 
     @Test
@@ -146,13 +147,13 @@ class ResultTests {
         val success = Result.of("success")
         val failure = Result.of(Exception("failure"))
 
-        val v1 = success.mapError { InstantiationException(it.getMessage()) }
-        val v2 = failure.mapError { InstantiationException(it.getMessage()) }
+        val v1 = success.mapError { InstantiationException(it.message) }
+        val v2 = failure.mapError { InstantiationException(it.message) }
 
         assertTrue { v1.value == "success" && v1.error == null }
         assertTrue {
             val (value, error) = v2
-            error is InstantiationException && error.getMessage() == "failure"
+            error is InstantiationException && error.message == "failure"
         }
     }
 
@@ -212,5 +213,40 @@ class ResultTests {
     fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
 
     fun concat(a: String, b: String): Result<String, NoException> = Result.Success(a + b)
+
+    sealed class PositiveNumberResult(override val value: Int?, override val error: IllegalArgumentException?) : ResultType<Int, IllegalArgumentException> {
+
+        public class Success(value: Int) : PositiveNumberResult(value, null)
+        public class Failure(error: IllegalArgumentException) : PositiveNumberResult(null, error)
+
+        companion object {
+            public fun of(value: Int): PositiveNumberResult {
+                return if (value > 0) {
+                    Success(value)
+                } else {
+                    Failure(IllegalArgumentException())
+                }
+            }
+        }
+
+        override fun <X> fold(success: (Int) -> X, failure: (IllegalArgumentException) -> X): X {
+            return when (this) {
+                is Success -> success(this.value!!)
+                is Failure -> failure(this.error!!)
+            }
+        }
+
+    }
+
+    @Test
+    fun testPositiveNumberResult() {
+        val v = 1 + 2 - 3 + 4 - 5 + 6 - 7
+
+        val result = PositiveNumberResult.of(v)
+        assertTrue { result is PositiveNumberResult.Failure }
+
+        val result2 = PositiveNumberResult.of(v + 8)
+        assertTrue { result2 is PositiveNumberResult.Success }
+    }
 
 }
