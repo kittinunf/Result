@@ -127,7 +127,7 @@ Result.of(operation)  // Result<String, FileException>
 * Normalize a data
 ``` Kotlin
 fun normalizedData(foo): Result<Boolean, NormalizedException> {
-    Result.of(data.normalize())
+    Result.of(foo.normalize())
 }
 ```
 
@@ -141,7 +141,7 @@ fun createRequestFromData(foo): Request {
 * Update DB with Request
 ``` Kotlin
 fun database.updateFromRequest(request): Result<Boolean, DBException> {
-    val transaction = request.transaction()
+    val transaction = request.transaction
     return Result.of(db.openTransaction {
         val success = db.execute(transaction)
         if (!success) {
