@@ -60,4 +60,3 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(o
     override fun toString() = fold({ "[Success: $it]" }, { "[Failure: $it]" })
 
 }
-
