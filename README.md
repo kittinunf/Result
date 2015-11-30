@@ -1,6 +1,6 @@
 # Result
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--1103-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--2423-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
 
 This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V, E : Exception>`.
 
@@ -15,6 +15,7 @@ This is a tiny framework for modelling success/failure of operations in [Kotlin]
 ### Gradle
 
 ``` Groovy
+
 buildscript {
     repositories {
         jcenter()
@@ -22,8 +23,9 @@ buildscript {
 }
 
 dependencies {
-    compile 'com.github.kittinunf.result:result:0.2'
+    compile 'com.github.kittinunf.result:result:0.3'
 }
+
 ```
 
 ## TL;DR
@@ -125,18 +127,28 @@ Result.of(operation)  // Result<String, FileException>
 * Normalize a data
 ``` Kotlin
 fun normalizedData(foo): Result<Boolean, NormalizedException> {
+    Result.of(data.normalize())
 }
 ```
 
 * Create a request from data
 ``` Kotlin
 fun createRequestFromData(foo): Request {
+    return createRequest(foo)
 }
 ```
 
 * Update DB with Request
 ``` Kotlin
 fun database.updateFromRequest(request): Result<Boolean, DBException> {
+    val transaction = request.transaction()
+    return Result.of(db.openTransaction {
+        val success = db.execute(transaction)
+        if (!success) {
+            throw DBException("Error")
+        }
+        return success
+    })
 }
 ```
 
