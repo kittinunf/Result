@@ -13,12 +13,6 @@ import kotlin.test.assertTrue
 class ResultTests {
 
     @Test
-    fun testOr()
-    {
-        val one = Result.of(null) or 1
-        assert(one.value==1)
-    }
-    @Test
     fun testCreateValue() {
         val v = Result.of(1)
 
@@ -70,7 +64,13 @@ class ResultTests {
     }
 
     @Test
-    fun testDematerialize() {
+    fun testOr() {
+        val one = Result.of(null) or 1
+        assert(one.value == 1)
+    }
+
+    @Test
+    fun testGet() {
         val f1 = { true }
         val f2 = { File("not_found_file").readText() }
 
@@ -90,7 +90,7 @@ class ResultTests {
     }
 
     @Test
-    fun testGetValue() {
+    fun testGetAsValue() {
         val result1 = Result.of(22)
         val result2 = Result.of(KotlinNullPointerException())
 
