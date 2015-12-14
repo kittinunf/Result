@@ -22,7 +22,7 @@ local.properties
 .project
 
 # Bintray
-bintray_push
+bintray_push.sh
 
 # Android Studio
 .idea/
