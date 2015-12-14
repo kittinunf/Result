@@ -40,7 +40,7 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(o
         public fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }) =
                 value?.let { Success(it) } ?: Failure(fail.invoke())
 
-        public fun <V: Any> of(f: Function0<V>): Result<V, Exception> {
+        public fun <V : Any> of(f: Function0<V>): Result<V, Exception> {
             return try {
                 Success(f.invoke())
             } catch(ex: Exception) {
