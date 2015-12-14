@@ -5,9 +5,3 @@ jdk:
 
 script:
   - ./gradlew test --info
-
-deploy:
-  provider: script
-  script: scripts/deploy.sh
-  on:
-    branch: master
