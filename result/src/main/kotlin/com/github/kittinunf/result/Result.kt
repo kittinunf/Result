@@ -16,8 +16,8 @@ public interface ResultType<out V : Any, out E : Exception> {
 
 }
 
-public inline fun <reified X> Result<*, *>.getAs() = fold({ this.value as? X }, { this.error as? X })
-public inline fun <reified V : Any, reified E : Exception> Result<V, E>.get() = fold({ this.value as V }, { throw this.error as E })
+public inline fun <reified X> ResultType<*, *>.getAs() = fold({ this.value as? X }, { this.error as? X })
+public inline fun <reified V : Any, reified E : Exception> ResultType<V, E>.get() = fold({ this.value as V }, { throw this.error as E })
 
 public infix fun <V : Any, E : Exception> ResultType<V, E>.or(fallback: V) = fold({ Result.Success(it) }, { Result.Success(fallback) })
 
@@ -35,16 +35,16 @@ sealed public class Result<out V : Any, out E : Exception> private constructor(o
 
     companion object {
         // Factory methods
-        public fun <E : Exception> of(error: E) = Failure(error)
+        public fun <E : Exception> error(ex: E) = Failure(ex)
 
-        public fun <V : Any> of(value: V?, fail: (() -> Exception)? = null) =
-                value?.let { Success(it) } ?: Failure(fail?.invoke() ?: Exception())
+        public fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }) =
+                value?.let { Success(it) } ?: Failure(fail.invoke())
 
-        public fun <V : Any> of(f: Function0<V>): Result<V, Exception> {
+        public fun <V: Any> of(f: Function0<V>): Result<V, Exception> {
             return try {
-                Result.of(f())
+                Success(f.invoke())
             } catch(ex: Exception) {
-                Result.of(ex)
+                Failure(ex)
             }
         }
 

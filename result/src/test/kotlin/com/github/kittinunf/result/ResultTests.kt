@@ -22,7 +22,7 @@ class ResultTests {
 
     @Test
     fun testCreateError() {
-        val e = Result.of(RuntimeException())
+        val e = Result.error(RuntimeException())
 
         assertNotNull(e, "Result is created successfully")
         assertTrue(e is Result.Failure, "v is Result.Success type")
@@ -92,7 +92,7 @@ class ResultTests {
     @Test
     fun testGetAsValue() {
         val result1 = Result.of(22)
-        val result2 = Result.of(KotlinNullPointerException())
+        val result2 = Result.error(KotlinNullPointerException())
 
         val v1: Int = result1.getAs()!!
         val (v2, err) = result2
@@ -104,7 +104,7 @@ class ResultTests {
     @Test
     fun testFold() {
         val success = Result.of("success")
-        val failure = Result.of(RuntimeException("failure"))
+        val failure = Result.error(RuntimeException("failure"))
 
         val v1 = success.fold({ 1 }, { 0 })
         val v2 = failure.fold({ 1 }, { 0 })
@@ -115,13 +115,12 @@ class ResultTests {
 
     //helper
     fun Nothing.count() = 0
-
     fun Nothing.getMessage() = ""
 
     @Test
     fun testMap() {
         val success = Result.of("success")
-        val failure = Result.of(RuntimeException("failure"))
+        val failure = Result.error(RuntimeException("failure"))
 
         val v1 = success.map { it.count() }
         val v2 = failure.map { it.count() }
@@ -133,7 +132,7 @@ class ResultTests {
     @Test
     fun testFlatMap() {
         val success = Result.of("success")
-        val failure = Result.of(RuntimeException("failure"))
+        val failure = Result.error(RuntimeException("failure"))
 
         val v1 = success.flatMap { Result.of(it.last()) }
         val v2 = failure.flatMap { Result.of(it.count()) }
@@ -145,7 +144,7 @@ class ResultTests {
     @Test
     fun testMapError() {
         val success = Result.of("success")
-        val failure = Result.of(Exception("failure"))
+        val failure = Result.error(Exception("failure"))
 
         val v1 = success.mapError { InstantiationException(it.message) }
         val v2 = failure.mapError { InstantiationException(it.message) }
@@ -160,10 +159,10 @@ class ResultTests {
     @Test
     fun testFlatMapError() {
         val success = Result.of("success")
-        val failure = Result.of(Exception("failure"))
+        val failure = Result.error(Exception("failure"))
 
-        val v1 = success.flatMapError { Result.of(IllegalArgumentException()) }
-        val v2 = failure.flatMapError { Result.of(IllegalArgumentException()) }
+        val v1 = success.flatMapError { Result.error(IllegalArgumentException()) }
+        val v2 = failure.flatMapError { Result.error(IllegalArgumentException()) }
 
         assertTrue { v1.getAs<String>() == "success" }
         assertTrue { v2.error is IllegalArgumentException }
