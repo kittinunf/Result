@@ -15,11 +15,8 @@ This is a tiny framework for modelling success/failure of operations in [Kotlin]
 ### Gradle
 
 ``` Groovy
-
-buildscript {
-    repositories {
-        jcenter()
-    }
+repositories {
+    jcenter()
 }
 
 dependencies {
