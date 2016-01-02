@@ -10,11 +10,12 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     testCompile "junit:junit:$junit_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
 
 buildscript {
     ext {
-        kotlin_version = '1.0.0-beta-3595'
+        kotlin_version = '1.0.0-beta-4584'
         junit_version = '4.12'
 
         bintray_version = '0.3.4'
