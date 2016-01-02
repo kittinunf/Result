@@ -52,7 +52,15 @@ sealed public class Result<out V : Any, out E : Exception> {
 
         override fun get(): V = value
 
+
         override fun toString() = "[Success: $value]"
+
+        override fun hashCode(): Int = value.hashCode()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Success<*, *> && value == other.value
+        }
     }
 
 
@@ -65,6 +73,13 @@ sealed public class Result<out V : Any, out E : Exception> {
         override fun get(): V = throw error
 
         override fun toString() = "[Failure: $error]"
+
+        override fun hashCode(): Int = error.hashCode()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Failure<*, *> && error == other.error
+        }
     }
 
     companion object {
