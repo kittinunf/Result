@@ -4,59 +4,96 @@ package com.github.kittinunf.result
  * Created by Kittinun Vantasin on 10/26/15.
  */
 
-public interface ResultType<out V : Any, out E : Exception> {
-
-    val value: V?
-    val error: E?
-
-    public operator fun component1(): V? = this.value
-    public operator fun component2(): E? = this.error
-
-    public fun <X> fold(success: (V) -> X, failure: (E) -> X): X
-
+public inline fun <reified X> Result<*, *>.getAs() = when (this) {
+    is Result.Success -> value as? X
+    is Result.Failure -> error as? X
 }
 
-public inline fun <reified X> ResultType<*, *>.getAs() = fold({ this.value as? X }, { this.error as? X })
-public inline fun <reified V : Any, reified E : Exception> ResultType<V, E>.get() = fold({ this.value as V }, { throw this.error as E })
+public infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
+    is Result.Success -> this
+    else -> Result.Success<V, E>(fallback)
+}
 
-public infix fun <V : Any, E : Exception> ResultType<V, E>.or(fallback: V) = fold({ Result.Success(it) }, { Result.Success(fallback) })
+public fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = when (this) {
+    is Result.Success -> Result.Success<U, E>(transform(value))
+    is Result.Failure -> Result.Failure<U, E>(error)
+}
 
-public fun <V : Any, U : Any, E : Exception> ResultType<V, E>.map(transform: (V) -> U) = fold({ Result.Success(transform(it)) }, { Result.Failure(it) })
-public fun <V : Any, U : Any, E : Exception> ResultType<V, E>.flatMap(transform: (V) -> Result<U, E>) = fold({ transform(it) }, { Result.Failure(it) })
+public fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = when (this) {
+    is Result.Success -> transform(value)
+    is Result.Failure -> Result.Failure<U, E>(error)
+}
 
-public fun <V : Any, E : Exception, E2 : Exception> ResultType<V, E>.mapError(transform: (E) -> E2) = fold({ Result.Success(it) }, { Result.Failure(transform(it)) })
-public fun <V : Any, E : Exception, E2 : Exception> ResultType<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = fold({ Result.Success(it) }, { transform(it) })
+public fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
+    is Result.Success -> Result.Success<V, E2>(value)
+    is Result.Failure -> Result.Failure<V, E2>(transform(error))
+}
+
+public fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
+    is Result.Success -> Result.Success<V, E2>(value)
+    is Result.Failure -> transform(error)
+}
 
 
-sealed public class Result<out V : Any, out E : Exception> private constructor(override val value: V?, override val error: E?) : ResultType<V, E> {
+sealed public class Result<out V : Any, out E : Exception> {
 
-    public class Success<V : Any>(value: V) : Result<V, Nothing>(value, null)
-    public class Failure<E : Exception>(error: E) : Result<Nothing, E>(null, error)
+    public abstract operator fun component1(): V?
+    public abstract operator fun component2(): E?
+
+    public abstract fun <X> fold(success: (V) -> X, failure: (E) -> X): X
+
+    public abstract fun get(): V
+
+    public class Success<out V : Any, out E : Exception>(val value: V) : Result<V, E>() {
+        override fun component1(): V? = value
+        override fun component2(): E? = null
+
+        override fun <X> fold(success: (V) -> X, failure: (E) -> X): X = success(value)
+
+        override fun get(): V = value
+
+
+        override fun toString() = "[Success: $value]"
+
+        override fun hashCode(): Int = value.hashCode()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Success<*, *> && value == other.value
+        }
+    }
+
+
+    public class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
+        override fun component1(): V? = null
+        override fun component2(): E? = error
+
+        override fun <X> fold(success: (V) -> X, failure: (E) -> X): X = failure(error)
+
+        override fun get(): V = throw error
+
+        override fun toString() = "[Failure: $error]"
+
+        override fun hashCode(): Int = error.hashCode()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Failure<*, *> && error == other.error
+        }
+    }
 
     companion object {
         // Factory methods
-        public fun <E : Exception> error(ex: E) = Failure(ex)
+        public fun <E : Exception> error(ex: E) = Failure<Nothing, E>(ex)
 
-        public fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }) =
-                value?.let { Success(it) } ?: Failure(fail.invoke())
-
-        public fun <V : Any> of(f: Function0<V>): Result<V, Exception> {
-            return try {
-                Success(f.invoke())
-            } catch(ex: Exception) {
-                Failure(ex)
-            }
+        public fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> {
+            return value?.let { Success<V, Nothing>(it) } ?: error(fail())
         }
 
-    }
-
-    override fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
-        return when (this) {
-            is Success -> success(this.value!!)
-            is Failure -> failure(this.error!!)
+        public fun <V : Any> of(f: () -> V): Result<V, Exception> = try {
+            Success(f())
+        } catch(ex: Exception) {
+            Failure(ex)
         }
     }
-
-    override fun toString() = fold({ "[Success: $it]" }, { "[Failure: $it]" })
-
 }
