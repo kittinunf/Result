@@ -1,10 +1,11 @@
 package com.github.kittinunf.result
 
+import org.hamcrest.CoreMatchers.*
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import org.junit.Assert.assertThat
+import org.hamcrest.CoreMatchers.`is` as isEqualTo
 
 /**
  * Created by Kittinun Vantasin on 10/27/15.
@@ -16,16 +17,16 @@ class ResultTests {
     fun testCreateValue() {
         val v = Result.of(1)
 
-        assertNotNull(v, "Result is created successfully")
-        assertTrue(v is Result.Success, "v is Result.Success type")
+        assertThat("Result is created successfully", v, notNullValue())
+        assertThat("v is Result.Success type", v is Result.Success, isEqualTo(true))
     }
 
     @Test
     fun testCreateError() {
         val e = Result.error(RuntimeException())
 
-        assertNotNull(e, "Result is created successfully")
-        assertTrue(e is Result.Failure, "v is Result.Success type")
+        assertThat("Result is created successfully", e, notNullValue())
+        assertThat("e is Result.Failure type", e is Result.Failure, isEqualTo(true))
     }
 
     @Test
@@ -36,8 +37,8 @@ class ResultTests {
         val result1 = Result.of(value1) { UnsupportedOperationException("value is null") }
         val result2 = Result.of(value2) { IllegalStateException("value is null") }
 
-        assertTrue(result1 is Result.Failure, "result1 is Result.Failure type")
-        assertTrue(result2 is Result.Success, "result2 is Result.Success type")
+        assertThat("result1 is Result.Failure type", result1 is Result.Failure, isEqualTo(true))
+        assertThat("result2 is Result.Success type", result2 is Result.Success, isEqualTo(true))
     }
 
     @Test
@@ -58,16 +59,53 @@ class ResultTests {
         val result2 = Result.of(f2)
         val result3 = Result.of(f3())
 
-        assertTrue(result1 is Result.Success, "result1 is Result.Success type")
-        assertTrue(result2 is Result.Failure, "result2 is Result.Failure type")
-        assertTrue(result3 is Result.Failure, "result2 is Result.Failure type")
+        assertThat("result1 is Result.Success type", result1 is Result.Success, isEqualTo(true))
+        assertThat("result2 is Result.Failure type", result2 is Result.Failure, isEqualTo(true))
+        assertThat("result3 is Result.Failure type", result3 is Result.Failure, isEqualTo(true))
     }
 
     @Test
     fun testOr() {
         val one = Result.of(null) or 1
-        assert(one is Result.Success)
-        assert(one is Result.Success && one.value == 1)
+
+        assertThat("one is Result.Success type", one is Result.Success, isEqualTo(true))
+        assertThat("value one is 1", one.component1()!!, isEqualTo(1))
+    }
+
+    @Test
+    fun testSucess() {
+        val result = Result.of { true }
+
+        var beingCalled = false
+        result.success {
+            beingCalled = true
+        }
+
+        var notBeingCalled = true
+        result.failure {
+            notBeingCalled = false
+        }
+
+        assertThat(beingCalled, isEqualTo(true))
+        assertThat(notBeingCalled, isEqualTo(true))
+    }
+
+    @Test
+    fun testFailure() {
+        val result = Result.of { File("not_found_file").readText() }
+
+        var beingCalled = false
+        result.failure {
+            beingCalled = true
+        }
+
+        var notBeingCalled = true
+        result.success {
+            notBeingCalled = false
+        }
+
+        assertThat(beingCalled, isEqualTo(true))
+        assertThat(notBeingCalled, isEqualTo(true))
     }
 
     @Test
@@ -78,16 +116,16 @@ class ResultTests {
         val result1 = Result.of(f1)
         val result2 = Result.of(f2)
 
-        assertTrue(result1.get(), "result1 is true")
-        assertTrue("result2 expecting to throw FileNotFoundException") {
-            var result = false
-            try {
-                result2.get()
-            } catch(e: FileNotFoundException) {
-                result = true
-            }
-            result
+        assertThat("result1 is true", result1.get(), isEqualTo(true))
+
+        var result = false
+        try {
+            result2.get()
+        } catch(e: FileNotFoundException) {
+            result = true
         }
+
+        assertThat("result2 expecting to throw FileNotFoundException", result, isEqualTo(true))
     }
 
     @Suppress("UNUSED_VARIABLE")
@@ -99,8 +137,8 @@ class ResultTests {
         val v1: Int = result1.getAs()!!
         val (v2, err) = result2
 
-        assertTrue { v1 == 22 }
-        assertTrue { err is KotlinNullPointerException }
+        assertThat("v1 is equal 22", v1, isEqualTo(22))
+        assertThat("err is KotlinNullPointerException type", err is KotlinNullPointerException, isEqualTo(true))
     }
 
     @Test
@@ -111,12 +149,13 @@ class ResultTests {
         val v1 = success.fold({ 1 }, { 0 })
         val v2 = failure.fold({ 1 }, { 0 })
 
-        assertTrue { v1 == 1 }
-        assertTrue { v2 == 0 }
+        assertThat("v1 is equal 1", v1, isEqualTo(1))
+        assertThat("v2 is equal 1", v2, isEqualTo(0))
     }
 
     //helper
     fun Nothing.count() = 0
+
     fun Nothing.getMessage() = ""
 
     @Test
@@ -127,8 +166,8 @@ class ResultTests {
         val v1 = success.map { it.count() }
         val v2 = failure.map { it.count() }
 
-        assertTrue { v1.getAs<Int>() == 7 }
-        assertTrue { v2.getAs<Int>() ?: 0 == 0 }
+        assertThat("v1 getAsInt equals 7", v1.getAs(), isEqualTo(7))
+        assertThat("v2 getAsInt null", v2.getAs<Int>(), nullValue())
     }
 
     @Test
@@ -139,8 +178,8 @@ class ResultTests {
         val v1 = success.flatMap { Result.of(it.last()) }
         val v2 = failure.flatMap { Result.of(it.count()) }
 
-        assertTrue { v1.getAs<Char>() == 's' }
-        assertTrue { v2.getAs<Char>() ?: "" == "" }
+        assertThat("v1 getAsChar equals s", v1.getAs(), isEqualTo('s'))
+        assertThat("v2 getAsInt null", v2.getAs<Int>(), nullValue())
     }
 
     @Test
@@ -151,11 +190,10 @@ class ResultTests {
         val v1 = success.mapError { InstantiationException(it.message) }
         val v2 = failure.mapError { InstantiationException(it.message) }
 
-        assertTrue { v1 is Result.Success && v1.value == "success" }
-        assertTrue {
-            val (value, error) = v2
-            error is InstantiationException && error.message == "failure"
-        }
+        assertThat("v1 is success", v1 is Result.Success, isEqualTo(true))
+        assertThat("v1 is success", v1.component1(), isEqualTo("success"))
+        assertThat("v2 is failure", v2 is Result.Failure, isEqualTo(true))
+        assertThat("v2 is failure", v2.component2()!!.message, isEqualTo("failure"))
     }
 
     @Test
@@ -166,9 +204,11 @@ class ResultTests {
         val v1 = success.flatMapError { Result.error(IllegalArgumentException()) }
         val v2 = failure.flatMapError { Result.error(IllegalArgumentException()) }
 
-        assertTrue { v1.getAs<String>() == "success" }
-        assertTrue { v2 is Result.Failure }
-        assertTrue { v2 is Result.Failure  && v2.error is IllegalArgumentException }
+
+        assertThat("v1 is success", v1 is Result.Success, isEqualTo(true))
+        assertThat("v1 is success", v1.getAs(), isEqualTo("success"))
+        assertThat("v2 is failure", v2 is Result.Failure, isEqualTo(true))
+        assertThat("v2 is failure", v2.component2() is IllegalArgumentException, isEqualTo(true))
     }
 
     @Test
@@ -181,8 +221,10 @@ class ResultTests {
         val (value1, error1) = Result.of(foo).map { it.count() }.mapError { IllegalStateException() }
         val (value2, error2) = Result.of(notFound).map { bar }.mapError { IllegalStateException() }
 
-        assertTrue { value1 == 574 && error1 == null }
-        assertTrue { value2 == null && error2 is IllegalStateException }
+        assertThat("value1 is 574", value1, isEqualTo(574))
+        assertThat("error1 is null", error1, nullValue())
+        assertThat("value2 is null", value2, nullValue())
+        assertThat("error2 is Exception", error2 is IllegalStateException, isEqualTo(true))
     }
 
     @Test
@@ -190,14 +232,14 @@ class ResultTests {
         val r1 = Result.of(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }.mapError { Exception("this should not happen") }
         val r2 = Result.of(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }.mapError { KotlinNullPointerException() }
 
-        assertTrue { r1 is Result.Success }
-        assertTrue { r2 is Result.Failure }
+        assertThat("r1 is Result.Success type", r1 is Result.Success, isEqualTo(true))
+        assertThat("r2 is Result.Failure type", r2 is Result.Failure, isEqualTo(true))
     }
 
     @Test
     fun testNoException() {
         val r = concat("1", "2")
-        assertTrue { r is Result.Success }
+        assertThat("r is Result.Success type", r is Result.Success, isEqualTo(true))
     }
 
     // helper

@@ -9,6 +9,20 @@ public inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Failure -> error as? X
 }
 
+public inline fun <V : Any> Result<V, *>.success(f: (V) -> Unit) {
+    when (this) {
+        is Result.Success -> f(value)
+        is Result.Failure -> {}
+    }
+}
+
+public inline fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) {
+    when (this) {
+        is Result.Success -> {}
+        is Result.Failure -> f(error)
+    }
+}
+
 public infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     is Result.Success -> this
     else -> Result.Success<V, E>(fallback)
@@ -33,7 +47,6 @@ public fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(tr
     is Result.Success -> Result.Success<V, E2>(value)
     is Result.Failure -> transform(error)
 }
-
 
 sealed public class Result<out V : Any, out E : Exception> {
 
@@ -62,7 +75,6 @@ sealed public class Result<out V : Any, out E : Exception> {
             return other is Success<*, *> && value == other.value
         }
     }
-
 
     public class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
         override fun component1(): V? = null
@@ -96,4 +108,5 @@ sealed public class Result<out V : Any, out E : Exception> {
             Failure(ex)
         }
     }
+
 }
