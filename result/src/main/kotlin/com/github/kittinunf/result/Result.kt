@@ -1,13 +1,13 @@
 package com.github.kittinunf.result
 
-/**
- * Created by Kittinun Vantasin on 10/26/15.
- */
-
 public inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Success -> value as? X
     is Result.Failure -> error as? X
 }
+
+public fun <V : Any> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
+
+public fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
 public infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     is Result.Success -> this
@@ -33,7 +33,6 @@ public fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(tr
     is Result.Success -> Result.Success<V, E2>(value)
     is Result.Failure -> transform(error)
 }
-
 
 sealed public class Result<out V : Any, out E : Exception> {
 
@@ -62,7 +61,6 @@ sealed public class Result<out V : Any, out E : Exception> {
             return other is Success<*, *> && value == other.value
         }
     }
-
 
     public class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
         override fun component1(): V? = null
@@ -96,4 +94,5 @@ sealed public class Result<out V : Any, out E : Exception> {
             Failure(ex)
         }
     }
+
 }
