@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.kittinunf.result:result:0.31'
+    compile 'com.github.kittinunf.result:result:0.4'
 }
 
 ```
@@ -52,7 +52,15 @@ val error = result.error
 val value: Int = result.get<Int>() ?: 0
 val ex: Exception = result.get<Exception>()!!
 
-//fold
+//success
+result.success {
+}
+
+//failure
+result.failure {
+}
+
+//fold is there, if you want to handle both success and failure
 result.fold({ value ->
     //do something with value
 }, { error ->

@@ -1,27 +1,13 @@
 package com.github.kittinunf.result
 
-/**
- * Created by Kittinun Vantasin on 10/26/15.
- */
-
 public inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Success -> value as? X
     is Result.Failure -> error as? X
 }
 
-public inline fun <V : Any> Result<V, *>.success(f: (V) -> Unit) {
-    when (this) {
-        is Result.Success -> f(value)
-        is Result.Failure -> {}
-    }
-}
+public fun <V : Any> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
-public inline fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) {
-    when (this) {
-        is Result.Success -> {}
-        is Result.Failure -> f(error)
-    }
-}
+public fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
 public infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     is Result.Success -> this
