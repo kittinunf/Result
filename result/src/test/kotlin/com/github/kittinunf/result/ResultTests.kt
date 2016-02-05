@@ -66,14 +66,14 @@ class ResultTests {
 
     @Test
     fun testOr() {
-        val one = Result.of(null) or 1
+        val one = Result.of<Int>(null) or 1
 
         assertThat("one is Result.Success type", one is Result.Success, isEqualTo(true))
         assertThat("value one is 1", one.component1()!!, isEqualTo(1))
     }
 
     @Test
-    fun testSucess() {
+    fun testSuccess() {
         val result = Result.of { true }
 
         var beingCalled = false
