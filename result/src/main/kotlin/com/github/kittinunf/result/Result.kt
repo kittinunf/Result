@@ -1,49 +1,49 @@
 package com.github.kittinunf.result
 
-public inline fun <reified X> Result<*, *>.getAs() = when (this) {
+inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Success -> value as? X
     is Result.Failure -> error as? X
 }
 
-public fun <V : Any> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
+fun <V : Any> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
-public fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
+fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
-public infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
+infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     is Result.Success -> this
     else -> Result.Success<V, E>(fallback)
 }
 
-public fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = when (this) {
+fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = when (this) {
     is Result.Success -> Result.Success<U, E>(transform(value))
     is Result.Failure -> Result.Failure<U, E>(error)
 }
 
-public fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = when (this) {
+fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = when (this) {
     is Result.Success -> transform(value)
     is Result.Failure -> Result.Failure<U, E>(error)
 }
 
-public fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
+fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
     is Result.Success -> Result.Success<V, E2>(value)
     is Result.Failure -> Result.Failure<V, E2>(transform(error))
 }
 
-public fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
+fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
     is Result.Success -> Result.Success<V, E2>(value)
     is Result.Failure -> transform(error)
 }
 
-sealed public class Result<out V : Any, out E : Exception> {
+sealed class Result<out V : Any, out E : Exception> {
 
-    public abstract operator fun component1(): V?
-    public abstract operator fun component2(): E?
+    abstract operator fun component1(): V?
+    abstract operator fun component2(): E?
 
-    public abstract fun <X> fold(success: (V) -> X, failure: (E) -> X): X
+    abstract fun <X> fold(success: (V) -> X, failure: (E) -> X): X
 
-    public abstract fun get(): V
+    abstract fun get(): V
 
-    public class Success<out V : Any, out E : Exception>(val value: V) : Result<V, E>() {
+    class Success<out V : Any, out E : Exception>(val value: V) : Result<V, E>() {
         override fun component1(): V? = value
         override fun component2(): E? = null
 
@@ -62,7 +62,7 @@ sealed public class Result<out V : Any, out E : Exception> {
         }
     }
 
-    public class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
+    class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
         override fun component1(): V? = null
         override fun component2(): E? = error
 
@@ -82,13 +82,13 @@ sealed public class Result<out V : Any, out E : Exception> {
 
     companion object {
         // Factory methods
-        public fun <E : Exception> error(ex: E) = Failure<Nothing, E>(ex)
+        fun <E : Exception> error(ex: E) = Failure<Nothing, E>(ex)
 
-        public fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> {
+        fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> {
             return value?.let { Success<V, Nothing>(it) } ?: error(fail())
         }
 
-        public fun <V : Any> of(f: () -> V): Result<V, Exception> = try {
+        fun <V : Any> of(f: () -> V): Result<V, Exception> = try {
             Success(f())
         } catch(ex: Exception) {
             Failure(ex)

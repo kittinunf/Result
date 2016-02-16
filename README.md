@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.kittinunf.result:result:0.4'
+    compile 'com.github.kittinunf.result:result:1.0.0'
 }
 
 ```
