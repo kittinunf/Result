@@ -14,6 +14,11 @@ infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     else -> Result.Success<V, E>(fallback)
 }
 
+infix fun <V : Any, E : Exception> Result<V, E>.getOrElse(fallback: V) = when (this) {
+    is Result.Success -> value
+    else -> fallback
+}
+
 fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = when (this) {
     is Result.Success -> Result.Success<U, E>(transform(value))
     is Result.Failure -> Result.Failure<U, E>(error)

@@ -73,6 +73,13 @@ class ResultTests {
     }
 
     @Test
+    fun testOrElse() {
+        val one = Result.of<Int>(null) getOrElse 1
+
+        assertThat("one is 1", one, isEqualTo(1))
+    }
+
+    @Test
     fun testSuccess() {
         val result = Result.of { true }
 
