@@ -5,6 +5,8 @@ import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
 import org.junit.Assert.assertThat
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.hamcrest.CoreMatchers.`is` as isEqualTo
 
 /**
@@ -216,6 +218,20 @@ class ResultTests {
         assertThat("v1 is success", v1.getAs(), isEqualTo("success"))
         assertThat("v2 is failure", v2 is Result.Failure, isEqualTo(true))
         assertThat("v2 is failure", v2.component2() is IllegalArgumentException, isEqualTo(true))
+    }
+
+    @Test
+    fun testAny() {
+        val foo = Result.of { readFromAssetFileName("foo.txt") }
+        val fooo = Result.of { readFromAssetFileName("fooo.txt") }
+
+        val v1 = foo.any { "Lorem" in it }
+        val v2 = fooo.any { "Lorem" in it }
+        val v3 = foo.any { "LOREM" in it }
+
+        assertTrue("v1 is true", v1)
+        assertFalse("v2 is false", v2)
+        assertFalse("v3 is false", v3)
     }
 
     @Test

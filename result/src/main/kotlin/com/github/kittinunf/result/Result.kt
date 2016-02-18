@@ -39,6 +39,11 @@ fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform
     is Result.Failure -> transform(error)
 }
 
+fun <V : Any> Result<V, *>.any(predicate: (V) -> Boolean): Boolean = when (this) {
+    is Result.Success -> predicate(value)
+    is Result.Failure -> false
+}
+
 sealed class Result<out V : Any, out E : Exception> {
 
     abstract operator fun component1(): V?
