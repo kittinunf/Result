@@ -8,7 +8,7 @@ buildscript {
 
 allprojects {
     ext {
-        publish_version = '1.0.0'
+        publish_version = '1.0.1'
 
         kotlin_version = '1.0.0'
 
