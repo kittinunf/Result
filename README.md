@@ -44,10 +44,6 @@ Work with `Result` is easy
 //multi-declaration
 val (value, error) = result
 
-//direct access
-val value = result.value
-val error = result.error
-
 //get
 val value: Int = result.get<Int>() ?: 0
 val ex: Exception = result.get<Exception>()!!
