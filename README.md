@@ -64,6 +64,19 @@ result.fold({ value ->
 })
 ```
 
+Combine several results in a validation (without stopping at the first error)
+
+``` Kotlin
+val r1: Result<Int, Exception> = Result.of(1)
+val r2: Result<Int, Exception> = Result.of{throw Exception("Not a number")}
+val r3: Result<Int, Exception> = Result.of(3)
+val r4: Result<Int, Exception> = Result.of{throw Exception("Division by zero")}
+
+val validation = Validation(r1, r2, r3, r4)
+validation.hasFailures //true
+validation.failures.map{it.message} //[Not a number, Division by zero]
+```
+
 ## Why
 
 `Result` is suitable whenever there is a need to represent an operation that has the possibility of failure. Error handling can be cumbersome to work with.
