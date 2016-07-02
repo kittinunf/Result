@@ -80,6 +80,8 @@ sealed class Result<out V : Any, out E : Exception> {
 
         override fun get(): V = throw error
 
+        fun getException(): E = error
+
         override fun toString() = "[Failure: $error]"
 
         override fun hashCode(): Int = error.hashCode()
