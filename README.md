@@ -73,7 +73,7 @@ val r3: Result<Int, Exception> = Result.of(3)
 val r4: Result<Int, Exception> = Result.of{throw Exception("Division by zero")}
 
 val validation = Validation(r1, r2, r3, r4)
-validation.hasFailures //true
+validation.hasFailure //true
 validation.failures.map{it.message} //[Not a number, Division by zero]
 ```
 
