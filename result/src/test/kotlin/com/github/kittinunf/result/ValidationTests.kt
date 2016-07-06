@@ -1,13 +1,13 @@
 package com.github.kittinunf.result
 
-import org.junit.Test
 import org.junit.Assert.assertThat
+import org.junit.Test
 import org.hamcrest.CoreMatchers.`is` as isEqualTo
 
 class ValidationTests {
 
     @Test
-    fun validationTest() {
+    fun testValidation() {
         val r1: Result<Int, Exception> = Result.of(1)
         val r2: Result<Int, Exception> = Result.of(2)
         val r3: Result<Int, Exception> = Result.of(3)
@@ -18,7 +18,7 @@ class ValidationTests {
     }
 
     @Test
-    fun validationTestWithError() {
+    fun testValidationWithError() {
 
         val r1: Result<Int, Exception> = Result.of(1)
         val r2: Result<Int, Exception> = Result.of { throw Exception("Not a number") }
@@ -29,4 +29,5 @@ class ValidationTests {
         assertThat("validation.hasFailures", validation.hasFailure, isEqualTo(true))
         assertThat("validation.failures", validation.failures.map { it.message }, isEqualTo(listOf<String?>("Not a number", "Division by zero")))
     }
+
 }

@@ -1,17 +1,12 @@
 package com.github.kittinunf.result
 
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.nullValue
+import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
-import org.junit.Assert.assertThat
-import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
 import org.hamcrest.CoreMatchers.`is` as isEqualTo
-
-/**
- * Created by Kittinun Vantasin on 10/27/15.
- */
 
 class ResultTests {
 
