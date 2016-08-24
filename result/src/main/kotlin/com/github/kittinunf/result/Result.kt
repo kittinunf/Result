@@ -49,7 +49,12 @@ sealed class Result<out V : Any, out E : Exception> {
     abstract operator fun component1(): V?
     abstract operator fun component2(): E?
 
-    abstract fun <X> fold(success: (V) -> X, failure: (E) -> X): X
+    inline fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
+      return when (this) {
+        is Success -> success(this.value)
+        is Failure -> failure(this.error)
+      }
+    }
 
     abstract fun get(): V
 
@@ -57,10 +62,7 @@ sealed class Result<out V : Any, out E : Exception> {
         override fun component1(): V? = value
         override fun component2(): E? = null
 
-        override fun <X> fold(success: (V) -> X, failure: (E) -> X): X = success(value)
-
         override fun get(): V = value
-
 
         override fun toString() = "[Success: $value]"
 
@@ -75,8 +77,6 @@ sealed class Result<out V : Any, out E : Exception> {
     class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
         override fun component1(): V? = null
         override fun component2(): E? = error
-
-        override fun <X> fold(success: (V) -> X, failure: (E) -> X): X = failure(error)
 
         override fun get(): V = throw error
 
