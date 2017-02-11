@@ -1,2 +1,3 @@
-include ':result'
+rootProject.name = 'result-root'
 
+include ':result'

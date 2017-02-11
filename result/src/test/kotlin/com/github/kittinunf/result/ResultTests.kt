@@ -260,6 +260,20 @@ class ResultTests {
         assertThat("r is Result.Success type", r is Result.Success, isEqualTo(true))
     }
 
+    @Test
+    fun testFanoutSuccesses() {
+        val readFooResult = resultReadFromAssetFileName("foo.txt")
+        val readBarResult = resultReadFromAssetFileName("bar.txt")
+
+        val finalResult = readFooResult.fanout { readBarResult }
+        val (v, e) = finalResult
+
+        assertThat("finalResult is success", finalResult is Result.Success, isEqualTo(true))
+        assertThat("finalResult has a pair type when both are successes", v is Pair<String, String>, isEqualTo(true))
+        assertThat("value of finalResult has text from foo as left and text from bar as right",
+            v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v!!.second.startsWith("Contrary to popular belief"), isEqualTo(true))
+    }
+
     // helper
     fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
