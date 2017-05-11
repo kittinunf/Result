@@ -1,6 +1,6 @@
 # Result
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.0.6-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.1.2-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
 
 This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V, E : Exception>`.
 
@@ -8,7 +8,7 @@ This is a tiny framework for modelling success/failure of operations in [Kotlin]
 
 `Result<V, E: Exception>` is to provide higher abstraction of operation that can be ended with result either success or failure. The is somewhat similar to Kotlin's `nullable types` (`T?`) (https://kotlinlang.org/docs/reference/null-safety.html).
 
-`Result.Success` represents `value` in case of success, and `Result.Failure` represents `error` in case of failure which is upper bounded with `Exception` type. 
+`Result.Success` represents `value` in case of success, and `Result.Failure` represents `error` in case of failure which is upper bounded with `Exception` type.
 
 ## Installation
 
@@ -27,7 +27,7 @@ dependencies {
 
 ## TL;DR
 
-This model is highly inspired by "[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/#monads)" concept. 
+This model is highly inspired by "[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/#monads)" concept.
 
 `Result` allows one to express series of success/failure operations in Kotlin as;
 
@@ -82,7 +82,7 @@ validation.failures.map{it.message} //[Not a number, Division by zero]
 `Result` is suitable whenever there is a need to represent an operation that has the possibility of failure. Error handling can be cumbersome to work with.
 `Result` helps process the operations in a nice, functional way, while maintaining readability to your code.
 
-Let's consider a need to read data from `foo`, and to perform some further validation 
+Let's consider a need to read data from `foo`, and to perform some further validation
 
 ``` Kotlin
 fun process(): String {
@@ -93,7 +93,7 @@ fun process(): String {
             return "Data is corrupted and cannot be processed"
         }
     } catch (e: Exception) {
-        //do something if error 
+        //do something if error
         Logger.log(ERROR, e.message())
     }
 }
@@ -119,7 +119,7 @@ fun process(): String {
             return "DB error, cannot update"
         }
     } catch (e: Exception) {
-        //do something if error 
+        //do something if error
         Logger.log(ERROR, e.message())
     }
 }
@@ -179,14 +179,14 @@ The creates a nice "happy path" of the whole chain, also handle error as appropr
 
 ## Never Fail Operation
 
-In some case, one wants to model an always successful operation. `Result<V, NoException>` is a good idea for that. 
+In some case, one wants to model an always successful operation. `Result<V, NoException>` is a good idea for that.
 `NoException` is to indicate that there is no exception to throw. E.g.
 
 ``` Kotlin
 // Add operation can never be failure
 fun add(i: Int, j: Int) : Result<Int, NoException>
 ```
- 
+
 Nice thing about modelling in this way is to be able to compose it with others "failable" operations in `Result`.
 
 ## High Order functions
@@ -198,7 +198,7 @@ Nice thing about modelling in this way is to be able to compose it with others "
 When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 
 `flatMap` is similar to `map`, however it requires transformation in type of `(V) -> Result<U, ...>`.
- 
+
 ### Failure
 `mapError` and `flatMapError`
 
