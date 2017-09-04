@@ -11,4 +11,3 @@ script:
 
 after_success:
   - ./deploy_bintray.sh
-
