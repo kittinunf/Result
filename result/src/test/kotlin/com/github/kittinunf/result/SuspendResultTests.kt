@@ -1,7 +1,6 @@
 package com.github.kittinunf.result
 
 import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.CoreMatchers
 import org.junit.Assert
@@ -26,7 +25,7 @@ class SuspendResultTests {
 
     @Test
     fun testCreateError() {
-        var e = runBlocking { SuspendedResult.error(RuntimeException()) }
+        val e = runBlocking { SuspendedResult.error(RuntimeException()) }
 
         Assert.assertThat("SuspendedResult is created successfully", e, CoreMatchers.notNullValue())
         Assert.assertThat("e is SuspendedResult.Failure type", e is SuspendedResult.Failure, CoreMatchers.`is`(true))
@@ -310,7 +309,6 @@ class SuspendResultTests {
         val assetsDir = File(dir, "src/test/assets/")
         Thread.sleep(5000)
         return File(assetsDir, name).readText()
-
     }
 
     suspend fun resultReadFromAssetFileName(name: String): SuspendedResult<String, Exception> {
