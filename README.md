@@ -204,6 +204,12 @@ When `Result` is `Result.Failure`, `error` is re-wrapped into a new `Result`.
 
 `mapError` (`(E) -> E2`) and `flatMapError` (`(E) -> Result<E2, ...>`) are counterpart of `map` and `flatMap`. However, they are operate on `Result.Failure`. It is quite handy when one needs to do some transformation on given `Exception` into a custom type of `Exception` that suits ones' need.
 
+## Support for Kotlin's Coroutines
+
+### SuspendableResult & SuspendableValidation
+
+These classes are an exact copy of the `Result` and `Validation` classes respectively. Use these classes if you are planning on using coroutines in your functions.
+
 ## Railway Oriented Programming
 
 If interested, here are more articles that one might enjoy.
