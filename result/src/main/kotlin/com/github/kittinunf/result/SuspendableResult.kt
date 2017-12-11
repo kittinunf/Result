@@ -104,7 +104,7 @@ sealed class SuspendableResult<out V : Any, out E : Exception> {
             return value?.let { Success<V, Nothing>(it) } ?: error(fail())
         }
 
-        suspend fun <V : Any> of(f: () -> V): SuspendableResult<V, Exception> = try {
+        suspend fun <V : Any> of(f: suspend () -> V): SuspendableResult<V, Exception> = try {
             Success(f())
         } catch(ex: Exception) {
             Failure(ex)
