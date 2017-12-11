@@ -3,7 +3,9 @@ package com.github.kittinunf.result
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert
+import org.junit.Assert.assertThat
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
@@ -45,25 +47,27 @@ class SuspendableResultTests {
 
     @Test
     fun testCreateFromLambda() {
-        val f1 = { "foo" }
-        val f2 = {
-            val v = arrayListOf<Int>()
-            v[1]
+        runBlocking {
+
+            val result1 = SuspendableResult.of { fooString() }
+            val result2 = SuspendableResult.of { invalidArrayAccessor() }
+            val result3 = SuspendableResult.of (invalidNullAssignmentToFinalProperty())
+
+            assertThat("result1 is Result.Success type", result1 is SuspendableResult.Success, `is`(true))
+            assertThat("result2 is Result.Failure type", result2 is SuspendableResult.Failure, `is`(true))
+            assertThat("result3 is Result.Failure type", result3 is SuspendableResult.Failure, `is`(true))
         }
+    }
 
-        val f3 = {
-            val s: String?
-            s = null
-            s
-        }
-
-        val result1 = runBlocking { SuspendableResult.of(f1) }
-        val result2 = runBlocking { SuspendableResult.of(f2) }
-        val result3 = runBlocking { SuspendableResult.of(f3()) }
-
-        Assert.assertThat("result1 is SuspendableResult.Success type", result1 is SuspendableResult.Success, CoreMatchers.`is`(true))
-        Assert.assertThat("result2 is SuspendableResult.Failure type", result2 is SuspendableResult.Failure, CoreMatchers.`is`(true))
-        Assert.assertThat("result3 is SuspendableResult.Failure type", result3 is SuspendableResult.Failure, CoreMatchers.`is`(true))
+    private suspend fun fooString() = "foo"
+    private suspend fun invalidArrayAccessor() {
+        val v = arrayListOf<Int>()
+        v[1]
+    }
+    private suspend fun invalidNullAssignmentToFinalProperty(): String? {
+        val s: String?
+        s = null
+        return s
     }
 
     @Test
@@ -124,12 +128,8 @@ class SuspendableResultTests {
 
     @Test
     fun testGet() {
-        val f1 = { true }
-        val f2 = { File("not_found_file").readText() }
-
-        val result1 = runBlocking { SuspendableResult.of(f1) }
-        val result2 = runBlocking { SuspendableResult.of(f2) }
-
+        val result1 = runBlocking { SuspendableResult.of(true) }
+        val result2 = runBlocking { SuspendableResult.of{ runBlocking { File("not_found_file").readText()} } }
 
         Assert.assertThat("result1 is true", result1.get(), CoreMatchers.`is`(true))
 
@@ -147,7 +147,7 @@ class SuspendableResultTests {
     @Test
     fun testGetAsValue() {
         val result1 = runBlocking { SuspendableResult.of(22) }
-        val result2 = SuspendableResult.error(KotlinNullPointerException())
+        val result2 = runBlocking { SuspendableResult.error(KotlinNullPointerException()) }
 
         val v1: Int = result1.getAs()!!
         val (v2, err) = result2
@@ -255,13 +255,13 @@ class SuspendableResultTests {
     @Test
     fun testComposableFunctions1() {
         runBlocking {
-            val foo = { readFromAssetFileName("foo.txt") }
-            val bar = { readFromAssetFileName("bar.txt") }
+            val foo = { runBlocking { readFromAssetFileName("foo.txt") }}
+            val bar = { runBlocking { readFromAssetFileName("bar.txt") }}
 
-            val notFound = { readFromAssetFileName("fooo.txt") }
+            val notFound = { runBlocking { readFromAssetFileName("fooo.txt") }}
 
-            val (value1, error1) = SuspendableResult.of(foo).map { it.count() }.mapError { IllegalStateException() }
-            val (value2, error2) = SuspendableResult.of(notFound).map { bar }.mapError { IllegalStateException() }
+            val (value1, error1) = Result.of(foo).map { it.count() }.mapError { IllegalStateException() }
+            val (value2, error2) = Result.of(notFound).map { bar }.mapError { IllegalStateException() }
 
             Assert.assertThat("value1 is 574", value1, CoreMatchers.`is`(574))
             Assert.assertThat("error1 is null", error1, CoreMatchers.nullValue())
@@ -304,15 +304,15 @@ class SuspendableResultTests {
     }
 
     // helper
-    fun readFromAssetFileName(name: String): String {
+    suspend fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
         val assetsDir = File(dir, "src/test/assets/")
-        Thread.sleep(2000)
+        Thread.sleep(1000)
         return File(assetsDir, name).readText()
     }
 
     suspend fun resultReadFromAssetFileName(name: String): SuspendableResult<String, Exception> {
-        val operation = async { readFromAssetFileName(name) }.await()
+        val operation = readFromAssetFileName(name)
         return SuspendableResult.of(operation)
     }
 
