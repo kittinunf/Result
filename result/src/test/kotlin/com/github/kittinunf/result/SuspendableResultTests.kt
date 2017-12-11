@@ -255,13 +255,8 @@ class SuspendableResultTests {
     @Test
     fun testComposableFunctions1() {
         runBlocking {
-            val foo = { runBlocking { readFromAssetFileName("foo.txt") }}
-            val bar = { runBlocking { readFromAssetFileName("bar.txt") }}
-
-            val notFound = { runBlocking { readFromAssetFileName("fooo.txt") }}
-
-            val (value1, error1) = Result.of(foo).map { it.count() }.mapError { IllegalStateException() }
-            val (value2, error2) = Result.of(notFound).map { bar }.mapError { IllegalStateException() }
+            val (value1, error1) = SuspendableResult.of { readFromAssetFileName("foo.txt") }.map { it.count() }.mapError { IllegalStateException() }
+            val (value2, error2) = SuspendableResult.of { readFromAssetFileName("fooo.txt") }.map { readFromAssetFileName("bar.txt") }.mapError { IllegalStateException() }
 
             Assert.assertThat("value1 is 574", value1, CoreMatchers.`is`(574))
             Assert.assertThat("error1 is null", error1, CoreMatchers.nullValue())
@@ -304,7 +299,7 @@ class SuspendableResultTests {
     }
 
     // helper
-    suspend fun readFromAssetFileName(name: String): String {
+    fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
         val assetsDir = File(dir, "src/test/assets/")
         Thread.sleep(1000)
