@@ -8,6 +8,7 @@ sourceSets {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$parent.ext.kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.3"
 
     testCompile "junit:junit:$parent.ext.junit"
 }
@@ -31,4 +32,10 @@ publish {
     publishVersion = parent.ext.publish_version
     uploadName = 'Result'
     website = 'https://github.com/kittinunf/Result'
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
