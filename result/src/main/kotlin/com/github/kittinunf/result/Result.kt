@@ -11,7 +11,7 @@ fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
 infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     is Result.Success -> this
-    else -> Result.Success<V, E>(fallback)
+    else -> Result.Success(fallback)
 }
 
 infix fun <V : Any, E : Exception> Result<V, E>.getOrElse(fallback: V) = when (this) {
@@ -20,13 +20,13 @@ infix fun <V : Any, E : Exception> Result<V, E>.getOrElse(fallback: V) = when (t
 }
 
 fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = when (this) {
-    is Result.Success -> Result.Success<U, E>(transform(value))
-    is Result.Failure -> Result.Failure<U, E>(error)
+    is Result.Success -> Result.Success(transform(value))
+    is Result.Failure -> Result.Failure(error)
 }
 
 fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = when (this) {
     is Result.Success -> transform(value)
-    is Result.Failure -> Result.Failure<U, E>(error)
+    is Result.Failure -> Result.Failure(error)
 }
 
 fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
@@ -35,7 +35,7 @@ fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E
 }
 
 fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
-    is Result.Success -> Result.Success<V, E2>(value)
+    is Result.Success -> Result.Success(value)
     is Result.Failure -> transform(error)
 }
 
@@ -99,9 +99,8 @@ sealed class Result<out V : Any, out E : Exception> {
         // Factory methods
         fun <E : Exception> error(ex: E) = Failure<Nothing, E>(ex)
 
-        fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> {
-            return value?.let { Success<V, Nothing>(it) } ?: error(fail())
-        }
+        fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> =
+                value?.let { Success<V, Nothing>(it) } ?: error(fail())
 
         fun <V : Any> of(f: () -> V): Result<V, Exception> = try {
             Success(f())

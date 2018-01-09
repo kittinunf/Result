@@ -2,7 +2,9 @@ package com.github.kittinunf.result
 
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.CoreMatchers.nullValue
-import org.junit.Assert.*
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
@@ -11,7 +13,7 @@ import org.hamcrest.CoreMatchers.`is` as isEqualTo
 class ResultTests {
 
     @Test
-    fun testCreateValue() {
+    fun createValue() {
         val v = Result.of(1)
 
         assertThat("Result is created successfully", v, notNullValue())
@@ -19,7 +21,7 @@ class ResultTests {
     }
 
     @Test
-    fun testCreateError() {
+    fun createError() {
         val e = Result.error(RuntimeException())
 
         assertThat("Result is created successfully", e, notNullValue())
@@ -27,7 +29,7 @@ class ResultTests {
     }
 
     @Test
-    fun testCreateOptionalValue() {
+    fun createOptionalValue() {
         val value1: String? = null
         val value2: String? = "1"
 
@@ -39,7 +41,7 @@ class ResultTests {
     }
 
     @Test
-    fun testCreateFromLambda() {
+    fun createFromLambda() {
         val f1 = { "foo" }
         val f2 = {
             val v = arrayListOf<Int>()
@@ -62,7 +64,7 @@ class ResultTests {
     }
 
     @Test
-    fun testOr() {
+    fun or() {
         val one = Result.of<Int>(null) or 1
 
         assertThat("one is Result.Success type", one is Result.Success, isEqualTo(true))
@@ -70,14 +72,14 @@ class ResultTests {
     }
 
     @Test
-    fun testOrElse() {
+    fun orElse() {
         val one = Result.of<Int>(null) getOrElse 1
 
         assertThat("one is 1", one, isEqualTo(1))
     }
 
     @Test
-    fun testSuccess() {
+    fun success() {
         val result = Result.of { true }
 
         var beingCalled = false
@@ -95,7 +97,7 @@ class ResultTests {
     }
 
     @Test
-    fun testFailure() {
+    fun failure() {
         val result = Result.of { File("not_found_file").readText() }
 
         var beingCalled = false
@@ -113,7 +115,7 @@ class ResultTests {
     }
 
     @Test
-    fun testGet() {
+    fun get() {
         val f1 = { true }
         val f2 = { File("not_found_file").readText() }
 
@@ -125,7 +127,7 @@ class ResultTests {
         var result = false
         try {
             result2.get()
-        } catch(e: FileNotFoundException) {
+        } catch (e: FileNotFoundException) {
             result = true
         }
 
@@ -134,7 +136,7 @@ class ResultTests {
 
     @Suppress("UNUSED_VARIABLE")
     @Test
-    fun testGetAsValue() {
+    fun getAsValue() {
         val result1 = Result.of(22)
         val result2 = Result.error(KotlinNullPointerException())
 
@@ -146,7 +148,7 @@ class ResultTests {
     }
 
     @Test
-    fun testFold() {
+    fun fold() {
         val success = Result.of("success")
         val failure = Result.error(RuntimeException("failure"))
 
@@ -163,7 +165,7 @@ class ResultTests {
     fun Nothing.getMessage() = ""
 
     @Test
-    fun testMap() {
+    fun map() {
         val success = Result.of("success")
         val failure = Result.error(RuntimeException("failure"))
 
@@ -175,7 +177,7 @@ class ResultTests {
     }
 
     @Test
-    fun testFlatMap() {
+    fun flatMap() {
         val success = Result.of("success")
         val failure = Result.error(RuntimeException("failure"))
 
@@ -187,7 +189,7 @@ class ResultTests {
     }
 
     @Test
-    fun testMapError() {
+    fun mapError() {
         val success = Result.of("success")
         val failure = Result.error(Exception("failure"))
 
@@ -201,7 +203,7 @@ class ResultTests {
     }
 
     @Test
-    fun testFlatMapError() {
+    fun flatMapError() {
         val success = Result.of("success")
         val failure = Result.error(Exception("failure"))
 
@@ -216,7 +218,7 @@ class ResultTests {
     }
 
     @Test
-    fun testAny() {
+    fun any() {
         val foo = Result.of { readFromAssetFileName("foo.txt") }
         val fooo = Result.of { readFromAssetFileName("fooo.txt") }
 
@@ -230,7 +232,7 @@ class ResultTests {
     }
 
     @Test
-    fun testComposableFunctions1() {
+    fun composableFunctions1() {
         val foo = { readFromAssetFileName("foo.txt") }
         val bar = { readFromAssetFileName("bar.txt") }
 
@@ -246,7 +248,7 @@ class ResultTests {
     }
 
     @Test
-    fun testComposableFunctions2() {
+    fun composableFunctions2() {
         val r1 = Result.of(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }.mapError { Exception("this should not happen") }
         val r2 = Result.of(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }.mapError { KotlinNullPointerException() }
 
@@ -255,13 +257,13 @@ class ResultTests {
     }
 
     @Test
-    fun testNoException() {
+    fun noException() {
         val r = concat("1", "2")
         assertThat("r is Result.Success type", r is Result.Success, isEqualTo(true))
     }
 
     @Test
-    fun testFanoutSuccesses() {
+    fun fanoutSuccesses() {
         val readFooResult = resultReadFromAssetFileName("foo.txt")
         val readBarResult = resultReadFromAssetFileName("bar.txt")
 
@@ -271,7 +273,12 @@ class ResultTests {
         assertThat("finalResult is success", finalResult is Result.Success, isEqualTo(true))
         assertThat("finalResult has a pair type when both are successes", v is Pair<String, String>, isEqualTo(true))
         assertThat("value of finalResult has text from foo as left and text from bar as right",
-            v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v!!.second.startsWith("Contrary to popular belief"), isEqualTo(true))
+                v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v!!.second.startsWith("Contrary to popular belief"), isEqualTo(true))
+    }
+
+    @Test
+    fun mapThatThrows() {
+
     }
 
     // helper
@@ -289,5 +296,6 @@ class ResultTests {
     fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
 
     fun concat(a: String, b: String): Result<String, NoException> = Result.Success(a + b)
+
 
 }
