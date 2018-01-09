@@ -1,6 +1,6 @@
 # Result
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.1.4.3-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.2.10-blue.svg)](http://kotlinlang.org) [ ![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg) ](https://bintray.com/kittinunf/maven/Result/_latestVersion) [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
 
 This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V, E : Exception>`.
 
