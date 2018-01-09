@@ -14,7 +14,7 @@ class ValidationTests {
 
         val validation = Validation(r1, r2, r3)
         assertThat("validation.hasFailures", validation.hasFailure, isEqualTo(false))
-        assertThat("validation.failures", validation.failures, isEqualTo(listOf<Exception>()))
+        assertThat("validation.failures", validation.failures, isEqualTo(listOf()))
     }
 
     @Test

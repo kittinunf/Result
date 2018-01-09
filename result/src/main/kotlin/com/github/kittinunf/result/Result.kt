@@ -60,11 +60,9 @@ sealed class Result<out V : Any, out E : Exception> {
     abstract operator fun component1(): V?
     abstract operator fun component2(): E?
 
-    inline fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
-        return when (this) {
-            is Success -> success(this.value)
-            is Failure -> failure(this.error)
-        }
+    inline fun <X> fold(success: (V) -> X, failure: (E) -> X): X = when (this) {
+        is Success -> success(this.value)
+        is Failure -> failure(this.error)
     }
 
     abstract fun get(): V

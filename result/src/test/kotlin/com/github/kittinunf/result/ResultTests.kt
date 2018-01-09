@@ -161,9 +161,7 @@ class ResultTests {
     }
 
     //helper
-    fun Nothing.count() = 0
-
-    fun Nothing.getMessage() = ""
+    private fun Nothing.count() = 0
 
     @Test
     fun map() {
@@ -274,7 +272,7 @@ class ResultTests {
         assertThat("finalResult is success", finalResult, instanceOf(Result.Success::class.java))
         assertThat("finalResult has a pair type when both are successes", v is Pair<String, String>, equalTo(true))
         assertThat("value of finalResult has text from foo as left and text from bar as right",
-                v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v!!.second.startsWith("Contrary to popular belief"), equalTo(true))
+                v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v.second.startsWith("Contrary to popular belief"), equalTo(true))
         assertThat("value of the second component is null", e, nullValue())
     }
 
