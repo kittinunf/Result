@@ -19,14 +19,22 @@ infix fun <V : Any, E : Exception> Result<V, E>.getOrElse(fallback: V) = when (t
     else -> fallback
 }
 
-fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = when (this) {
-    is Result.Success -> Result.Success(transform(value))
-    is Result.Failure -> Result.Failure(error)
+fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
+    when (this) {
+        is Result.Success -> Result.Success(transform(value))
+        is Result.Failure -> Result.Failure(error)
+    }
+} catch (ex: Exception) {
+    Result.error(ex as E)
 }
 
-fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = when (this) {
-    is Result.Success -> transform(value)
-    is Result.Failure -> Result.Failure(error)
+fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
+    when (this) {
+        is Result.Success -> transform(value)
+        is Result.Failure -> Result.Failure(error)
+    }
+} catch (ex: Exception) {
+    Result.error(ex as E)
 }
 
 fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
@@ -44,8 +52,8 @@ fun <V : Any> Result<V, *>.any(predicate: (V) -> Boolean): Boolean = when (this)
     is Result.Failure -> false
 }
 
-fun <V : Any, U: Any> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
-    flatMap { outer -> other().map { outer to it } }
+fun <V : Any, U : Any> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
+        flatMap { outer -> other().map { outer to it } }
 
 sealed class Result<out V : Any, out E : Exception> {
 
@@ -53,10 +61,10 @@ sealed class Result<out V : Any, out E : Exception> {
     abstract operator fun component2(): E?
 
     inline fun <X> fold(success: (V) -> X, failure: (E) -> X): X {
-      return when (this) {
-        is Success -> success(this.value)
-        is Failure -> failure(this.error)
-      }
+        return when (this) {
+            is Success -> success(this.value)
+            is Failure -> failure(this.error)
+        }
     }
 
     abstract fun get(): V
@@ -104,7 +112,7 @@ sealed class Result<out V : Any, out E : Exception> {
 
         fun <V : Any> of(f: () -> V): Result<V, Exception> = try {
             Success(f())
-        } catch(ex: Exception) {
+        } catch (ex: Exception) {
             Failure(ex)
         }
     }
