@@ -43,7 +43,6 @@ class SuspendableResultTests {
     @Test
     fun testCreateFromLambda() {
         runBlocking {
-
             val result1 = SuspendableResult.of { fooString() }
             val result2 = SuspendableResult.of { invalidArrayAccessor() }
             val result3 = SuspendableResult.of(invalidNullAssignmentToFinalProperty())
@@ -226,7 +225,6 @@ class SuspendableResultTests {
             val v1 = success.flatMapError { SuspendableResult.error(IllegalArgumentException()) }
             val v2 = failure.flatMapError { SuspendableResult.error(IllegalArgumentException()) }
 
-
             assertThat("v1 is success", v1 is SuspendableResult.Success, equalTo(true))
             assertThat("v1 is success", v1.getAs(), equalTo("success"))
             assertThat("v2 is failure", v2 is SuspendableResult.Failure, equalTo(true))
@@ -292,7 +290,7 @@ class SuspendableResultTests {
             assertThat("finalResult is success", finalResult is SuspendableResult.Success, equalTo(true))
             assertThat("finalResult has a pair type when both are successes", v is Pair<String, String>, equalTo(true))
             assertThat("value of finalResult has text from foo as left and text from bar as right",
-                    v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v!!.second.startsWith("Contrary to popular belief"), equalTo(true))
+                    v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v.second.startsWith("Contrary to popular belief"), equalTo(true))
         }
     }
 
