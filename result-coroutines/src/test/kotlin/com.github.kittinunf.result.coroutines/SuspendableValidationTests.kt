@@ -36,7 +36,7 @@ class SuspendableValidationTests {
     }
 
     // helper
-    fun readFromAssetFileName(name: String): String {
+    private fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
         val assetsDir = File(dir, "src/test/assets/")
         Thread.sleep(2000)

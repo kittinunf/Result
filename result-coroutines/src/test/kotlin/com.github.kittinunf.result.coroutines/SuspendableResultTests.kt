@@ -168,7 +168,7 @@ class SuspendableResultTests {
     }
 
     //helper
-    fun Nothing.count() = 0
+    private fun Nothing.count() = 0
 
     fun Nothing.getMessage() = ""
 
@@ -295,20 +295,20 @@ class SuspendableResultTests {
     }
 
     // helper
-    fun readFromAssetFileName(name: String): String {
+    private fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
         val assetsDir = File(dir, "src/test/assets/")
         Thread.sleep(1000)
         return File(assetsDir, name).readText()
     }
 
-    suspend fun resultReadFromAssetFileName(name: String): SuspendableResult<String, Exception> {
+    private suspend fun resultReadFromAssetFileName(name: String): SuspendableResult<String, Exception> {
         val operation = readFromAssetFileName(name)
         return SuspendableResult.of(operation)
     }
 
-    fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
+    private fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
 
-    fun concat(a: String, b: String): SuspendableResult<String, NoException> = SuspendableResult.Success(a + b)
+    private fun concat(a: String, b: String): SuspendableResult<String, NoException> = SuspendableResult.Success(a + b)
 
 }

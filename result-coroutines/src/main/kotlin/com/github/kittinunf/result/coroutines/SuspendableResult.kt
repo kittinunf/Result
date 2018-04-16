@@ -107,7 +107,7 @@ sealed class SuspendableResult<out V : Any, out E : Exception> {
         // Factory methods
         fun <E : Exception> error(ex: E) = Failure<Nothing, E>(ex)
 
-        suspend fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): SuspendableResult<V, Exception> {
+        fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): SuspendableResult<V, Exception> {
             return value?.let { Success<V, Nothing>(it) } ?: error(fail())
         }
 
