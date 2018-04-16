@@ -15,16 +15,6 @@ dependencies {
     testCompile "junit:junit:$parent.ext.junitVersion"
 }
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$parent.ext.kotlinVersion"
-    }
-}
-
 publish {
     artifactId = 'result-coroutines'
     desc = 'The modelling for success/failure of operations in Kotlin'

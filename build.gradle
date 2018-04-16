@@ -16,6 +16,7 @@ buildscript {
 
     dependencies {
         classpath "com.novoda:bintray-release:$bintrayReleaseVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
