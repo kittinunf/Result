@@ -7,9 +7,9 @@ sourceSets {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$parent.ext.kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$parent.ext.kotlinVersion"
 
-    testCompile "junit:junit:$parent.ext.junit"
+    testCompile "junit:junit:$parent.ext.junitVersion"
 }
 
 buildscript {
@@ -18,8 +18,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$parent.ext.kotlin_version"
-        classpath "com.novoda:bintray-release:$parent.ext.bintray_release"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$parent.ext.kotlinVersion"
     }
 }
 
@@ -28,7 +27,7 @@ publish {
     desc = 'The modelling for success/failure of operations in Kotlin'
     groupId = 'com.github.kittinunf.result'
     licences = ['MIT']
-    publishVersion = parent.ext.publish_version
+    publishVersion = parent.ext.publishVersion
     uploadName = 'Result'
     website = 'https://github.com/kittinunf/Result'
 }
