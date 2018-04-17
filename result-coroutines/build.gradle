@@ -7,17 +7,26 @@ sourceSets {
 }
 
 dependencies {
+    compile project(':result')
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$parent.ext.kotlinVersion"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$parent.ext.coroutinesVersion"
 
     testCompile "junit:junit:$parent.ext.junitVersion"
 }
 
 publish {
-    artifactId = 'result'
+    artifactId = 'result-coroutines'
     desc = 'The modelling for success/failure of operations in Kotlin'
     groupId = 'com.github.kittinunf.result'
     licences = ['MIT']
     publishVersion = parent.ext.publishVersion
     uploadName = 'Result'
     website = 'https://github.com/kittinunf/Result'
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
