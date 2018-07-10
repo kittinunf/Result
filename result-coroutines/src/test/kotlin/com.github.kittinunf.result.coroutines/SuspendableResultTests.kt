@@ -257,7 +257,7 @@ class SuspendableResultTests {
             val v2 = foo.any { readFromAssetFileName("fooo.txt"); true }
 
             assertThat(v1, equalTo(true))
-            assertThat(v2, equalTo(true))
+            assertThat(v2, equalTo(false))
         }
     }
 
