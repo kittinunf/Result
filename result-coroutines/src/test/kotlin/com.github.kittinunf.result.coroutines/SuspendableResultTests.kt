@@ -242,9 +242,22 @@ class SuspendableResultTests {
             val v2 = fooo.any { "Lorem" in it }
             val v3 = foo.any { "LOREM" in it }
 
-            assertThat("v1 is true", v1, equalTo(true))
-            assertThat("v2 is false", v2, equalTo(false))
-            assertThat("v3 is false", v3, equalTo(false))
+            assertThat(v1, equalTo(true))
+            assertThat(v2, equalTo(false))
+            assertThat(v3, equalTo(false))
+        }
+    }
+
+    @Test
+    fun testAnyWithThrow() {
+        runBlocking {
+            val foo = SuspendableResult.of { readFromAssetFileName("foo.txt") }
+
+            val v1 = foo.any { "Lorem" in it }
+            val v2 = foo.any { readFromAssetFileName("fooo.txt"); true }
+
+            assertThat(v1, equalTo(true))
+            assertThat(v2, equalTo(false))
         }
     }
 

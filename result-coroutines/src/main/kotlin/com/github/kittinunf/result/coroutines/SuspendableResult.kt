@@ -47,9 +47,13 @@ suspend fun <V : Any, E : Exception, E2 : Exception> SuspendableResult<V, E>.fla
     is SuspendableResult.Failure -> transform(error)
 }
 
-suspend fun <V : Any> SuspendableResult<V, *>.any(predicate: suspend (V) -> Boolean): Boolean = when (this) {
-    is SuspendableResult.Success -> predicate(value)
-    is SuspendableResult.Failure -> false
+suspend fun <V : Any, E : Exception> SuspendableResult<V, E>.any(predicate: suspend (V) -> Boolean): Boolean = try {
+    when (this) {
+        is SuspendableResult.Success -> predicate(value)
+        is SuspendableResult.Failure -> false
+    }
+} catch (ex: Exception) {
+    false
 }
 
 suspend fun <V : Any, U: Any> SuspendableResult<V, *>.fanout(other: suspend () -> SuspendableResult<U, *>): SuspendableResult<Pair<V, U>, *> =

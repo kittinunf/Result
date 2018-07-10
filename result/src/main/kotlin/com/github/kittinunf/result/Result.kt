@@ -47,9 +47,13 @@ fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform
     is Result.Failure -> transform(error)
 }
 
-fun <V : Any> Result<V, *>.any(predicate: (V) -> Boolean): Boolean = when (this) {
-    is Result.Success -> predicate(value)
-    is Result.Failure -> false
+fun <V : Any, E : Exception> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = try {
+    when (this) {
+        is Result.Success -> predicate(value)
+        is Result.Failure -> false
+    }
+} catch (ex: Exception) {
+    false
 }
 
 fun <V : Any, U : Any> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
