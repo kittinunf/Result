@@ -4,9 +4,7 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.CoreMatchers.nullValue
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThat
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
@@ -225,9 +223,20 @@ class ResultTests {
         val v2 = fooo.any { "Lorem" in it }
         val v3 = foo.any { "LOREM" in it }
 
-        assertTrue("v1 is true", v1)
-        assertFalse("v2 is false", v2)
-        assertFalse("v3 is false", v3)
+        assertThat(v1, equalTo(true))
+        assertThat(v2, equalTo(false))
+        assertThat(v3, equalTo(false))
+    }
+
+    @Test
+    fun anyWithThrow() {
+        val foo = Result.of { readFromAssetFileName("foo.txt") }
+
+        val v1 = foo.any { "Lorem" in it }
+        val v2 = foo.any { readFromAssetFileName("ff.txt"); true }
+
+        assertThat(v1, equalTo(true))
+        assertThat(v2, equalTo(false))
     }
 
     @Test
