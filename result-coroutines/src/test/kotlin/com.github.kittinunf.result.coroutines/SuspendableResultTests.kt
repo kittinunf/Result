@@ -43,8 +43,8 @@ class SuspendableResultTests {
     @Test
     fun testCreateFromLambda() {
         runBlocking {
-            val result1 = SuspendableResult.of { fooString() }
-            val result2 = SuspendableResult.of { invalidArrayAccessor() }
+            val result1 = SuspendableResult.of<String, Exception> { fooString() }
+            val result2 = SuspendableResult.of<Unit, Exception> { invalidArrayAccessor() }
             val result3 = SuspendableResult.of(invalidNullAssignmentToFinalProperty())
 
             assertThat("result1 is Result.Success type", result1 is SuspendableResult.Success, equalTo(true))
@@ -82,7 +82,7 @@ class SuspendableResultTests {
 
     @Test
     fun testSuccess() {
-        val result = runBlocking { SuspendableResult.of { true } }
+        val result = runBlocking { SuspendableResult.of<Boolean, NoException> { true } }
 
         var beingCalled = false
         runBlocking {
@@ -105,7 +105,7 @@ class SuspendableResultTests {
     @Test
     fun testFailure() {
         runBlocking {
-            val result = SuspendableResult.of { File("not_found_file").readText() }
+            val result = SuspendableResult.of<String, Exception> { File("not_found_file").readText() }
 
             var beingCalled = false
             var notBeingCalled = true
@@ -126,7 +126,7 @@ class SuspendableResultTests {
     @Test
     fun testGet() {
         val result1 = runBlocking { SuspendableResult.of(true) }
-        val result2 = runBlocking { SuspendableResult.of { runBlocking { File("not_found_file").readText() } } }
+        val result2 = runBlocking { SuspendableResult.of<String, Exception> { runBlocking { File("not_found_file").readText() } } }
 
         assertThat("result1 is true", result1.get(), equalTo(true))
 
@@ -235,8 +235,8 @@ class SuspendableResultTests {
     @Test
     fun testAny() {
         runBlocking {
-            val foo = SuspendableResult.of { readFromAssetFileName("foo.txt") }
-            val fooo = SuspendableResult.of { readFromAssetFileName("fooo.txt") }
+            val foo = SuspendableResult.of<String, Exception> { readFromAssetFileName("foo.txt") }
+            val fooo = SuspendableResult.of<String, Exception> { readFromAssetFileName("fooo.txt") }
 
             val v1 = foo.any { "Lorem" in it }
             val v2 = fooo.any { "Lorem" in it }
@@ -251,7 +251,7 @@ class SuspendableResultTests {
     @Test
     fun testAnyWithThrow() {
         runBlocking {
-            val foo = SuspendableResult.of { readFromAssetFileName("foo.txt") }
+            val foo = SuspendableResult.of<String, Exception> { readFromAssetFileName("foo.txt") }
 
             val v1 = foo.any { "Lorem" in it }
             val v2 = foo.any { readFromAssetFileName("fooo.txt"); true }
@@ -264,8 +264,8 @@ class SuspendableResultTests {
     @Test
     fun testComposableFunctions1() {
         runBlocking {
-            val (value1, error1) = SuspendableResult.of { readFromAssetFileName("foo.txt") }.map { it.count() }.mapError { IllegalStateException() }
-            val (value2, error2) = SuspendableResult.of { readFromAssetFileName("fooo.txt") }.map { readFromAssetFileName("bar.txt") }.mapError { IllegalStateException() }
+            val (value1, error1) = SuspendableResult.of<String, Exception> { readFromAssetFileName("foo.txt") }.map { it.count() }.mapError { IllegalStateException() }
+            val (value2, error2) = SuspendableResult.of<String, Exception> { readFromAssetFileName("fooo.txt") }.map { readFromAssetFileName("bar.txt") }.mapError { IllegalStateException() }
 
             assertThat("value1 is 574", value1, equalTo(574))
             assertThat("error1 is null", error1, nullValue())
