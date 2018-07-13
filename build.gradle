@@ -2,7 +2,7 @@ buildscript {
     ext {
         publishVersion = '1.4.0'
 
-        kotlinVersion = '1.2.50'
+        kotlinVersion = '1.2.51'
         coroutinesVersion = '0.22.5'
 
         junitVersion = '4.12'
