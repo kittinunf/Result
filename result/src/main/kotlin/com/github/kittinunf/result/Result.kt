@@ -112,10 +112,10 @@ sealed class Result<out V : Any, out E : Exception> {
         fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> =
                 value?.let { Success<V, Nothing>(it) } ?: error(fail())
 
-        fun <V : Any> of(f: () -> V): Result<V, Exception> = try {
+        fun <V : Any, E: Exception> of(f: () -> V): Result<V, E> = try {
             Success(f())
         } catch (ex: Exception) {
-            Failure(ex)
+            Failure(ex as E)
         }
     }
 

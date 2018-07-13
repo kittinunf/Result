@@ -24,10 +24,10 @@ class SuspendableValidationTests {
     @Test
     fun testSuspendableValidationWithError() {
         runBlocking {
-            val r1 = async { SuspendableResult.of { readFromAssetFileName("foo.txt") } }
-            val r2 = async { SuspendableResult.of { throw Exception("Exception r2") } }
-            val r3 = async { SuspendableResult.of { readFromAssetFileName("bar.txt") } }
-            val r4 = async { SuspendableResult.of { throw Exception("Exception r4") } }
+            val r1 = async { SuspendableResult.of<String, Exception> { readFromAssetFileName("foo.txt") } }
+            val r2 = async { SuspendableResult.of<String, Exception> { throw Exception("Exception r2") } }
+            val r3 = async { SuspendableResult.of<String, Exception> { readFromAssetFileName("bar.txt") } }
+            val r4 = async { SuspendableResult.of<String, Exception> { throw Exception("Exception r4") } }
 
             val validation = SuspendedValidation(r1.await(), r2.await(), r3.await(), r4.await())
             assertThat("validation.hasFailures", validation.hasFailure, equalTo(true))

@@ -53,8 +53,8 @@ class ResultTests {
             s
         }
 
-        val result1 = Result.of(f1)
-        val result2 = Result.of(f2)
+        val result1 = Result.of<String, NoException>(f1)
+        val result2 = Result.of<Int, NoException>(f2)
         val result3 = Result.of(f3())
 
         assertThat("result1 is Result.Success type", result1, instanceOf(Result.Success::class.java))
@@ -79,7 +79,7 @@ class ResultTests {
 
     @Test
     fun success() {
-        val result = Result.of { true }
+        val result = Result.of<Boolean, NoException> { true }
 
         var beingCalled = false
         result.success {
@@ -97,7 +97,7 @@ class ResultTests {
 
     @Test
     fun failure() {
-        val result = Result.of { File("not_found_file").readText() }
+        val result = Result.of<String, Exception> { File("not_found_file").readText() }
 
         var beingCalled = false
         result.failure {
@@ -118,8 +118,8 @@ class ResultTests {
         val f1 = { true }
         val f2 = { File("not_found_file").readText() }
 
-        val result1 = Result.of(f1)
-        val result2 = Result.of(f2)
+        val result1 = Result.of<Boolean, NoException>(f1)
+        val result2 = Result.of<String, Exception>(f2)
 
         assertThat("result1 is true", result1.get(), equalTo(true))
 
@@ -216,8 +216,8 @@ class ResultTests {
 
     @Test
     fun any() {
-        val foo = Result.of { readFromAssetFileName("foo.txt") }
-        val fooo = Result.of { readFromAssetFileName("fooo.txt") }
+        val foo = Result.of<String, Exception> { readFromAssetFileName("foo.txt") }
+        val fooo = Result.of<String, Exception> { readFromAssetFileName("fooo.txt") }
 
         val v1 = foo.any { "Lorem" in it }
         val v2 = fooo.any { "Lorem" in it }
@@ -230,7 +230,7 @@ class ResultTests {
 
     @Test
     fun anyWithThrow() {
-        val foo = Result.of { readFromAssetFileName("foo.txt") }
+        val foo = Result.of<String, Exception> { readFromAssetFileName("foo.txt") }
 
         val v1 = foo.any { "Lorem" in it }
         val v2 = foo.any { readFromAssetFileName("ff.txt"); true }
@@ -246,8 +246,8 @@ class ResultTests {
 
         val notFound = { readFromAssetFileName("fooo.txt") }
 
-        val (value1, error1) = Result.of(foo).map { it.count() }.mapError { IllegalStateException() }
-        val (value2, error2) = Result.of(notFound).map { bar }.mapError { IllegalStateException() }
+        val (value1, error1) = Result.of<String, Exception>(foo).map { it.count() }.mapError { IllegalStateException() }
+        val (value2, error2) = Result.of<String, Exception>(notFound).map { bar }.mapError { IllegalStateException() }
 
         assertThat("value1 is 574", value1, equalTo(574))
         assertThat("error1 is null", error1, nullValue())
