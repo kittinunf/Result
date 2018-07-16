@@ -6,7 +6,7 @@ if [[ "$TRAVIS_BRANCH" == */release-v* ]]; then
 
   echo "We're on release branch, deploying"
 
-  modules=("result", "result-coroutines")
+  modules=("result" "result-coroutines")
 
   for i in "${modules[@]}"
   do
