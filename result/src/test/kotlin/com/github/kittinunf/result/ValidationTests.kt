@@ -30,4 +30,19 @@ class ValidationTests {
         assertThat("validation.failures", validation.failures.map { it.message }, isEqualTo(listOf<String?>("Not a number", "Division by zero")))
     }
 
+    @Test
+    fun testValidationWithUserException() {
+
+        val r1: Result<Int, UserException> = Result.of { 1 }
+        val r2: Result<Int, UserException> = Result.of { throw Exception("Not a number") }
+        val r3: Result<Int, UserException> = Result.of { 3 }
+        val r4: Result<Int, UserException> = Result.of { throw Exception("Division by zero") }
+
+        val validation = Validation(r1, r2, r3, r4)
+        assertThat("validation.hasFailures", validation.hasFailure, isEqualTo(true))
+        assertThat("validation.failures", validation.failures.map { it.message }, isEqualTo(listOf<String?>("Not a number", "Division by zero")))
+    }
+
+    class UserException : Exception()
 }
+

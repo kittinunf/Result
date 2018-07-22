@@ -117,6 +117,12 @@ sealed class Result<out V : Any, out E : Exception> {
         } catch (ex: Exception) {
             Failure(ex as E)
         }
+
+        fun <V : Any, E: Exception>ofCatching(c : (exception:Exception) -> E,f: () -> V): Result<V, E> = try {
+            Result.Success(f())
+        } catch (ex: Exception) {
+            Result.Failure(c(ex) )
+        }
     }
 
 }
