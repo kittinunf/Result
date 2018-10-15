@@ -1,16 +1,16 @@
 #!/bin/bash
 
-echo $TRAVIS_BRANCH
-
 if [[ "$TRAVIS_BRANCH" == */release-v* ]]; then
 
-  echo "We're on release branch, deploying"
+  echo "We're on release branch, deploying at $TRAVIS_BRANCH"
 
-  modules=("result" "result-coroutines")
-
-  for i in "${modules[@]}"
+  for i in $(ls -d */);
   do
-    ./gradlew :$i:clean :$i:build :$i:bintrayUpload -PbintrayUser=$BINTRAY_USER -PbintrayKey=$BINTRAY_KEY -PdryRun=false
+    m=${i%%/}
+    if [[ $m == result* ]]; then
+      echo ">> Deploying $m ..."
+      ./gradlew :$i:clean :$i:build :$i:bintrayUpload -PbintrayUser=$BINTRAY_USER -PbintrayKey=$BINTRAY_KEY -PdryRun=false
+    fi
   done
 
 fi
