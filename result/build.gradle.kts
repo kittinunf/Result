@@ -6,5 +6,5 @@ sourceSets {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    testImplementation("junit:junit:4.12")
+    testImplementation("junit:junit:${extra.get("junit")}")
 }

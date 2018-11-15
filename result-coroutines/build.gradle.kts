@@ -7,7 +7,7 @@ dependencies {
     implementation(project(":result"))
 
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${extra.get("coroutines")}")
 
-    testImplementation("junit:junit:4.12")
+    testImplementation("junit:junit:${extra.get("junit")}")
 }

@@ -7,7 +7,8 @@ buildscript {
     }
 
     dependencies {
-        classpath(kotlin("gradle-plugin", "1.3.10"))
+        classpath(kotlin("gradle-plugin", extra.get("kotlin") as String))
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${extra.get("bintray")}")
     }
 }
 
@@ -21,6 +22,7 @@ subprojects {
     apply {
         plugin<JavaLibraryPlugin>()
         plugin<KotlinPlatformJvmPlugin>()
-
+        plugin("maven-publish")
+        plugin("com.jfrog.bintray")
     }
 }
