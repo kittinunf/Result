@@ -21,5 +21,6 @@ subprojects {
     apply {
         plugin<JavaLibraryPlugin>()
         plugin<KotlinPlatformJvmPlugin>()
+
     }
 }
