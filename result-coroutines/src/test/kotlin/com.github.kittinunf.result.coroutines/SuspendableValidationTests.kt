@@ -1,7 +1,6 @@
 package com.github.kittinunf.result.coroutines
 
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.*
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -44,7 +43,7 @@ class SuspendableValidationTests {
     }
 
     suspend fun resultReadFromAssetFileName(name: String): SuspendableResult<String, Exception> {
-        val operation = async { readFromAssetFileName(name) }.await()
+        val operation = runBlocking { async { readFromAssetFileName(name) }.await() }
         return SuspendableResult.of(operation)
     }
 

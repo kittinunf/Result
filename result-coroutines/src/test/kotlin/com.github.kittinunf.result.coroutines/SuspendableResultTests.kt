@@ -1,7 +1,7 @@
 package com.github.kittinunf.result.coroutines
 
 import com.github.kittinunf.result.NoException
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.CoreMatchers.nullValue
