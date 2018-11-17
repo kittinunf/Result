@@ -36,8 +36,14 @@ subprojects {
         classifier = "sources"
     }
 
+    val doc by tasks.creating(Javadoc::class) {
+        isFailOnError = false
+        source = sourceSets["main"].allJava
+    }
     val javadocJar by tasks.creating(Jar::class) {
-        from(sourceSets["main"].allJava)
+        dependsOn(doc)
+        from(doc)
+
         classifier = "javadoc"
     }
 
