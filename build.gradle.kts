@@ -24,5 +24,18 @@ subprojects {
         plugin<KotlinPlatformJvmPlugin>()
         plugin("maven-publish")
         plugin("com.jfrog.bintray")
+        plugin("jacoco")
+    }
+
+    configure<JacocoPluginExtension> {
+        toolVersion = extra.get("jacoco") as String
+    }
+
+    tasks.withType<JacocoReport> {
+        reports {
+            html.isEnabled = true
+            xml.isEnabled = true
+            csv.isEnabled = false
+        }
     }
 }
