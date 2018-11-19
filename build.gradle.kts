@@ -71,6 +71,7 @@ subprojects {
         user = findProperty("BINTRAY_USER") as? String
         key = findProperty("BINTRAY_KEY") as? String
         setPublications(project.name)
+        publish = true
         pkg.apply {
             repo = "maven"
             name = "Result"
