@@ -38,8 +38,8 @@ fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Res
 }
 
 fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
-    is Result.Success -> Result.Success<V, E2>(value)
-    is Result.Failure -> Result.Failure<V, E2>(transform(error))
+    is Result.Success -> Result.Success(value)
+    is Result.Failure -> Result.Failure(transform(error))
 }
 
 fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
@@ -61,8 +61,8 @@ fun <V : Any, U : Any> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pa
 
 sealed class Result<out V : Any, out E : Exception> {
 
-    abstract operator fun component1(): V?
-    abstract operator fun component2(): E?
+    open operator fun component1(): V? = null
+    open operator fun component2(): E? = null
 
     inline fun <X> fold(success: (V) -> X, failure: (E) -> X): X = when (this) {
         is Success -> success(this.value)
@@ -71,9 +71,8 @@ sealed class Result<out V : Any, out E : Exception> {
 
     abstract fun get(): V
 
-    class Success<out V : Any, out E : Exception>(val value: V) : Result<V, E>() {
+    class Success<out V : Any>(val value: V) : Result<V, Nothing>() {
         override fun component1(): V? = value
-        override fun component2(): E? = null
 
         override fun get(): V = value
 
@@ -83,15 +82,14 @@ sealed class Result<out V : Any, out E : Exception> {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            return other is Success<*, *> && value == other.value
+            return other is Success<*> && value == other.value
         }
     }
 
-    class Failure<out V : Any, out E : Exception>(val error: E) : Result<V, E>() {
-        override fun component1(): V? = null
+    class Failure<out E : Exception>(val error: E) : Result<Nothing, E>() {
         override fun component2(): E? = error
 
-        override fun get(): V = throw error
+        override fun get() = throw error
 
         fun getException(): E = error
 
@@ -101,21 +99,23 @@ sealed class Result<out V : Any, out E : Exception> {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            return other is Failure<*, *> && error == other.error
+            return other is Failure<*> && error == other.error
         }
     }
 
     companion object {
         // Factory methods
-        fun <E : Exception> error(ex: E) = Failure<Nothing, E>(ex)
+        fun <E : Exception> error(ex: E) = Failure(ex)
+
+        fun <V : Any> success(v: V) = Success(v)
 
         fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> =
-                value?.let { Success<V, Nothing>(it) } ?: error(fail())
+                value?.let { success(it) } ?: error(fail())
 
         fun <V : Any, E: Exception> of(f: () -> V): Result<V, E> = try {
-            Success(f())
+            success(f())
         } catch (ex: Exception) {
-            Failure(ex as E)
+            error(ex as E)
         }
     }
 

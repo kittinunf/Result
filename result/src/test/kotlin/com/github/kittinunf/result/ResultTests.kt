@@ -337,6 +337,37 @@ class ResultTests {
         assertThat("isCalled is being set as true", isCalled, equalTo(true))
     }
 
+    @Test
+    fun successIsSubtypeOfResult() {
+        class AlwaysSuccess : GetFoo {
+            override fun foo(): Result<Foo, Exception> = Result.success(Foo)
+        }
+
+        val s = AlwaysSuccess()
+
+        assertThat(s.foo(), instanceOf(Result::class.java))
+        assertThat(s.foo().get(), equalTo(Foo))
+    }
+
+    @Test(expected = IllegalAccessException::class)
+    fun failureIsSubtypeOfResult() {
+        class AlwaysFailure : GetFoo {
+            override fun foo(): Result<Foo, Exception> = Result.error(IllegalAccessException("Can't get foo"))
+        }
+
+        val e = AlwaysFailure()
+
+        assertThat(e.foo(), instanceOf(Result::class.java))
+
+        e.foo().get()
+    }
+
+    object Foo
+
+    interface GetFoo {
+        fun foo(): Result<Foo, Exception>
+    }
+
     // helper
     private fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
