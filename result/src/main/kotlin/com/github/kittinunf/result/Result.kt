@@ -19,7 +19,7 @@ infix fun <V : Any, E : Exception> Result<V, E>.getOrElse(fallback: V) = when (t
     else -> fallback
 }
 
-fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
+inline fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
     when (this) {
         is Result.Success -> Result.Success(transform(value))
         is Result.Failure -> Result.Failure(error)
@@ -28,7 +28,7 @@ fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Res
     Result.error(ex as E)
 }
 
-fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
+inline fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
     when (this) {
         is Result.Success -> transform(value)
         is Result.Failure -> Result.Failure(error)
