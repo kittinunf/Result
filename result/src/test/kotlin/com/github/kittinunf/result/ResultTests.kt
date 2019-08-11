@@ -368,8 +368,17 @@ class ResultTests {
 
         assertThat(rs, instanceOf(Result::class.java))
         assertThat(rs, instanceOf(Result.Success::class.java))
-        println(rs.get()[0])
         assertThat(rs.get()[0], equalTo(readFromAssetFileName("bar.txt")))
+    }
+
+    @Test
+    fun liftListToResultOfListFailure() {
+        val rs = listOf("bar", "not_found").map { "$it.txt" }.map { resultReadFromAssetFileName(it) }.lift()
+
+        assertThat(rs, instanceOf(Result::class.java))
+        assertThat(rs, instanceOf(Result.Failure::class.java))
+        val (_, error) = rs
+        assertThat(error, instanceOf(FileNotFoundException::class.java))
     }
 
     object Foo
