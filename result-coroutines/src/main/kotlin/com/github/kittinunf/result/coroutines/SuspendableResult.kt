@@ -59,6 +59,12 @@ suspend fun <V : Any, E : Exception> SuspendableResult<V, E>.any(predicate: susp
 suspend fun <V : Any, U: Any> SuspendableResult<V, *>.fanout(other: suspend () -> SuspendableResult<U, *>): SuspendableResult<Pair<V, U>, *> =
     flatMap { outer -> other().map { outer to it } }
 
+fun <V : Any, E : Exception> List<SuspendableResult<V, E>>.lift(): SuspendableResult<List<V>, E> = fold(SuspendableResult.success(mutableListOf<V>()) as SuspendableResult<MutableList<V>, E>) { acc, result ->
+    acc.flatMap { combine ->
+        result.map { combine.apply { add(it) } }
+    }
+}
+
 sealed class SuspendableResult<out V : Any, out E : Exception> {
 
     abstract operator fun component1(): V?
