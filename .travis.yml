@@ -1,7 +1,5 @@
-language: java
-
-jdk:
-  - oraclejdk8
+language: android
+dist: trusty
 
 cache:
   directories:

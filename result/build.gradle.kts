@@ -5,8 +5,9 @@ sourceSets {
 
 dependencies {
     val junit: String by project
+    val kotlinVersion: String by project
 
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib", kotlinVersion))
 
     testImplementation("junit:junit:$junit")
 }
