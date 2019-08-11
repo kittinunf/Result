@@ -362,6 +362,16 @@ class ResultTests {
         e.foo().get()
     }
 
+    @Test
+    fun liftListToResultOfListSuccess() {
+        val rs = listOf("bar", "foo").map { "$it.txt" }.map { resultReadFromAssetFileName(it) }.lift()
+
+        assertThat(rs, instanceOf(Result::class.java))
+        assertThat(rs, instanceOf(Result.Success::class.java))
+        println(rs.get()[0])
+        assertThat(rs.get()[0], equalTo(readFromAssetFileName("bar.txt")))
+    }
+
     object Foo
 
     interface GetFoo {
