@@ -6,8 +6,11 @@ sourceSets {
 dependencies {
     implementation(project(":result"))
 
-    implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${extra.get("coroutines")}")
+    val junit: String by project
+    val coroutines: String by project
 
-    testImplementation("junit:junit:${extra.get("junit")}")
+    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
+
+    testImplementation("junit:junit:$junit")
 }

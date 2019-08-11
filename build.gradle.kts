@@ -7,9 +7,11 @@ buildscript {
         mavenCentral()
     }
 
+    val kotlinVersion: String by project
+    val bintray: String by project
     dependencies {
-        classpath(kotlin("gradle-plugin", extra.get("kotlin") as String))
-        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${extra.get("bintray")}")
+        classpath(kotlin("gradle-plugin", kotlinVersion))
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintray")
     }
 }
 
@@ -28,8 +30,8 @@ subprojects {
         plugin("jacoco")
     }
 
-    val artifactPublish: String by extra
-    val artifactGroupId: String by extra
+    val artifactPublish: String by project
+    val artifactGroupId: String by project
 
     version = artifactPublish
     group = artifactGroupId
