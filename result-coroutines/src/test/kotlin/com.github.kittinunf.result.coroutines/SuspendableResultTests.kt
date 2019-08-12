@@ -3,6 +3,7 @@ package com.github.kittinunf.result.coroutines
 import com.github.kittinunf.result.NoException
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
@@ -307,6 +308,29 @@ class SuspendableResultTests {
         }
     }
 
+    @Test
+    fun liftListToResultOfListSuccess() {
+        runBlocking {
+            val rs = listOf("bar", "foo").map { "$it.txt" }.map { resultReadFromAssetFileName(it) }.lift()
+
+            assertThat(rs, instanceOf(SuspendableResult::class.java))
+            assertThat(rs, instanceOf(SuspendableResult.Success::class.java))
+            assertThat(rs.get()[0], equalTo(readFromAssetFileName("bar.txt")))
+        }
+    }
+
+    @Test
+    fun liftListToResultOfListFailure() {
+        runBlocking {
+            val rs = listOf("bar", "not_found").map { "$it.txt" }.map { resultReadFromAssetFileName(it) }.lift()
+
+            assertThat(rs, instanceOf(SuspendableResult::class.java))
+            assertThat(rs, instanceOf(SuspendableResult.Failure::class.java))
+            val (_, error) = rs
+            assertThat(error, instanceOf(FileNotFoundException::class.java))
+        }
+    }
+
     // helper
     private fun readFromAssetFileName(name: String): String {
         val dir = System.getProperty("user.dir")
@@ -316,8 +340,7 @@ class SuspendableResultTests {
     }
 
     private suspend fun resultReadFromAssetFileName(name: String): SuspendableResult<String, Exception> {
-        val operation = readFromAssetFileName(name)
-        return SuspendableResult.of(operation)
+        return SuspendableResult.of { readFromAssetFileName(name) }
     }
 
     private fun functionThatCanReturnNull(nullEnabled: Boolean): Int? = if (nullEnabled) null else Int.MIN_VALUE
