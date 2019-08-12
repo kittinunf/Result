@@ -4,10 +4,14 @@ sourceSets {
 }
 
 dependencies {
+    val junit: String by project
+    val coroutines: String by project
+    val kotlinVersion: String by project
+
     implementation(project(":result"))
 
-    implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${extra.get("coroutines")}")
+    implementation(kotlin("stdlib", kotlinVersion))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
 
-    testImplementation("junit:junit:${extra.get("junit")}")
+    testImplementation("junit:junit:$junit")
 }
