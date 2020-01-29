@@ -81,6 +81,15 @@ class ResultTests {
     }
 
     @Test
+    fun orElseDeprecated() {
+        val one = Result.of<Int>(null) getOrElse 1
+        val two = Result.of<Int, Exception>{ throw Exception("1") }.getOrElse(2)
+
+        assertThat("one is 1", one, equalTo(1))
+        assertThat("two is 2", two, equalTo(2))
+    }
+
+    @Test
     fun orElse() {
         val one = Result.of<Int>(null) getOrElse { 1 }
         val two = Result.of<Int>(null).getOrElse { 1 }
