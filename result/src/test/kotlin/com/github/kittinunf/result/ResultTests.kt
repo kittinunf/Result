@@ -88,7 +88,7 @@ class ResultTests {
 
         assertThat("one is 1", one, equalTo(1))
         assertThat("two is 2", two, equalTo(2))
-        assertThat("three is 3", two, equalTo(3))
+        assertThat("three is 3", three, equalTo(3))
     }
 
     @Test

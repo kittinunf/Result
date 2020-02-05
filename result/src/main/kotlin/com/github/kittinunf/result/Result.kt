@@ -34,8 +34,6 @@ fun <V: Any, E: Exception> Result<V, E>.getOrNull(): V? {
     }
 }
 
-
-
 inline fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
     when (this) {
         is Result.Success -> Result.Success(transform(value))
