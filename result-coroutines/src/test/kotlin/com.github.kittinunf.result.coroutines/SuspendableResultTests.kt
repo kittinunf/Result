@@ -170,7 +170,7 @@ class SuspendableResultTests {
 
         assertThat("result2 expecting to throw FileNotFoundException", result, equalTo(true))
 
-        Assert.assertThat("result3 is default", result3.get() ?: "default", equalTo("default"))
+        assertThat("result3 is default", result3.get() ?: "default", equalTo("default"))
     }
 
     @Suppress("UNUSED_VARIABLE")
