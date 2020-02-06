@@ -1,5 +1,7 @@
 package com.github.kittinunf.result.coroutines
 
+import com.github.kittinunf.result.Result
+
 inline fun <reified X> SuspendableResult<*, *>.getAs() = when (this) {
     is SuspendableResult.Success -> value as? X
     is SuspendableResult.Failure -> error as? X
@@ -14,9 +16,24 @@ infix fun <V : Any?, E : Exception> SuspendableResult<V, E>.or(fallback: V) = wh
     else -> SuspendableResult.Success(fallback)
 }
 
+@Deprecated("Use lazy-evaluating variant instead", ReplaceWith("getOrElse { fallback }"))
 infix fun <V : Any?, E : Exception> SuspendableResult<V, E>.getOrElse(fallback: V) = when (this) {
     is SuspendableResult.Success -> value
     else -> fallback
+}
+
+inline infix fun <V: Any?, E: Exception> SuspendableResult<V, E>.getOrElse(fallback: (E) -> V): V {
+    return when (this) {
+        is SuspendableResult.Success -> value
+        is SuspendableResult.Failure -> fallback(error)
+    }
+}
+
+fun <V: Any?, E: Exception> SuspendableResult<V, E>.getOrNull(): V? {
+    return when (this) {
+        is SuspendableResult.Success -> value
+        is SuspendableResult.Failure -> null
+    }
 }
 
 suspend fun <V : Any?, U : Any?, E : Exception> SuspendableResult<V, E>.map(transform: suspend (V) -> U): SuspendableResult<U, E> = try {

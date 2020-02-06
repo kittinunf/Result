@@ -1,12 +1,16 @@
 package com.github.kittinunf.result.coroutines
 
 import com.github.kittinunf.result.NoException
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.getOrElse
+import com.github.kittinunf.result.getOrNull
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
@@ -75,10 +79,35 @@ class SuspendableResultTests {
     }
 
     @Test
-    fun testOrElse() {
-        val one = runBlocking { SuspendableResult.of<Int>(null) getOrElse 1 }
+    fun testOrNull() {
+        val one = runBlocking { SuspendableResult.of<Int, Exception> { throw Exception("Some error") } .getOrNull() }
+        val two = SuspendableResult.of(1) .getOrNull()
 
-        assertThat("one is 1", one, equalTo(1))
+        val result: Int? = null
+        Assert.assertThat("one is null", one, equalTo(result))
+        Assert.assertThat("two is one", two, equalTo(1))
+    }
+
+    @Test
+    fun testOrElseDeprecated() {
+        val one = SuspendableResult.of<Int>(null) getOrElse 1
+        val two = SuspendableResult.of(2) getOrElse 1
+        val three = runBlocking { SuspendableResult.of<Int, Exception>{ throw Exception("1") }.getOrElse(3) }
+
+        Assert.assertThat("one is 1", one, equalTo(1))
+        Assert.assertThat("two is 2", two, equalTo(2))
+        Assert.assertThat("three is 3", three, equalTo(3))
+    }
+
+    @Test
+    fun testOrElse() {
+        val one = SuspendableResult.of<Int>(null) getOrElse { 1 }
+        val two = SuspendableResult.of(2).getOrElse { 1 }
+        val three = runBlocking { SuspendableResult.of<String, Exception>{ throw Exception("Message") }.getOrElse { it.message!! } }
+
+        Assert.assertThat("one is 1", one, equalTo(1))
+        Assert.assertThat("two is 2", two, equalTo(2))
+        Assert.assertThat("three is exception message", three, equalTo("Message"))
     }
 
     @Test
@@ -128,6 +157,7 @@ class SuspendableResultTests {
     fun testGet() {
         val result1 = runBlocking { SuspendableResult.of(true) }
         val result2 = runBlocking { SuspendableResult.of<String, Exception> { runBlocking { File("not_found_file").readText() } } }
+        val result3 = runBlocking { SuspendableResult.of<String?, Exception> { null } }
 
         assertThat("result1 is true", result1.get(), equalTo(true))
 
@@ -139,6 +169,8 @@ class SuspendableResultTests {
         }
 
         assertThat("result2 expecting to throw FileNotFoundException", result, equalTo(true))
+
+        Assert.assertThat("result3 is default", result3.get() ?: "default", equalTo("default"))
     }
 
     @Suppress("UNUSED_VARIABLE")
