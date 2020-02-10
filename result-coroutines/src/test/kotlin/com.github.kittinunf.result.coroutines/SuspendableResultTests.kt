@@ -89,17 +89,6 @@ class SuspendableResultTests {
     }
 
     @Test
-    fun testOrElseDeprecated() {
-        val one = SuspendableResult.of<Int>(null) getOrElse 1
-        val two = SuspendableResult.of(2) getOrElse 1
-        val three = runBlocking { SuspendableResult.of<Int, Exception>{ throw Exception("1") }.getOrElse(3) }
-
-        Assert.assertThat("one is 1", one, equalTo(1))
-        Assert.assertThat("two is 2", two, equalTo(2))
-        Assert.assertThat("three is 3", three, equalTo(3))
-    }
-
-    @Test
     fun testOrElse() {
         val one = SuspendableResult.of<Int>(null) getOrElse { 1 }
         val two = SuspendableResult.of(2).getOrElse { 1 }
