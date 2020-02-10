@@ -16,12 +16,6 @@ infix fun <V : Any?, E : Exception> SuspendableResult<V, E>.or(fallback: V) = wh
     else -> SuspendableResult.Success(fallback)
 }
 
-@Deprecated("Use lazy-evaluating variant instead", ReplaceWith("getOrElse { fallback }"))
-infix fun <V : Any?, E : Exception> SuspendableResult<V, E>.getOrElse(fallback: V) = when (this) {
-    is SuspendableResult.Success -> value
-    else -> fallback
-}
-
 inline infix fun <V: Any?, E: Exception> SuspendableResult<V, E>.getOrElse(fallback: (E) -> V): V {
     return when (this) {
         is SuspendableResult.Success -> value
