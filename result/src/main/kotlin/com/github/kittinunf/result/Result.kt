@@ -5,36 +5,30 @@ inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Failure -> error as? X
 }
 
-fun <V : Any> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
+fun <V : Any?> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
 fun <E : Exception> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
-infix fun <V : Any, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
+infix fun <V : Any?, E : Exception> Result<V, E>.or(fallback: V) = when (this) {
     is Result.Success -> this
     else -> Result.Success(fallback)
 }
 
-@Deprecated("Use lazy-evaluating variant instead", ReplaceWith("getOrElse { fallback }"))
-infix fun <V : Any, E : Exception> Result<V, E>.getOrElse(fallback: V) = when (this) {
-    is Result.Success -> value
-    else -> fallback
-}
-
-inline infix fun <V: Any, E: Exception> Result<V, E>.getOrElse(fallback: (E) -> V): V {
+inline infix fun <V: Any?, E: Exception> Result<V, E>.getOrElse(fallback: (E) -> V): V {
     return when (this) {
         is Result.Success -> value
         is Result.Failure -> fallback(error)
     }
 }
 
-fun <V: Any, E: Exception> Result<V, E>.getOrNull(): V? {
+fun <V: Any?, E: Exception> Result<V, E>.getOrNull(): V? {
     return when (this) {
         is Result.Success -> value
         is Result.Failure -> null
     }
 }
 
-inline fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
+inline fun <V : Any?, U : Any?, E : Exception> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
     when (this) {
         is Result.Success -> Result.Success(transform(value))
         is Result.Failure -> Result.Failure(error)
@@ -43,7 +37,7 @@ inline fun <V : Any, U : Any, E : Exception> Result<V, E>.map(transform: (V) -> 
     Result.error(ex as E)
 }
 
-inline fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
+inline fun <V : Any?, U : Any?, E : Exception> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
     when (this) {
         is Result.Success -> transform(value)
         is Result.Failure -> Result.Failure(error)
@@ -52,17 +46,17 @@ inline fun <V : Any, U : Any, E : Exception> Result<V, E>.flatMap(transform: (V)
     Result.error(ex as E)
 }
 
-fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
+fun <V : Any?, E : Exception, E2 : Exception> Result<V, E>.mapError(transform: (E) -> E2) = when (this) {
     is Result.Success -> Result.Success(value)
     is Result.Failure -> Result.Failure(transform(error))
 }
 
-fun <V : Any, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
+fun <V : Any?, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transform: (E) -> Result<V, E2>) = when (this) {
     is Result.Success -> Result.Success(value)
     is Result.Failure -> transform(error)
 }
 
-fun <V : Any, E : Exception> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = try {
+fun <V : Any?, E : Exception> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = try {
     when (this) {
         is Result.Success -> predicate(value)
         is Result.Failure -> false
@@ -71,16 +65,16 @@ fun <V : Any, E : Exception> Result<V, E>.any(predicate: (V) -> Boolean): Boolea
     false
 }
 
-fun <V : Any, U : Any> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
+fun <V : Any?, U : Any?> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
         flatMap { outer -> other().map { outer to it } }
 
-fun <V : Any, E : Exception> List<Result<V, E>>.lift(): Result<List<V>, E> = fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
+fun <V : Any?, E : Exception> List<Result<V, E>>.lift(): Result<List<V>, E> = fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
     acc.flatMap { combine ->
         result.map { combine.apply { add(it) } }
     }
 }
 
-sealed class Result<out V : Any, out E : Exception> {
+sealed class Result<out V : Any?, out E : Exception> {
 
     open operator fun component1(): V? = null
     open operator fun component2(): E? = null
@@ -92,7 +86,7 @@ sealed class Result<out V : Any, out E : Exception> {
 
     abstract fun get(): V
 
-    class Success<out V : Any>(val value: V) : Result<V, Nothing>() {
+    class Success<out V : Any?>(val value: V) : Result<V, Nothing>() {
         override fun component1(): V? = value
 
         override fun get(): V = value
@@ -128,12 +122,12 @@ sealed class Result<out V : Any, out E : Exception> {
         // Factory methods
         fun <E : Exception> error(ex: E) = Failure(ex)
 
-        fun <V : Any> success(v: V) = Success(v)
+        fun <V : Any?> success(v: V) = Success(v)
 
-        fun <V : Any> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> =
+        fun <V : Any?> of(value: V?, fail: (() -> Exception) = { Exception() }): Result<V, Exception> =
                 value?.let { success(it) } ?: error(fail())
 
-        fun <V : Any, E: Exception> of(f: () -> V): Result<V, E> = try {
+        fun <V : Any?, E: Exception> of(f: () -> V): Result<V, E> = try {
             success(f())
         } catch (ex: Exception) {
             error(ex as E)

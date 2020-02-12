@@ -81,17 +81,6 @@ class ResultTests {
     }
 
     @Test
-    fun orElseDeprecated() {
-        val one = Result.of<Int>(null) getOrElse 1
-        val two = Result.of(2) getOrElse 1
-        val three = Result.of<Int, Exception>{ throw Exception("1") }.getOrElse(3)
-
-        assertThat("one is 1", one, equalTo(1))
-        assertThat("two is 2", two, equalTo(2))
-        assertThat("three is 3", three, equalTo(3))
-    }
-
-    @Test
     fun orElse() {
         val one = Result.of<Int>(null) getOrElse { 1 }
         val two = Result.of(2).getOrElse { 1 }
@@ -145,6 +134,7 @@ class ResultTests {
 
         val result1 = Result.of<Boolean, NoException>(f1)
         val result2 = Result.of<String, Exception>(f2)
+        val result3 = Result.of<String?, Exception> { null }
 
         assertThat("result1 is true", result1.get(), equalTo(true))
 
@@ -156,6 +146,8 @@ class ResultTests {
         }
 
         assertThat("result2 expecting to throw FileNotFoundException", result, equalTo(true))
+
+        assertThat("result3 is default", result3.get() ?: "default", equalTo("default"))
     }
 
     @Suppress("UNUSED_VARIABLE")
