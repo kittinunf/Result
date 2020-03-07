@@ -1,10 +1,7 @@
 package com.github.kittinunf.result
 
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.CoreMatchers.notNullValue
-import org.hamcrest.CoreMatchers.nullValue
-import org.junit.Assert.assertThat
+import org.hamcrest.CoreMatchers.*
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
@@ -72,8 +69,8 @@ class ResultTests {
 
     @Test
     fun orNull() {
-        val one = Result.of<Int, Exception> { throw Exception("Some error") } .getOrNull()
-        val two = Result.of(1) .getOrNull()
+        val one = Result.of<Int, Exception> { throw Exception("Some error") }.getOrNull()
+        val two = Result.of(1).getOrNull()
 
         val result: Int? = null
         assertThat("one is null", one, equalTo(result))
@@ -84,7 +81,7 @@ class ResultTests {
     fun orElse() {
         val one = Result.of<Int>(null) getOrElse { 1 }
         val two = Result.of(2).getOrElse { 1 }
-        val three = Result.of<String, Exception>{ throw Exception("Message") }.getOrElse { it.message!! }
+        val three = Result.of<String, Exception> { throw Exception("Message") }.getOrElse { it.message!! }
 
         assertThat("one is 1", one, equalTo(1))
         assertThat("two is 2", two, equalTo(2))

@@ -1,6 +1,6 @@
 package com.github.kittinunf.result
 
-import org.junit.Assert.assertThat
+import org.hamcrest.MatcherAssert.*
 import org.junit.Test
 import org.hamcrest.CoreMatchers.`is` as isEqualTo
 
