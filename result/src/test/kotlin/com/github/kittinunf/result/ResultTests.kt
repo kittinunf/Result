@@ -232,6 +232,18 @@ class ResultTests {
     }
 
     @Test
+    fun doOnError() {
+        val success = Result.of("success")
+        val failure = Result.error(Exception("failure"))
+
+        val v1 = success.doOnError { }
+        val v2 = failure.doOnError { }
+
+        assertThat("v1 is success", v1, instanceOf(Result.Success::class.java))
+        assertThat("v2 is failure", v2, instanceOf(Result.Failure::class.java))
+    }
+
+    @Test
     fun any() {
         val foo = Result.of<String, Exception> { readFromAssetFileName("foo.txt") }
         val fooo = Result.of<String, Exception> { readFromAssetFileName("fooo.txt") }
