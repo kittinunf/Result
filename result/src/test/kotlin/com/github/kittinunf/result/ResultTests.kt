@@ -232,12 +232,12 @@ class ResultTests {
     }
 
     @Test
-    fun doOnError() {
+    fun onError() {
         val success = Result.of("success")
         val failure = Result.error(Exception("failure"))
 
-        val v1 = success.doOnError { }
-        val v2 = failure.doOnError { }
+        val v1 = success.onError { }
+        val v2 = failure.onError { }
 
         assertThat("v1 is success", v1, instanceOf(Result.Success::class.java))
         assertThat("v2 is failure", v2, instanceOf(Result.Failure::class.java))

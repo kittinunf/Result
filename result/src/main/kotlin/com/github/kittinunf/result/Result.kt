@@ -56,7 +56,7 @@ fun <V : Any?, E : Exception, E2 : Exception> Result<V, E>.flatMapError(transfor
     is Result.Failure -> transform(error)
 }
 
-fun <V : Any?, E : Exception> Result<V, E>.doOnError(f: (E) -> Unit) = when(this) {
+inline fun <V : Any?, E : Exception> Result<V, E>.onError(f: (E) -> Unit) = when(this) {
     is Result.Success -> Result.Success(value)
     is Result.Failure -> {
         f(error)
