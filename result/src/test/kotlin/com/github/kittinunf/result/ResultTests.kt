@@ -232,6 +232,23 @@ class ResultTests {
     }
 
     @Test
+    fun onError() {
+        val success = Result.of("success")
+        val failure = Result.error(Exception("failure"))
+
+        var hasSuccessChanged = false
+        var hasFailureChanged = false
+
+        val v1 = success.onError { hasSuccessChanged = true }
+        val v2 = failure.onError { hasFailureChanged = true }
+
+        assertThat("v1 is success", v1, instanceOf(Result.Success::class.java))
+        assertThat("v2 is failure", v2, instanceOf(Result.Failure::class.java))
+        assertThat("hasSuccessChanged is false", hasSuccessChanged, equalTo(false))
+        assertThat("hasFailureChanged is true", hasFailureChanged, equalTo(true))
+    }
+
+    @Test
     fun any() {
         val foo = Result.of<String, Exception> { readFromAssetFileName("foo.txt") }
         val fooo = Result.of<String, Exception> { readFromAssetFileName("fooo.txt") }
