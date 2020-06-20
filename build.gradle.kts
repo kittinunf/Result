@@ -30,9 +30,17 @@ subprojects {
         plugin("jacoco")
     }
 
+    val artifactRepo: String by project
+    val artifactName: String by project
+    val artifactDesc: String by project
+    val artifactUserOrg: String by project
+    val artifactUrl: String by project
+    val artifactScm: String by project
+    val artifactLicenseName: String by project
+    val artifactLicenseUrl: String by project
+
     val artifactPublish: String by project
     val artifactGroupId: String by project
-
     version = artifactPublish
     group = artifactGroupId
 
@@ -68,11 +76,49 @@ subprojects {
                 version = artifactPublish
 
                 pom {
+                    name.set(project.name)
+                    description.set(artifactDesc)
+
+                    packaging = "jar"
+                    url.set(artifactUrl)
+
                     licenses {
                         license {
                             name.set("MIT License")
                             url.set("http://www.opensource.org/licenses/mit-license.php")
                         }
+                    }
+
+                    developers {
+                        developer {
+                            name.set("kittinunf")
+                        }
+                        developer {
+                            name.set("mplatvoet")
+                        }
+                        developer {
+                            name.set("Globegitter")
+                        }
+                        developer {
+                            name.set("pt2121")
+                        }
+                        developer {
+                            name.set("yoavst")
+                        }
+                        developer {
+                            name.set("pitagoras3")
+                        }
+
+                    }
+                  
+                    contributors {
+                        // https://github.com/kittinunf/Result/graphs/contributors
+                    }
+
+                    scm {
+                        url.set(artifactUrl)
+                        connection.set(artifactScm)
+                        developerConnection.set(artifactScm)
                     }
                 }
             }
@@ -86,15 +132,19 @@ subprojects {
         setPublications(project.name)
         publish = true
         pkg.apply {
-            repo = "maven"
-            name = "Result"
-            desc = "The modelling for success/failure of operations in Kotlin"
-            userOrg = "kittinunf"
-            websiteUrl = "https://github.com/kittinunf/Result"
-            vcsUrl = "https://github.com/kittinunf/Result"
-            setLicenses("MIT")
+            repo = artifactRepo
+            name = artifactName
+            desc = artifactDesc
+            userOrg = artifactUserOrg
+            websiteUrl = artifactUrl
+            vcsUrl = artifactUrl
+            setLicenses(artifactLicenseName)
             version.apply {
                 name = artifactPublish
+                gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
+                    sign = true
+                    passphrase = System.getenv("GPG_PASSPHRASE") ?: ""
+                })
             }
         }
     }
