@@ -2,8 +2,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.30-blue.svg)](http://kotlinlang.org) 
 [![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg)](https://bintray.com/kittinunf/maven/Result/_latestVersion) 
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/com.github.kittinunf.result/result/badge.svg)]
-(https://search.maven.org/search?q=g:com.github.kittinunf.result)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/com.github.kittinunf.result/result/badge.svg)](https://search.maven.org/search?q=g:com.github.kittinunf.result)
 [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
 [![Codecov](https://codecov.io/github/kittinunf/Result/coverage.svg?branch=master)](https://codecov.io/gh/kittinunf/Result)
 
