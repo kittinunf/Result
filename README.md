@@ -1,18 +1,16 @@
 # Result
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.30-blue.svg)](http://kotlinlang.org) 
+[![Kotlin](https://img.shields.io/badge/kotlin-1.4.0-blue.svg)](http://kotlinlang.org) 
 [![jcenter](https://api.bintray.com/packages/kittinunf/maven/Result/images/download.svg)](https://bintray.com/kittinunf/maven/Result/_latestVersion) 
 [![MavenCentral](https://maven-badges.herokuapp.com/maven-central/com.github.kittinunf.result/result/badge.svg)](https://search.maven.org/search?q=g:com.github.kittinunf.result)
 [![Build Status](https://travis-ci.org/kittinunf/Result.svg?branch=master)](https://travis-ci.org/kittinunf/Result)
 [![Codecov](https://codecov.io/github/kittinunf/Result/coverage.svg?branch=master)](https://codecov.io/gh/kittinunf/Result)
 
-This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V, E : Exception>`.
+This is a tiny framework for modelling success/failure of operations in [Kotlin](http://kotlinlang.org). In short, it is a model in type of `Result<V: Any?, E : Exception>`.
 
 ## Ideology
 
-`Result<V, E: Exception>` is to provide higher abstraction of operation that can be ended with result either success or failure. The is somewhat similar to Kotlin's `nullable types` (`T?`) (https://kotlinlang.org/docs/reference/null-safety.html).
-
-`Result.Success` represents `value` in case of success, and `Result.Failure` represents `error` in case of failure which is upper bounded with `Exception` type.
+`Result<V: Any?, E: Exception>` is to provide higher abstraction of operation that can be ended with result either success or failure. `Result.Success` represents `value` in case of success, and `Result.Failure` represents `error` in case of failure which is upper bounded with `Exception` type.
 
 ## Installation
 
@@ -184,7 +182,7 @@ The creates a nice "happy path" of the whole chain, also handle error as appropr
 
 ## Never Fail Operation
 
-In some case, one wants to model an always successful operation. `Result<V, NoException>` is a good idea for that.
+In some case, one wants to model an always successful operation. `Result<V: Any?, NoException>` is a good idea for that.
 `NoException` is to indicate that there is no exception to throw. E.g.
 
 ``` Kotlin
