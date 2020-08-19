@@ -1,9 +1,6 @@
 package com.github.kittinunf.result.coroutines
 
 import com.github.kittinunf.result.NoException
-import com.github.kittinunf.result.Result
-import com.github.kittinunf.result.getOrElse
-import com.github.kittinunf.result.getOrNull
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
@@ -80,8 +77,8 @@ class SuspendableResultTests {
 
     @Test
     fun testOrNull() {
-        val one = runBlocking { SuspendableResult.of<Int, Exception> { throw Exception("Some error") } .getOrNull() }
-        val two = SuspendableResult.of(1) .getOrNull()
+        val one = runBlocking { SuspendableResult.of<Int, Exception> { throw Exception("Some error") }.getOrNull() }
+        val two = SuspendableResult.of(1).getOrNull()
 
         val result: Int? = null
         Assert.assertThat("one is null", one, equalTo(result))
@@ -92,7 +89,7 @@ class SuspendableResultTests {
     fun testOrElse() {
         val one = SuspendableResult.of<Int>(null) getOrElse { 1 }
         val two = SuspendableResult.of(2).getOrElse { 1 }
-        val three = runBlocking { SuspendableResult.of<String, Exception>{ throw Exception("Message") }.getOrElse { it.message!! } }
+        val three = runBlocking { SuspendableResult.of<String, Exception> { throw Exception("Message") }.getOrElse { it.message!! } }
 
         Assert.assertThat("one is 1", one, equalTo(1))
         Assert.assertThat("two is 2", two, equalTo(2))

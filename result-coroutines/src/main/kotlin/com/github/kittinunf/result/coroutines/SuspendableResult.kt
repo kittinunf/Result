@@ -1,7 +1,5 @@
 package com.github.kittinunf.result.coroutines
 
-import com.github.kittinunf.result.Result
-
 inline fun <reified X> SuspendableResult<*, *>.getAs() = when (this) {
     is SuspendableResult.Success -> value as? X
     is SuspendableResult.Failure -> error as? X
@@ -16,14 +14,14 @@ infix fun <V : Any?, E : Exception> SuspendableResult<V, E>.or(fallback: V) = wh
     else -> SuspendableResult.Success(fallback)
 }
 
-inline infix fun <V: Any?, E: Exception> SuspendableResult<V, E>.getOrElse(fallback: (E) -> V): V {
+inline infix fun <V : Any?, E : Exception> SuspendableResult<V, E>.getOrElse(fallback: (E) -> V): V {
     return when (this) {
         is SuspendableResult.Success -> value
         is SuspendableResult.Failure -> fallback(error)
     }
 }
 
-fun <V: Any?, E: Exception> SuspendableResult<V, E>.getOrNull(): V? {
+fun <V : Any?, E : Exception> SuspendableResult<V, E>.getOrNull(): V? {
     return when (this) {
         is SuspendableResult.Success -> value
         is SuspendableResult.Failure -> null
@@ -67,8 +65,8 @@ suspend fun <V : Any?, E : Exception> SuspendableResult<V, E>.any(predicate: sus
     false
 }
 
-suspend fun <V : Any?, U: Any> SuspendableResult<V, *>.fanout(other: suspend () -> SuspendableResult<U, *>): SuspendableResult<Pair<V, U>, *> =
-    flatMap { outer -> other().map { outer to it } }
+suspend fun <V : Any?, U : Any> SuspendableResult<V, *>.fanout(other: suspend () -> SuspendableResult<U, *>): SuspendableResult<Pair<V, U>, *> =
+        flatMap { outer -> other().map { outer to it } }
 
 
 suspend fun <V : Any?, E : Exception> List<SuspendableResult<V, E>>.lift(): SuspendableResult<List<V>, E> = fold(SuspendableResult.Success<MutableList<V>, E>(mutableListOf<V>()) as SuspendableResult<MutableList<V>, E>) { acc, result ->
@@ -83,10 +81,10 @@ sealed class SuspendableResult<out V : Any?, out E : Exception> {
     abstract operator fun component2(): E?
 
     suspend fun <X> fold(success: suspend (V) -> X, failure: suspend (E) -> X): X {
-      return when (this) {
-        is Success -> success(this.value)
-        is Failure -> failure(this.error)
-      }
+        return when (this) {
+            is Success -> success(this.value)
+            is Failure -> failure(this.error)
+        }
     }
 
     abstract fun get(): V
@@ -133,9 +131,9 @@ sealed class SuspendableResult<out V : Any?, out E : Exception> {
             return value?.let { Success<V, Nothing>(it) } ?: error(fail())
         }
 
-        suspend fun <V : Any?, E: Exception> of(f: suspend () -> V): SuspendableResult<V, E> = try {
+        suspend fun <V : Any?, E : Exception> of(f: suspend () -> V): SuspendableResult<V, E> = try {
             Success(f())
-        } catch(ex: Exception) {
+        } catch (ex: Exception) {
             Failure(ex as E)
         }
     }
