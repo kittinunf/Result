@@ -6,8 +6,10 @@ sourceSets {
 dependencies {
     val junit: String by project
     val kotlinVersion: String by project
+    val coroutines: String by project
 
     implementation(kotlin("stdlib", kotlinVersion))
 
     testImplementation("junit:junit:$junit")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
 }
