@@ -100,21 +100,6 @@ class ResultTests {
     }
 
     @Test
-    fun getExceptionOrElse() {
-        val defaultError = Exception("fallback error")
-        val error = Exception()
-        val errorMessage = Exception("Message")
-        val one = Result.of<Int>(null) { error }.getExceptionOrElse { defaultError }
-        val two = Result.of(2).getExceptionOrElse { defaultError }
-        val three = Result.of<String, Exception>{ throw errorMessage }
-            .getExceptionOrElse { defaultError }
-
-        assertThat("one is error", one, equalTo(error))
-        assertThat("two is default error", two, equalTo(defaultError))
-        assertThat("three is exception message", three, equalTo(errorMessage))
-    }
-
-    @Test
     fun getExceptionOrNull() {
         val defaultError = Exception("fallback error")
         val error = Exception()

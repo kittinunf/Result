@@ -28,13 +28,6 @@ fun <V: Any?, E: Exception> Result<V, E>.getOrNull(): V? {
     }
 }
 
-inline infix fun <V : Any?, E : Exception> Result<V, E>.getExceptionOrElse(fallback: (V) -> E): E {
-    return when (this) {
-        is Result.Success -> fallback(value)
-        is Result.Failure -> error
-    }
-}
-
 fun <V : Any?, E : Exception> Result<V, E>.getExceptionOrNull(): E? {
     return when (this) {
         is Result.Success -> null
