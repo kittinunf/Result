@@ -1,5 +1,7 @@
 package com.github.kittinunf.result
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.notNullValue
@@ -54,12 +56,18 @@ class ResultTests {
         }
 
         val result1 = Result.of<String, NoException>(f1)
-        val result2 = Result.of<Int, NoException>(f2)
+        val result2 = Result.of<Int, IndexOutOfBoundsException>(f2)
         val result3 = Result.of(f3())
+        val result4 = try {
+            Result.of<Int, NoException>(f2)
+        } catch (ex: IndexOutOfBoundsException) {
+            Result.error(RuntimeException())
+        }
 
         assertThat("result1 is Result.Success type", result1, instanceOf(Result.Success::class.java))
         assertThat("result2 is Result.Failure type", result2, instanceOf(Result.Failure::class.java))
         assertThat("result3 is Result.Failure type", result3, instanceOf(Result.Failure::class.java))
+        assertThat("result4 has RuntimeException", result4.getExceptionOrNull(), instanceOf(RuntimeException::class.java))
     }
 
     @Test
@@ -89,6 +97,21 @@ class ResultTests {
         assertThat("one is 1", one, equalTo(1))
         assertThat("two is 2", two, equalTo(2))
         assertThat("three is exception message", three, equalTo("Message"))
+    }
+
+    @Test
+    fun getExceptionOrNull() {
+        val defaultError = Exception("fallback error")
+        val error = Exception()
+        val errorMessage = Exception("Message")
+        val one = Result.of<Int>(null) { error }.getExceptionOrNull()
+        val two = Result.of(2).getExceptionOrNull()
+        val three = Result.of<String, Exception>{ throw errorMessage }
+            .getExceptionOrNull()
+
+        assertThat("one is error", one, equalTo(error))
+        assertThat("two is null", two, equalTo(null))
+        assertThat("three is exception message", three, equalTo(errorMessage))
     }
 
     @Test
@@ -185,9 +208,40 @@ class ResultTests {
 
         val v1 = success.map { it.count() }
         val v2 = failure.map { it.count() }
+        val v3 = runBlocking { success.map { delay(10) } }
+
 
         assertThat("v1 getAsInt equals 7", v1.getAs(), equalTo(7))
         assertThat("v2 getAsInt null", v2.getAs<Int>(), nullValue())
+        assertThat("v3 get Unit", v3.get(), equalTo(Unit))
+    }
+
+    @Test
+    fun mapEither() {
+        val success = Result.of("success")
+        val failure = Result.error(RuntimeException("failure"))
+
+        val v1 = success.mapEither(
+            success = {
+                it.count()
+            },
+            failure = {
+                IllegalArgumentException()
+            }
+        )
+        val ex = IllegalArgumentException()
+        val v2 = failure.mapEither(
+            success = {
+                1
+            },
+            failure = {
+                ex
+            }
+        )
+
+        assertThat("v1 get equals 7", v1.get(), equalTo(7))
+        assertThat("v2 getOrNull null", v2.getOrNull(), nullValue())
+        assertThat("v2 getExceptionOrNull null", v2.getExceptionOrNull(), equalTo(ex))
     }
 
     @Test
@@ -246,6 +300,23 @@ class ResultTests {
         assertThat("v2 is failure", v2, instanceOf(Result.Failure::class.java))
         assertThat("hasSuccessChanged is false", hasSuccessChanged, equalTo(false))
         assertThat("hasFailureChanged is true", hasFailureChanged, equalTo(true))
+    }
+
+    @Test
+    fun onSuccess() {
+        val success = Result.of("success")
+        val failure = Result.error(Exception("failure"))
+
+        var hasSuccessChanged = false
+        var hasFailureChanged = false
+
+        val v1 = success.onSuccess { hasSuccessChanged = true }
+        val v2 = failure.onSuccess { hasFailureChanged = true }
+
+        assertThat("v1 is success", v1, instanceOf(Result.Success::class.java))
+        assertThat("v2 is failure", v2, instanceOf(Result.Failure::class.java))
+        assertThat("hasSuccessChanged is false", hasSuccessChanged, equalTo(true))
+        assertThat("hasFailureChanged is true", hasFailureChanged, equalTo(false))
     }
 
     @Test
