@@ -7,6 +7,7 @@ import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
@@ -67,7 +68,9 @@ class ResultTests {
         assertThat("result1 is Result.Success type", result1, instanceOf(Result.Success::class.java))
         assertThat("result2 is Result.Failure type", result2, instanceOf(Result.Failure::class.java))
         assertThat("result3 is Result.Failure type", result3, instanceOf(Result.Failure::class.java))
-        assertThat("result4 has RuntimeException", result4.getExceptionOrNull(), instanceOf(RuntimeException::class.java))
+        assertThat("result4 has RuntimeException",
+            result4.getExceptionOrNull(),
+            instanceOf(RuntimeException::class.java))
     }
 
     @Test
@@ -106,7 +109,7 @@ class ResultTests {
         val errorMessage = Exception("Message")
         val one = Result.of<Int>(null) { error }.getExceptionOrNull()
         val two = Result.of(2).getExceptionOrNull()
-        val three = Result.of<String, Exception>{ throw errorMessage }
+        val three = Result.of<String, Exception> { throw errorMessage }
             .getExceptionOrNull()
 
         assertThat("one is error", one, equalTo(error))
@@ -362,8 +365,10 @@ class ResultTests {
 
     @Test
     fun composableFunctions2() {
-        val r1 = Result.of(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }.mapError { Exception("this should not happen") }
-        val r2 = Result.of(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }.mapError { KotlinNullPointerException() }
+        val r1 = Result.of(functionThatCanReturnNull(false)).flatMap { resultReadFromAssetFileName("bar.txt") }
+            .mapError { Exception("this should not happen") }
+        val r2 = Result.of(functionThatCanReturnNull(true)).map { it.rangeTo(Int.MAX_VALUE) }
+            .mapError { KotlinNullPointerException() }
 
         assertThat("r1 is Result.Success type", r1, instanceOf(Result.Success::class.java))
         assertThat("r2 is Result.Failure type", r2, instanceOf(Result.Failure::class.java))
@@ -386,7 +391,8 @@ class ResultTests {
         assertThat("finalResult is success", finalResult, instanceOf(Result.Success::class.java))
         assertThat("finalResult has a pair type when both are successes", v is Pair<String, String>, equalTo(true))
         assertThat("value of finalResult has text from foo as left and text from bar as right",
-                v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v.second.startsWith("Contrary to popular belief"), equalTo(true))
+            v!!.first.startsWith("Lorem Ipsum is simply dummy text") && v.second.startsWith("Contrary to popular belief"),
+            equalTo(true))
         assertThat("value of the second component is null", e, nullValue())
     }
 
@@ -484,6 +490,28 @@ class ResultTests {
         assertThat(rs, instanceOf(Result.Failure::class.java))
         val (_, error) = rs
         assertThat(error, instanceOf(FileNotFoundException::class.java))
+    }
+
+    @Test
+    fun unwrap() {
+        val res1 = Result.of<Int, Exception> { 42 }
+        assertThat(res1.unwrap { throw IllegalStateException(it) }, equalTo(42))
+
+        val res2 = Result.of<Int>(null, { Exception() })
+        assertThrows(IllegalStateException::class.java) { res2.unwrap { throw IllegalStateException(it) } }
+    }
+
+    @Test
+    fun unwrapError() {
+        val e = Exception()
+        val res1 = Result.of<Int>(null, { e })
+        assertThat(res1.unwrapError { throw IllegalStateException(it.toString()) }, equalTo(e))
+
+        val res2 = Result.of(42, { Exception() })
+
+        assertThrows(IllegalStateException::class.java) {
+            res2.unwrapError { throw IllegalStateException(it.toString()) }
+        }
     }
 
     object Foo

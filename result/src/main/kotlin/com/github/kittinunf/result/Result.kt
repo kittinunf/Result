@@ -112,6 +112,13 @@ inline fun <V : Any?, reified E : Exception> List<Result<V, E>>.lift(): Result<L
     }
 }
 
+inline fun <V, E : Exception> Result<V, E>.unwrap(failure: (E) -> Nothing): V =
+    apply { component2()?.let(failure) }.component1()!!
+
+inline fun <V, E : Exception> Result<V, E>.unwrapError(success: (V) -> Nothing): E =
+    apply { component1()?.let(success) }.component2()!!
+
+
 sealed class Result<out V : Any?, out E : Exception> {
 
     open operator fun component1(): V? = null
