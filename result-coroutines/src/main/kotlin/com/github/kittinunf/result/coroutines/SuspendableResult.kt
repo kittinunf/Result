@@ -1,5 +1,8 @@
 package com.github.kittinunf.result.coroutines
 
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+
 inline fun <reified X> SuspendableResult<*, *>.getAs() = when (this) {
     is SuspendableResult.Success -> value as? X
     is SuspendableResult.Failure -> error as? X
@@ -75,7 +78,7 @@ suspend fun <V : Any?, E : Exception> List<SuspendableResult<V, E>>.lift(): Susp
     }
 }
 
-sealed class SuspendableResult<out V : Any?, out E : Exception> {
+sealed class SuspendableResult<out V : Any?, out E : Exception>: ReadOnlyProperty<Any?, V> {
 
     abstract operator fun component1(): V?
     abstract operator fun component2(): E?
@@ -103,6 +106,8 @@ sealed class SuspendableResult<out V : Any?, out E : Exception> {
             if (this === other) return true
             return other is Success<*, *> && value == other.value
         }
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): V = get()
     }
 
     class Failure<out V : Any?, out E : Exception>(val error: E) : SuspendableResult<V, E>() {
@@ -121,6 +126,8 @@ sealed class SuspendableResult<out V : Any?, out E : Exception> {
             if (this === other) return true
             return other is Failure<*, *> && error == other.error
         }
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): V = get()
     }
 
     companion object {

@@ -1,5 +1,8 @@
 package com.github.kittinunf.result
 
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+
 inline fun <reified X> Result<*, *>.getAs() = when (this) {
     is Result.Success -> value as? X
     is Result.Failure -> error as? X
@@ -119,7 +122,7 @@ inline fun <V, E : Exception> Result<V, E>.unwrapError(success: (V) -> Nothing):
     apply { component1()?.let(success) }.component2()!!
 
 
-sealed class Result<out V : Any?, out E : Exception> {
+sealed class Result<out V : Any?, out E : Exception>: ReadOnlyProperty<Any?, V> {
 
     open operator fun component1(): V? = null
     open operator fun component2(): E? = null
@@ -144,6 +147,8 @@ sealed class Result<out V : Any?, out E : Exception> {
             if (this === other) return true
             return other is Success<*> && value == other.value
         }
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): V  = get()
     }
 
     class Failure<out E : Exception>(val error: E) : Result<Nothing, E>() {
@@ -161,6 +166,8 @@ sealed class Result<out V : Any?, out E : Exception> {
             if (this === other) return true
             return other is Failure<*> && error == other.error
         }
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): Nothing = get()
     }
 
     companion object {
