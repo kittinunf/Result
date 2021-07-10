@@ -1,26 +1,9 @@
-//import com.jfrog.bintray.gradle.BintrayExtension
-//import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin
-//
-//buildscript {
-//    repositories {
-//        jcenter()
-//        mavenCentral()
-//    }
-//
-//    val kotlinVersion: String by project
-//    val bintray: String by project
-//    dependencies {
-//        classpath(kotlin("gradle-plugin", kotlinVersion))
-//        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintray")
-//    }
-//}
-//
 allprojects {
     repositories {
         mavenCentral()
     }
 }
-//
+
 //subprojects {
 //    apply {
 //        plugin<JavaLibraryPlugin>()

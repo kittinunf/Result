@@ -8,7 +8,6 @@ pluginManagement {
     repositories {
     }
     plugins {
-        kotlin("multiplatform") version "1.5.20"
     }
 }
 
