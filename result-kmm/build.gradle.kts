@@ -2,24 +2,26 @@ import java.io.IOException
 
 plugins {
     kotlin("multiplatform")
-//    id("com.android.library")
 //    id("publication")
 }
+
+val artifactGroupId: String by project
+group = artifactGroupId
+
+val gitSha = "git rev-parse --short HEAD".runCommand(project.rootDir)?.trim().orEmpty()
+val artifactPublishVersion: String by project
 
 val isReleaseBuild: Boolean
     get() = properties.containsKey("release")
 
-//group = Publishing.groupId
-val gitSha = "git rev-parse --short HEAD".runCommand(project.rootDir)?.trim().orEmpty()
-//version = if (isReleaseBuild) Publishing.version else "master-$gitSha-SNAPSHOT"
+version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSHOT"
+println(version)
 
 kotlin {
-    jvm {
-    }
+    jvm()
 
     sourceSets {
-        all {
-        }
+        all {}
 
         val commonMain by getting {
             dependencies {
