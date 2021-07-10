@@ -61,22 +61,26 @@ inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.flatMapE
     }
 }
 
-inline fun <V : Any?, E : Exception> Result<V, E>.onError(f: (E) -> Unit) = when (this) {
-    is Result.Success -> Result.success(value)
-    is Result.Failure -> {
-        f(error)
-        this
+inline fun <V, E : Throwable> Result<V, E>.onError(f: (E) -> Unit): Result<V, E> {
+    when (this) {
+        is Result.Success -> {
+        }
+        is Result.Failure -> {
+            f(error)
+        }
     }
+    return this
 }
 
-inline fun <V : Any?, E : Exception> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> {
-    return when (this) {
+inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> {
+    when (this) {
         is Result.Success -> {
             f(value)
-            this
         }
-        is Result.Failure -> this
+        is Result.Failure -> {
+        }
     }
+    return this
 }
 
 @Suppress("UNCHECKED_CAST")

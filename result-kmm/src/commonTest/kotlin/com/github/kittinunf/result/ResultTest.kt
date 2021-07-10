@@ -6,6 +6,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class ResultTest {
@@ -181,7 +182,10 @@ class ResultTest {
         val v2 = failure.onError { hasFailureChanged = true }
 
         assertIs<Result.Success<*>>(v1)
+        assertSame(v1, success)
         assertIs<Result.Failure<*>>(v2)
+        assertSame(v2, failure)
+
         assertFalse(hasSuccessChanged)
         assertTrue(hasFailureChanged)
     }
@@ -198,8 +202,40 @@ class ResultTest {
         val v2 = failure.onSuccess { hasFailureChanged = true }
 
         assertIs<Result.Success<*>>(v1)
+        assertEquals(v1, success)
         assertIs<Result.Failure<*>>(v2)
+        assertSame(v2, failure)
+
         assertTrue(hasSuccessChanged)
         assertFalse(hasFailureChanged)
+    }
+
+    @Test
+    fun `should lift the result to success if all of the item is success`() {
+        val rs = listOf("lorem_short", "lorem_long").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.lift()
+
+        assertIs<Result.Success<List<String>>>(rs)
+        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
+    }
+
+    @Test
+    fun `should lift the result to failure if any of the item is failure`() {
+        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.lift()
+
+        assertIs<Result.Failure<*>>(rs)
     }
 }

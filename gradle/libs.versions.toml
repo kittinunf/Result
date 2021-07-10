@@ -10,4 +10,3 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 
 [bundles]
 kotlin-test = ["kotlin-test-common", "kotlin-test-annotations"]
-
