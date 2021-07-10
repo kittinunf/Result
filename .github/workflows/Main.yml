@@ -27,3 +27,10 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+
+      - name: Upload allTests results
+        uses: actions/upload-artifact@v2.2.3
+        if: failure()
+        with:
+          name: allTests
+          path: ./**/build/reports/tests/allTests

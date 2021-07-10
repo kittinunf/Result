@@ -23,4 +23,4 @@ jobs:
         uses: actions/upload-artifact@v2.2.3
         with:
           name: allTests
-          path: ./**/build/reports/test/allTests
+          path: ./**/build/reports/tests/allTests

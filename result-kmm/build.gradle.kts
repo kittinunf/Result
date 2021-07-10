@@ -15,7 +15,6 @@ val isReleaseBuild: Boolean
     get() = properties.containsKey("release")
 
 version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSHOT"
-println(version)
 
 kotlin {
     jvm()
