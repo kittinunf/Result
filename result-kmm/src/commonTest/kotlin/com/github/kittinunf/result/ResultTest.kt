@@ -29,8 +29,10 @@ class ResultTest {
     @Test
     fun `should create value with success`() {
         val s = Result.success(42)
+        val ss = Result.success(null)
 
         assertNotNull(s.get())
+        assertNull(ss.get())
     }
 
     @Test

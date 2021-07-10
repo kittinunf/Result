@@ -8,12 +8,12 @@ fun Result<*, *>.isSuccess() = this is Result.Success
 
 fun Result<*, *>.isFailure() = this is Result.Failure
 
-fun <V : Any?, E : Throwable> Result<V, E>.getOrNull(): V? = when (this) {
+fun <V, E : Throwable> Result<V, E>.getOrNull(): V? = when (this) {
     is Result.Success -> value
     is Result.Failure -> null
 }
 
-inline fun <T : Any?, U : Any?, reified E : Throwable> Result<T, E>.map(transform: (T) -> U): Result<U, E> = try {
+inline fun <T, U, reified E : Throwable> Result<T, E>.map(transform: (T) -> U): Result<U, E> = try {
     when (this) {
         is Result.Success -> Result.success(transform(value))
         is Result.Failure -> Result.failure(error)
@@ -37,7 +37,7 @@ inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.mapError
     }
 }
 
-inline fun <V : Any?, U : Any?, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
+inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
     when (this) {
         is Result.Success -> transform(value)
         is Result.Failure -> Result.failure(error)
@@ -62,7 +62,7 @@ inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.flatMapE
 }
 
 @Suppress("UNCHECKED_CAST")
-inline fun <V : Any?, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> {
+inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> {
     return fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
         acc.flatMap { combine ->
             result.map {
@@ -72,7 +72,7 @@ inline fun <V : Any?, reified E : Throwable> List<Result<V, E>>.lift(): Result<L
     }
 }
 
-sealed class Result<out V : Any?, out E : Throwable> {
+sealed class Result<out V, out E : Throwable> {
 
     open operator fun component1(): V? = null
     open operator fun component2(): E? = null
@@ -82,9 +82,9 @@ sealed class Result<out V : Any?, out E : Throwable> {
         is Failure -> failure(error)
     }
 
-    abstract fun get(): V
+    abstract fun get(): V?
 
-    class Success<out V : Any?> internal constructor(val value: V) : Result<V, Nothing>() {
+    class Success<out V> internal constructor(val value: V) : Result<V, Nothing>() {
 
         override fun component1(): V = value
 
@@ -124,7 +124,7 @@ sealed class Result<out V : Any?, out E : Throwable> {
         @Suppress("UNCHECKED_CAST")
         fun <V, E : Throwable> of(f: () -> V?): Result<V, E> = try {
             success(f()) as Result<V, E>
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             failure(e as E)
         }
     }
