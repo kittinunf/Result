@@ -83,7 +83,6 @@ inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, 
     return this
 }
 
-@Suppress("UNCHECKED_CAST")
 inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> {
     return fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
         acc.flatMap { combine ->

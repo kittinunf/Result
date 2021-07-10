@@ -211,7 +211,7 @@ class ResultTest {
     }
 
     @Test
-    fun `should lift the result to success if all of the item is success`() {
+    fun `should lift the result to success if all of the items are success`() {
         val rs = listOf("lorem_short", "lorem_long").map {
             Result.of<String, Exception> {
                 readFile(
