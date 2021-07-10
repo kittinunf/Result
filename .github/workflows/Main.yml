@@ -1,0 +1,29 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  publish:
+    name: Build and publish - SNAPSHOT
+    runs-on: macos-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Publish to MavenCentral
+        run: ./gradlew publishAllPublicationsToSonatypeRepository --max-workers 1
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

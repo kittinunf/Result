@@ -1,0 +1,27 @@
+name: Pull request
+
+on: [ pull_request ]
+
+jobs:
+  test:
+    name: Build
+    runs-on: macos-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Build
+        run: ./gradlew build --stacktrace
+
+      - name: Upload allTests results
+        uses: actions/upload-artifact@v2.2.3
+        if: failure()
+        with:
+          name: allTests
+          path: ./**/build/reports/test/allTests
