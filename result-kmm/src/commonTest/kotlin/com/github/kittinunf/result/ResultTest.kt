@@ -168,4 +168,38 @@ class ResultTest {
         assertIs<Result.Failure<IllegalArgumentException>>(v2)
         assertEquals(v2.error.message, "failure")
     }
+
+    @Test
+    fun `should be able to observe error with onError`() {
+        val success = Result.success("success")
+        val failure = Result.failure(Exception("failure"))
+
+        var hasSuccessChanged = false
+        var hasFailureChanged = false
+
+        val v1 = success.onError { hasSuccessChanged = true }
+        val v2 = failure.onError { hasFailureChanged = true }
+
+        assertIs<Result.Success<*>>(v1)
+        assertIs<Result.Failure<*>>(v2)
+        assertFalse(hasSuccessChanged)
+        assertTrue(hasFailureChanged)
+    }
+
+    @Test
+    fun `should be able to observe success with onSuccess`() {
+        val success = Result.success("success")
+        val failure = Result.failure(Exception("failure"))
+
+        var hasSuccessChanged = false
+        var hasFailureChanged = false
+
+        val v1 = success.onSuccess { hasSuccessChanged = true }
+        val v2 = failure.onSuccess { hasFailureChanged = true }
+
+        assertIs<Result.Success<*>>(v1)
+        assertIs<Result.Failure<*>>(v2)
+        assertTrue(hasSuccessChanged)
+        assertFalse(hasFailureChanged)
+    }
 }

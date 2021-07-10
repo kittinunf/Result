@@ -61,6 +61,24 @@ inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.flatMapE
     }
 }
 
+inline fun <V : Any?, E : Exception> Result<V, E>.onError(f: (E) -> Unit) = when (this) {
+    is Result.Success -> Result.success(value)
+    is Result.Failure -> {
+        f(error)
+        this
+    }
+}
+
+inline fun <V : Any?, E : Exception> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> {
+    return when (this) {
+        is Result.Success -> {
+            f(value)
+            this
+        }
+        is Result.Failure -> this
+    }
+}
+
 @Suppress("UNCHECKED_CAST")
 inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> {
     return fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
@@ -122,10 +140,13 @@ sealed class Result<out V, out E : Throwable> {
         fun <V> success(v: V) = Success(v)
 
         @Suppress("UNCHECKED_CAST")
-        fun <V, E : Throwable> of(f: () -> V?): Result<V, E> = try {
+        inline fun <V, reified E : Throwable> of(noinline f: () -> V?): Result<V, E> = try {
             success(f()) as Result<V, E>
-        } catch (e: Exception) {
-            failure(e as E)
+        } catch (ex: Exception) {
+            when (ex) {
+                is E -> failure(ex)
+                else -> throw ex
+            }
         }
     }
 }
