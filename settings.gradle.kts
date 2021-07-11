@@ -1,6 +1,6 @@
 enableFeaturePreview("VERSION_CATALOGS")
 
-//include(":result", ":result-coroutines")
+rootProject.name = "Result"
 
 include(":result-kmm")
 
@@ -9,8 +9,4 @@ pluginManagement {
     }
     plugins {
     }
-}
-
-dependencyResolutionManagement {
-    defaultLibrariesExtensionName.set("libs")
 }

@@ -1,6 +1,7 @@
 package com.github.kittinunf.result
 
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -237,5 +238,8 @@ class ResultTest {
         }.lift()
 
         assertIs<Result.Failure<*>>(rs)
+        val msg = rs.error.message
+        assertNotNull(msg)
+        assertContains(msg, "src/commonTest/resources/not_found.txt (No such file or directory)")
     }
 }
