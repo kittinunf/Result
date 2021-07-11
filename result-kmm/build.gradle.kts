@@ -2,6 +2,8 @@ import java.io.IOException
 
 plugins {
     kotlin("multiplatform") version "1.5.20"
+    java
+    jacoco
 //    id("publication")
 }
 
@@ -40,6 +42,35 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test.junit)
             }
+        }
+    }
+}
+
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+tasks {
+
+    withType<JacocoReport> {
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports."
+
+        val jvmTest by getting
+        dependsOn(jvmTest)
+
+        val classFiles = File("$buildDir/classes/kotlin/jvm/main").walkBottomUp().toSet()
+        classDirectories.setFrom(classFiles)
+        sourceDirectories.setFrom(files(arrayOf("$projectDir/src/commonMain")))
+        executionData.setFrom(files("$buildDir/jacoco/jvmTest.exec"))
+
+        reports {
+            xml.required.set(true)
+
+            html.required.set(true)
+            html.outputLocation.set(buildDir.resolve("reports"))
+
+            csv.required.set(false)
         }
     }
 }

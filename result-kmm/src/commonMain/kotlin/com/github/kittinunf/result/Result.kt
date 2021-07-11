@@ -61,7 +61,7 @@ inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.flatMapE
     }
 }
 
-inline fun <V, E : Throwable> Result<V, E>.onError(f: (E) -> Unit): Result<V, E> {
+inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> {
     when (this) {
         is Result.Success -> {
         }

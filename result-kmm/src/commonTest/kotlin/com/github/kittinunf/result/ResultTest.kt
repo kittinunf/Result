@@ -32,17 +32,21 @@ class ResultTest {
     fun `should create value with success`() {
         val s = Result.success(42)
         val ss = Result.success(null)
+        val value = s.component1()
 
         assertNotNull(s.get())
         assertNull(ss.get())
+        assertEquals(42, value)
     }
 
     @Test
     fun `should create value with failure`() {
         val e = Result.failure(RuntimeException())
+        val err = e.component2()
 
         assertNull(e.getOrNull())
         assertNull(e.component1())
+        assertNotNull(err)
     }
 
     @Test
@@ -104,6 +108,29 @@ class ResultTest {
         assertFalse(isSuccessNotCalled)
         assertTrue(isFailureCalled)
         assertFalse(isFailureNotCalled)
+    }
+
+    @Test
+    fun `should be able to use fold to check for value for both success and or failure`() {
+        val success = Result.of<String, Throwable> { "success" }
+        val failure = Result.failure(RuntimeException("failure"))
+
+        var hasFoldInSuccessCalled = false
+        success.fold({
+            hasFoldInSuccessCalled = true
+        }, {
+            hasFoldInSuccessCalled = false
+        })
+
+        var hasFoldInFailureCalled = false
+        failure.fold({
+            hasFoldInFailureCalled = false
+        }, {
+            hasFoldInFailureCalled = true
+        })
+
+        assertTrue(hasFoldInSuccessCalled)
+        assertTrue(hasFoldInFailureCalled)
     }
 
     private fun Nothing.count() = 0
@@ -179,8 +206,8 @@ class ResultTest {
         var hasSuccessChanged = false
         var hasFailureChanged = false
 
-        val v1 = success.onError { hasSuccessChanged = true }
-        val v2 = failure.onError { hasFailureChanged = true }
+        val v1 = success.onFailure { hasSuccessChanged = true }
+        val v2 = failure.onFailure { hasFailureChanged = true }
 
         assertIs<Result.Success<*>>(v1)
         assertSame(v1, success)
