@@ -105,7 +105,7 @@ sealed class Result<out V, out E : Throwable> {
 
     abstract fun get(): V?
 
-    class Success<out V> internal constructor(val value: V) : Result<V, Nothing>() {
+    class Success<out V : Any?> internal constructor(val value: V) : Result<V, Nothing>() {
 
         override fun component1(): V = value
 
@@ -139,8 +139,8 @@ sealed class Result<out V, out E : Throwable> {
 
     companion object {
         // Factory methods
-        fun <E : Throwable> failure(ex: E) = Failure(ex)
-        fun <V> success(v: V) = Success(v)
+        fun <E : Throwable> failure(throwable: E) = Failure(throwable)
+        fun <V> success(value: V) = Success(value)
 
         @Suppress("UNCHECKED_CAST")
         inline fun <V, reified E : Throwable> of(noinline f: () -> V?): Result<V, E> = try {

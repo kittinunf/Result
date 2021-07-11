@@ -1,7 +1,7 @@
 import java.io.IOException
 
 plugins {
-    kotlin("multiplatform") version "1.5.20"
+    kotlin("multiplatform")
     java
     jacoco
 //    id("publication")
