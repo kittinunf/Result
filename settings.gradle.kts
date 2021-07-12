@@ -2,6 +2,8 @@ enableFeaturePreview("VERSION_CATALOGS")
 
 rootProject.name = "Result"
 
+includeBuild("plugins")
+
 include(":result-kmm")
 
 pluginManagement {
