@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform")
     java
     jacoco
-//    id("publication")
+    id("publication")
 }
 
 val artifactGroupId: String by project
