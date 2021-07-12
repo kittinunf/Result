@@ -52,6 +52,18 @@ class ResultTest {
     }
 
     @Test
+    fun `should get the alternative value if failure otherwise get the value`() {
+        val s = Result.success(42)
+        val f = Result.failure(RuntimeException())
+
+        val alternative1 = s.getOrElse { 100 }
+        val alternative2 = f.getOrElse { 100 }
+
+        assertEquals(42, alternative1)
+        assertEquals(100, alternative2)
+    }
+
+    @Test
     fun `should create optional value with either success`() {
         val nullableStr: String? = null
         val str = "42"
@@ -238,6 +250,29 @@ class ResultTest {
 
         assertTrue(hasSuccessChanged)
         assertFalse(hasFailureChanged)
+    }
+
+    @Test
+    fun `should be able to fanout for success`() {
+        val s1 = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
+        val s2 = Result.of<Int, Throwable> { 42 }
+
+        val (value, error) = s1.fanout { s2 }
+
+        assertNull(error)
+        assertContains(value!!.first, "Lorem ipsum dolor sit amet")
+        assertEquals(42, value.second)
+    }
+
+    @Test
+    fun `should result in error for left or right is a failure`() {
+        val err = Result.failure(IllegalStateException("foo foo"))
+        val s = Result.success(42)
+
+        val (value, error) = s.fanout { err }
+
+        assertNotNull(error)
+        assertNull(value)
     }
 
     @Test

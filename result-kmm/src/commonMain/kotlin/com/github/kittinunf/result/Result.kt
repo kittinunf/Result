@@ -16,6 +16,11 @@ fun <V, E : Throwable> Result<V, E>.getOrNull(): V? = when (this) {
     is Result.Failure -> null
 }
 
+inline infix fun <V, E : Exception> Result<V, E>.getOrElse(fallback: (E) -> V): V = when (this) {
+    is Result.Success -> value
+    is Result.Failure -> fallback(error)
+}
+
 inline fun <T, U, reified E : Throwable> Result<T, E>.map(transform: (T) -> U): Result<U, E> = try {
     when (this) {
         is Result.Success -> Result.success(transform(value))
@@ -86,15 +91,19 @@ inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, 
     return this
 }
 
-inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> {
-    return fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
+inline fun <V, U> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
+    flatMap { outer ->
+        other().map { outer to it }
+    }
+
+inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> =
+    fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
         acc.flatMap { combine ->
             result.map {
                 combine.apply { add(it) }
             }
         }
     }
-}
 
 enum class Kind {
     Success,
