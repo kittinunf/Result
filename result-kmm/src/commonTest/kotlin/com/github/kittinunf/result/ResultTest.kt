@@ -18,6 +18,7 @@ class ResultTest {
 
         assertNotNull(v.get())
         assertIs<Result.Success<Int>>(v)
+        assertEquals(Kind.Success, v.kind)
     }
 
     @Test
@@ -26,6 +27,7 @@ class ResultTest {
 
         assertNull(v.component1())
         assertIs<Result.Failure<RuntimeException>>(v)
+        assertEquals(Kind.Failure, v.kind)
     }
 
     @Test

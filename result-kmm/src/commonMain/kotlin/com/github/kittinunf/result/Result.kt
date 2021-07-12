@@ -1,5 +1,8 @@
 package com.github.kittinunf.result
 
+import com.github.kittinunf.result.Kind.Failure
+import com.github.kittinunf.result.Kind.Success
+
 inline fun <V> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
 inline fun <E : Throwable> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
@@ -93,6 +96,11 @@ inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>,
     }
 }
 
+enum class Kind {
+    Success,
+    Failure
+}
+
 sealed class Result<out V, out E : Throwable> {
 
     open operator fun component1(): V? = null
@@ -105,7 +113,11 @@ sealed class Result<out V, out E : Throwable> {
 
     abstract fun get(): V?
 
+    abstract val kind: Kind
+
     class Success<out V : Any?> internal constructor(val value: V) : Result<V, Nothing>() {
+
+        override val kind: Kind = Success
 
         override fun component1(): V = value
 
@@ -122,6 +134,8 @@ sealed class Result<out V, out E : Throwable> {
     }
 
     class Failure<out E : Throwable> internal constructor(val error: E) : Result<Nothing, E>() {
+
+        override val kind: Kind = Failure
 
         override fun component2(): E = error
 
