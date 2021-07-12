@@ -7,9 +7,8 @@ includeBuild("plugins")
 include(":result-kmm")
 
 pluginManagement {
-    val kotlinVersion = rootDir.resolve("gradle/libs.versions.toml").readLines()
-        .first { it.contains("kotlin") }
-        .substringAfter("=")
+    val kotlinVersion = rootDir.resolve("gradle/libs.versions.toml").reader().use { java.util.Properties().apply { load(it) } }
+        .getProperty("kotlin")
         .removeSurrounding("\"")
 
     repositories {}
