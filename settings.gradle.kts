@@ -4,7 +4,7 @@ rootProject.name = "Result"
 
 includeBuild("plugins")
 
-include(":result-kmm")
+include(":result")
 
 pluginManagement {
     val kotlinVersion = rootDir.resolve("gradle/libs.versions.toml").reader().use { java.util.Properties().apply { load(it) } }
