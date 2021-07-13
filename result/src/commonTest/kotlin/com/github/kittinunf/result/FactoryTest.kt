@@ -15,10 +15,12 @@ class FactoryTest {
             3 * 100
         }
 
+        val r3 = runCatching<String?> { null }
+
         assertIs<Result.Success<Int>>(r1)
         assertIs<Result.Success<Int>>(r2)
+        assertIs<Result.Success<String?>>(r3)
     }
-
 
     @Test
     fun `should properly catch with runCatching as failure`() {
@@ -48,13 +50,16 @@ class FactoryTest {
     fun `should properly catch with runCatching with extension parameters`() {
         val sf = SimpleFile()
         val s = sf runCatching { found() }
+        val sn = sf runCatching { nullable() }
         val f = sf runCatching { notFound() }
 
         assertIs<Result.Success<String>>(s)
+        assertIs<Result.Success<*>>(sn)
         assertIs<Result.Failure<Throwable>>(f)
     }
 
     class SimpleFile {
+        fun nullable() = null
         fun found() = readFile(directory = "src/commonTest/resources/", fileName = "found.txt")
         fun notFound() = readFile(directory = "src/commonTest/resources/", fileName = "not_found.txt")
     }

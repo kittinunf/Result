@@ -1,6 +1,6 @@
 package com.github.kittinunf.result
 
-inline fun <V : Any?> runCatching(block: () -> V): Result<V, Throwable> {
+inline fun <V> runCatching(block: () -> V?): Result<V?, Throwable> {
     return try {
         Result.success(block())
     } catch (e: Exception) {
@@ -8,7 +8,7 @@ inline fun <V : Any?> runCatching(block: () -> V): Result<V, Throwable> {
     }
 }
 
-inline infix fun <T : Any?, V : Any?> T.runCatching(block: T.() -> V): Result<V, Throwable> {
+inline infix fun <T, V> T.runCatching(block: T.() -> V?): Result<V?, Throwable> {
     return try {
         Result.success(block())
     } catch (e: Exception) {

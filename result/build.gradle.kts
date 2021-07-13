@@ -51,7 +51,6 @@ jacoco {
 }
 
 tasks {
-
     withType<JacocoReport> {
         group = "Reporting"
         description = "Generate Jacoco coverage reports."
