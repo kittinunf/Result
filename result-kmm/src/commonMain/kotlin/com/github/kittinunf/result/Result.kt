@@ -105,6 +105,15 @@ inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>,
         }
     }
 
+inline fun <V, E : Throwable> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = try {
+    when (this) {
+        is Result.Success -> predicate(value)
+        is Result.Failure -> false
+    }
+} catch (ex: Throwable) {
+    false
+}
+
 enum class Kind {
     Success,
     Failure
