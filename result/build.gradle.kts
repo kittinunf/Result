@@ -2,8 +2,10 @@ import java.io.IOException
 
 plugins {
     kotlin("multiplatform")
+
     java
     jacoco
+
     id("publication")
 }
 
@@ -11,11 +13,11 @@ val artifactGroupId: String by project
 group = artifactGroupId
 
 val gitSha = "git rev-parse --short HEAD".runCommand(project.rootDir)?.trim().orEmpty()
-val artifactPublishVersion: String by project
 
 val isReleaseBuild: Boolean
     get() = properties.containsKey("release")
 
+val artifactPublishVersion: String by project
 version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSHOT"
 
 kotlin {
