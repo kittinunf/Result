@@ -2,7 +2,7 @@
 
 [![Kotlin](https://img.shields.io/badge/kotlin-1.5.20-blue.svg)](http://kotlinlang.org)
 ![Github Action](https://github.com/kittinunf/Result/actions/workflows/Main.yml/badge.svg)
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/com.github.kittinunf.result/result/badge.svg)](https://search.maven.org/search?q=g:com.github.kittinunf.result)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/com.github.kittinunf.result/result-jvm/badge.svg)](https://search.maven.org/search?q=g:com.github.kittinunf.result)
 [![Codecov](https://codecov.io/github/kittinunf/Result/coverage.svg?branch=master)](https://codecov.io/gh/kittinunf/Result)
 
 This is a tiny framework for modelling success/failure of operations
