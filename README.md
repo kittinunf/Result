@@ -26,9 +26,11 @@ repositories {
 }
 
 dependencies {
+    // if you are working on JVM or Android only project
     implementation("com.github.kittinunf.result:result-jvm:«version»") //for JVM support
     
-    implementation("com.github.kittinunf.result:result:«version»") for Kotlin Multiplatform support
+    // if you are working in KMM project
+    implementation("com.github.kittinunf.result:result:«version»") //for Kotlin Multiplatform support
 }
 
 ```
