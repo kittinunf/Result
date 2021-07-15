@@ -26,8 +26,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.kittinunf.result:result:<latest-version>' //for jvm
-    implementation 'com.github.kittinunf.result:result-coroutines:<latest-version>' //for kotlin's coroutine support
+    implementation("com.github.kittinunf.result:result-jvm:«version»") //for JVM support
+    
+    implementation("com.github.kittinunf.result:result:«version»") for Kotlin Multiplatform support
 }
 
 ```
