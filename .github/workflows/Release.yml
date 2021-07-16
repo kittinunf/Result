@@ -40,7 +40,7 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Publish to MavenCentral
-        run: ./gradlew publishAllPublicationsToSonatypeRepository --max-workers 1 -Prelease=true
+        run: ./gradlew publish --max-workers 1 -Prelease=true
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}

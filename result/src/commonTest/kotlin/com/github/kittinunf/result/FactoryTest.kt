@@ -60,7 +60,7 @@ class FactoryTest {
 
     class SimpleFile {
         fun nullable() = null
-        fun found() = readFile(directory = "src/commonTest/resources/", fileName = "found.txt")
+        fun found() = readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt")
         fun notFound() = readFile(directory = "src/commonTest/resources/", fileName = "not_found.txt")
     }
 }
