@@ -317,7 +317,7 @@ class ResultTest {
         val rs = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
 
         assertFalse(rs.any { it.isEmpty() })
-        assertTrue(rs.any { it.count() == 446 })
+        assertTrue(rs.any { it.count() <= 446 })
 
         val rf = Result.of<Int, Throwable> { throw IllegalStateException() }
 
