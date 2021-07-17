@@ -31,6 +31,24 @@ class ResultTest {
     }
 
     @Test
+    fun `should get return value and get failure return null for result with success`() {
+        val s = Result.of<Int, IllegalStateException> { 42 }
+
+        assertNull(s.getFailureOrNull())
+        assertNotNull(s.getOrNull())
+        assertEquals(42, s.getOrNull())
+    }
+
+    @Test
+    fun `should get return null and get failure return error for result with failure`() {
+        val f = Result.of<String, IllegalStateException> { throw IllegalStateException("foo") }
+
+        assertNull(f.getOrNull())
+        assertNotNull(f.getFailureOrNull())
+        assertIs<IllegalStateException>(f.getFailureOrNull())
+    }
+
+    @Test
     fun `should create value with success`() {
         val s = Result.success(42)
         val ss = Result.success(null)
@@ -46,7 +64,6 @@ class ResultTest {
         val e = Result.failure(RuntimeException())
         val err = e.component2()
 
-        assertNull(e.getOrNull())
         assertNull(e.component1())
         assertNotNull(err)
     }

@@ -21,9 +21,6 @@ local.properties
 .classpath
 .project
 
-# Bintray
-bintray_push.sh
-
 # Android Studio
 .idea/
 .gradle
