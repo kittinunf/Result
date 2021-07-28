@@ -134,7 +134,7 @@ sealed class Result<out V, out E : Throwable> {
         is Failure -> failure(error)
     }
 
-    abstract fun get(): V?
+    abstract fun get(): V
 
     abstract val kind: Kind
 
