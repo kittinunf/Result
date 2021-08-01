@@ -26,7 +26,7 @@ inline infix fun <V, E : Exception> Result<V, E>.getOrElse(fallback: (E) -> V): 
     is Result.Failure -> fallback(error)
 }
 
-inline fun <T, U, reified E : Throwable> Result<T, E>.map(transform: (T) -> U): Result<U, E> = try {
+inline fun <V, U, reified E : Throwable> Result<V, E>.map(transform: (V) -> U): Result<U, E> = try {
     when (this) {
         is Result.Success -> Result.success(transform(value))
         is Result.Failure -> Result.failure(error)
@@ -38,7 +38,7 @@ inline fun <T, U, reified E : Throwable> Result<T, E>.map(transform: (T) -> U): 
     }
 }
 
-inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.mapError(transform: (E) -> EE): Result<*, EE> = try {
+inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapError(transform: (E) -> EE): Result<V, EE> = try {
     when (this) {
         is Result.Success -> Result.success(value)
         is Result.Failure -> Result.failure(transform(error))
@@ -62,7 +62,7 @@ inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> 
     }
 }
 
-inline fun <reified E : Throwable, reified EE : Throwable> Result<*, E>.flatMapError(transform: (E) -> Result<*, EE>): Result<*, EE> = try {
+inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatMapError(transform: (E) -> Result<V, EE>): Result<V, EE> = try {
     when (this) {
         is Result.Success -> Result.success(value)
         is Result.Failure -> transform(error)
