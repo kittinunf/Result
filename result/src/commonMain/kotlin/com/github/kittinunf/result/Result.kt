@@ -50,6 +50,18 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapEr
     }
 }
 
+inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapBoth(transformSuccess: (V) -> U, transformFailure: (E) -> EE): Result<U, EE> = try {
+    when (this) {
+        is Result.Success -> Result.success(transformSuccess(value))
+        is Result.Failure -> Result.failure(transformFailure(error))
+    }
+} catch (ex: Exception) {
+    when (ex) {
+        is EE -> Result.failure(ex)
+        else -> throw ex
+    }
+}
+
 inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
     when (this) {
         is Result.Success -> transform(value)
