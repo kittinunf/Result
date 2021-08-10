@@ -330,6 +330,69 @@ class ResultTest {
     }
 
     @Test
+    fun `should liftSuccess the result to a list if all items are successful`() {
+        val rs = listOf("lorem_short", "lorem_long").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.liftSuccess {  }
+
+        assertIs<Result.Success<List<String>>>(rs)
+        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
+    }
+
+    @Test
+    fun `should liftSuccess the result to a list if any item is failure`() {
+        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.liftSuccess {  }
+
+        assertIs<Result.Success<List<String>>>(rs)
+        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
+        assertEquals(2, rs.get().size)
+    }
+
+    @Test
+    fun `should liftSuccess invoking doWithError callback when any item is failure`() {
+        var callbackCalled = false
+        val rs = listOf("not_found2", "lorem_short", "lorem_long", "not_found").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.liftSuccess { errorList ->
+            callbackCalled = true
+            assertEquals(2, errorList.size)
+        }
+
+        assertEquals(callbackCalled, true)
+    }
+
+    @Test
+    fun `should liftSuccess into an empty list when all items are failure`() {
+        val rs = listOf("not_found2", "not_found").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.liftSuccess {  }
+
+        assertEquals(0, rs.get().size)
+    }
+
+    @Test
     fun `should return true if predicate in any matches`() {
         val rs = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
 
