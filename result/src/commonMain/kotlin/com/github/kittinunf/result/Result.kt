@@ -115,11 +115,6 @@ inline fun <V, reified E : Throwable> List<Result<V, E>>.liftResult(fn: (v: List
         acc
     }.let { fn(it.first, it.second) }
 
-inline fun <V, reified E : Throwable> List<Result<V, E>>.liftSuccess(doWithErrors: (e: List<E>) -> Unit): Result<List<V>, E> {
-        doWithErrors(filter { it.isFailure() }.mapNotNull { it.getFailureOrNull() })
-        return filter{ it.isSuccess() }.lift()
-}
-
 inline fun <V, E : Throwable> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = try {
     when (this) {
         is Result.Success -> predicate(value)

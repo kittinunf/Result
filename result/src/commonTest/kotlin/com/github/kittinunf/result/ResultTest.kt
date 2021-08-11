@@ -330,22 +330,7 @@ class ResultTest {
     }
 
     @Test
-    fun `should liftSuccess the result to a list if all items are successful`() {
-        val rs = listOf("lorem_short", "lorem_long").map {
-            Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
-            }
-        }.liftSuccess {  }
-
-        assertIs<Result.Success<List<String>>>(rs)
-        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
-    }
-
-    @Test
-    fun `should liftSuccess the result to a list if any item is failure`() {
+    fun `should liftResult success and failures to callback returning success`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
                 readFile(
@@ -353,43 +338,31 @@ class ResultTest {
                     fileName = "$it.txt"
                 )
             }
-        }.liftSuccess {  }
-
-        assertIs<Result.Success<List<String>>>(rs)
-        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
-        assertEquals(2, rs.get().size)
-    }
-
-    @Test
-    fun `should liftSuccess invoking doWithError callback when any item is failure`() {
-        var callbackCalled = false
-        val rs = listOf("not_found2", "lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
-            }
-        }.liftSuccess { errorList ->
-            callbackCalled = true
-            assertEquals(2, errorList.size)
+        }.liftResult { successes, errors ->
+            assertEquals(2, successes.size)
+            assertEquals(1, errors.size)
+            Result.success(successes)
         }
 
-        assertEquals(callbackCalled, true)
+        assertIs<Result.Success<List<String>>>(rs)
     }
 
     @Test
-    fun `should liftSuccess into an empty list when all items are failure`() {
-        val rs = listOf("not_found2", "not_found").map {
+    fun `should liftResult success and failures to callback returning error`() {
+        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
                 readFile(
                     directory = "src/commonTest/resources/",
                     fileName = "$it.txt"
                 )
             }
-        }.liftSuccess {  }
+        }.liftResult { successes, errors ->
+            assertEquals(2, successes.size)
+            assertEquals(1, errors.size)
+            Result.failure(errors.first())
+        }
 
-        assertEquals(0, rs.get().size)
+        assertIs<Result.Failure<Throwable>>(rs)
     }
 
     @Test
