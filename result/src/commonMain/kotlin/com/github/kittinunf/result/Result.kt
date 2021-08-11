@@ -86,29 +86,11 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatM
     }
 }
 
-inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> {
-    when (this) {
-        is Result.Success -> {
-        }
-        is Result.Failure -> {
-            f(error)
-        }
-    }
-    return this
-}
+inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> = fold({ f(it); this }, { this })
 
-inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> {
-    when (this) {
-        is Result.Success -> {
-            f(value)
-        }
-        is Result.Failure -> {
-        }
-    }
-    return this
-}
+inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> = fold({ this }, { f(it); this })
 
-inline fun <V, U> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
+inline fun <V, U, reified E : Throwable> Result<V, E>.fanout(other: () -> Result<U, E>): Result<Pair<V, U>, E> =
     flatMap { outer ->
         other().map { outer to it }
     }
