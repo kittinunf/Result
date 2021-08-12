@@ -101,14 +101,14 @@ inline fun <V, U> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V,
         other().map { outer to it }
     }
 
-inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> = liftResult { successes, errors ->
+inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> = lift { successes, errors ->
     when (errors.isEmpty()) {
         true -> Result.success(successes)
         else -> Result.failure(errors.first())
     }
 }
 
-inline fun <V, reified E : Throwable> List<Result<V, E>>.liftResult(fn: (v: List<V>, e: List<E>) -> Result<List<V>, E>): Result<List<V>, E> =
+inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(fn: (v: List<V>, e: List<E>) -> Result<List<V>, E>): Result<List<V>, E> =
     fold(Pair<MutableList<V>, MutableList<E>>(mutableListOf(), mutableListOf())) { acc, result ->
         result.success { acc.first.add(it) }
         result.failure { acc.second.add(it) }

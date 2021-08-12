@@ -330,7 +330,7 @@ class ResultTest {
     }
 
     @Test
-    fun `should liftResult success and failures to callback returning success`() {
+    fun `should lift success and failures to callback returning success`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
                 readFile(
@@ -338,7 +338,7 @@ class ResultTest {
                     fileName = "$it.txt"
                 )
             }
-        }.liftResult { successes, errors ->
+        }.lift { successes, errors ->
             assertEquals(2, successes.size)
             assertEquals(1, errors.size)
             Result.success(successes)
@@ -348,7 +348,7 @@ class ResultTest {
     }
 
     @Test
-    fun `should liftResult success and failures to callback returning error`() {
+    fun `should lift success and failures to callback returning error`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
                 readFile(
@@ -356,7 +356,7 @@ class ResultTest {
                     fileName = "$it.txt"
                 )
             }
-        }.liftResult { successes, errors ->
+        }.lift { successes, errors ->
             assertEquals(2, successes.size)
             assertEquals(1, errors.size)
             Result.failure(errors.first())
