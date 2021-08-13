@@ -23,7 +23,16 @@ version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSH
 kotlin {
     jvm()
     ios()
-    js { browser() }
+    js {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
+        binaries.executable()
+    }
 
     sourceSets {
         all {}
