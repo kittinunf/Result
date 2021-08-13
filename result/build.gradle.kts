@@ -47,6 +47,12 @@ kotlin {
                 implementation(libs.kotlin.test.junit)
             }
         }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test.js)
+            }
+        }
     }
 }
 
