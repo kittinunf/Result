@@ -314,7 +314,7 @@ class ResultTest {
     @Test
     @JsName("should_be_able_to_fanout_for_success")
     fun `should be able to fanout for success`() {
-        val s1 = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
+        val s1 = Result.of<String, Throwable> { Resource("lorem_short.txt").read() }
         val s2 = Result.of<Int, Throwable> { 42 }
 
         val (value, error) = s1.fanout { s2 }
@@ -346,15 +346,12 @@ class ResultTest {
     fun `should lift the result to success if all of the items are success`() {
         val rs = listOf("lorem_short", "lorem_long").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift()
 
         assertIs<Result.Success<List<String>>>(rs)
-        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
+        assertEquals(rs.get()[0], Resource("lorem_short.txt").read())
     }
 
     @Test
@@ -362,10 +359,7 @@ class ResultTest {
     fun `should lift the result to failure if any of the item is failure`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift()
 
@@ -414,7 +408,7 @@ class ResultTest {
     @Test
     @JsName("should_return_true_if_predicate_in_any_matches")
     fun `should return true if predicate in any matches`() {
-        val rs = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
+        val rs = Result.of<String, Throwable> { Resource("lorem_short.txt").read() }
 
         assertFalse(rs.any { it.isEmpty() })
         assertTrue(rs.any { it.count() <= 446 })

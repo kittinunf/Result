@@ -9,6 +9,3 @@ actual class Resource actual constructor(actual val name: String) {
 
     actual fun read(): String = file.readText()
 }
-
-actual fun readFile(directory: String, fileName: String): String =
-    File(System.getProperty("user.dir")).resolve(directory).resolve(fileName).readText()

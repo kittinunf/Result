@@ -8,5 +8,3 @@ expect class Resource(name: String) {
     fun exists(): Boolean
     fun read(): String
 }
-
-expect fun readFile(directory: String, fileName: String): String

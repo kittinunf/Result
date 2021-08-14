@@ -12,14 +12,3 @@ actual class Resource actual constructor(actual val name: String) {
 
     actual fun read(): String = fs.readFileSync(path, "utf8") as String
 }
-
-actual fun readFile(directory: String, fileName: String): String  = ""
-//    val path = path.join(
-//        __dirname,
-//        "..\\..\\..\\..\\..\\..",
-//        "src",
-//        "commonTest",
-//        "resources",
-//        fileName
-//    )
-//    return fs.readFileSync(path, "utf8") as String

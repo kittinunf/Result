@@ -24,13 +24,7 @@ kotlin {
     jvm()
     ios()
     js {
-        nodejs {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                }
-            }
-        }
+        nodejs()
         binaries.executable()
     }
 

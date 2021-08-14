@@ -44,7 +44,9 @@ class FactoryTest {
     fun `should properly catch with runCatching with block parameters`() {
         val sf = SimpleFile()
         val s = runCatching(sf::found)
+        println(s.get())
         val f = runCatching(sf::notFound)
+        println(f.getFailureOrNull())
 
         assertIs<Result.Success<String>>(s)
         assertIs<Result.Failure<Throwable>>(f)
@@ -65,7 +67,7 @@ class FactoryTest {
 
     class SimpleFile {
         fun nullable() = null
-        fun found() = readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt")
-        fun notFound() = readFile(directory = "src/commonTest/resources/", fileName = "not_found.txt")
+        fun found() = Resource("lorem_short.txt").read()
+        fun notFound() = Resource("not_found.txt").read()
     }
 }
