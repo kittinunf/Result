@@ -3,7 +3,7 @@ package com.github.kittinunf.result
 import com.github.kittinunf.result.Kind.Failure
 import com.github.kittinunf.result.Kind.Success
 
-fun <V: Any> V.success(): Result.Success<V> = Result.success(this)
+fun <V: Any?> V.success(): Result.Success<V> = Result.success(this)
 
 fun <E: Throwable> E.failure(): Result.Failure<E> = Result.failure(this)
 
