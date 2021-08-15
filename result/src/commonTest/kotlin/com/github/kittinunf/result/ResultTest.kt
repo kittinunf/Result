@@ -340,4 +340,22 @@ class ResultTest {
 
         assertFalse(rf.any { it == 0 })
     }
+
+    @Test
+    fun `should result in Failure just the same as companion object's function`() {
+        data class TestException(val errorCode: String, val errorMessage: String): Exception(errorMessage)
+
+        val originalFailure = Result.failure(TestException("error_code", "error message"))
+        val extensionFailure = TestException("error_code", "error message").failure()
+
+        assertEquals(originalFailure, extensionFailure)
+    }
+
+    @Test
+    fun `should result in Success just the same as companion object's function`() {
+        val originalSuccess = Result.success("success")
+        val extensionSuccess = "success".success()
+
+        assertEquals(originalSuccess, extensionSuccess)
+    }
 }
