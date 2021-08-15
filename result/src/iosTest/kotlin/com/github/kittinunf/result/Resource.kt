@@ -33,7 +33,7 @@ Proin elementum libero in viverra dignissim. Morbi commodo eget tellus a congue.
 Praesent euismod aliquet ligula, et consequat tortor sodales feugiat. Praesent et dolor felis.
         """.trimIndent()
             }
-            else -> throw RuntimeException("src/commonTest/resources/$fileName (No such file or directory)")
+            else -> throw RuntimeException("src/commonTest/resources/$name (No such file or directory)")
         }
     }
 }
