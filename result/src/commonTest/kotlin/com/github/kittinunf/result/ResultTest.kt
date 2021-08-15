@@ -366,7 +366,7 @@ class ResultTest {
         assertIs<Result.Failure<*>>(rs)
         val msg = rs.error.message
         assertNotNull(msg)
-        assertContains(msg, "No such file or directory")
+        assertContains(msg, "No such file or directory", ignoreCase = true)
     }
 
     @Test
