@@ -44,9 +44,7 @@ class FactoryTest {
     fun `should properly catch with runCatching with block parameters`() {
         val sf = SimpleFile()
         val s = runCatching(sf::found)
-        println(s.get())
         val f = runCatching(sf::notFound)
-        println(f.getFailureOrNull())
 
         assertIs<Result.Success<String>>(s)
         assertIs<Result.Failure<Throwable>>(f)
