@@ -277,17 +277,17 @@ class ResultTest {
 
         val transformedSuccess = s.mapBoth({ it.length }, { IllegalStateException("changed!") })
 
-        assertIs<String>(s.getOrNull())
+        assertIs<String>(s.get())
+        assertIs<Int>(transformedSuccess.get())
         assertEquals(11, transformedSuccess.get())
         assertEquals(null, transformedSuccess.getFailureOrNull())
-        assertIs<Int>(transformedSuccess.get())
 
         val f = Result.of<Int, Throwable> { 1 / 0 } //this should have arithmetic exception
 
         val transformedFailure = f.mapBoth({ it > 1 }, { RuntimeException("changed!") })
 
         assertIs<ArithmeticException>(f.getFailureOrNull())
-        assertIs<Boolean>(transformedFailure.get())
+        assertIs<RuntimeException>(transformedFailure.getFailureOrNull())
         assertEquals(null, transformedFailure.getOrNull())
         assertEquals("changed!", transformedFailure.getFailureOrNull()!!.message)
     }
