@@ -270,6 +270,29 @@ class ResultTest {
     }
 
     @Test
+    fun `should be able to transform both value from 2 sides`() {
+        val s = Result.of<String, Throwable> {
+            "hello world"
+        }
+
+        val transformedSuccess = s.mapBoth({ it.length }, { IllegalStateException("changed!") })
+
+        assertIs<String>(s.get())
+        assertIs<Int>(transformedSuccess.get())
+        assertEquals(11, transformedSuccess.get())
+        assertEquals(null, transformedSuccess.getFailureOrNull())
+
+        val f = Result.of<Int, Throwable> { 1 / 0 } //this should have arithmetic exception
+
+        val transformedFailure = f.mapBoth({ it > 1 }, { RuntimeException("changed!") })
+
+        assertIs<ArithmeticException>(f.getFailureOrNull())
+        assertIs<RuntimeException>(transformedFailure.getFailureOrNull())
+        assertEquals(null, transformedFailure.getOrNull())
+        assertEquals("changed!", transformedFailure.getFailureOrNull()!!.message)
+    }
+
+    @Test
     fun `should be able to fanout for success`() {
         val s1 = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
         val s2 = Result.of<Int, Throwable> { 42 }

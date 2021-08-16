@@ -54,6 +54,18 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapEr
     }
 }
 
+inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapBoth(transformSuccess: (V) -> U, transformFailure: (E) -> EE): Result<U, EE> = try {
+    when (this) {
+        is Result.Success -> Result.success(transformSuccess(value))
+        is Result.Failure -> Result.failure(transformFailure(error))
+    }
+} catch (ex: Exception) {
+    when (ex) {
+        is EE -> Result.failure(ex)
+        else -> throw ex
+    }
+}
+
 inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = try {
     when (this) {
         is Result.Success -> transform(value)
@@ -78,29 +90,11 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatM
     }
 }
 
-inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> {
-    when (this) {
-        is Result.Success -> {
-        }
-        is Result.Failure -> {
-            f(error)
-        }
-    }
-    return this
-}
+inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> = fold({ f(it); this }, { this })
 
-inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> {
-    when (this) {
-        is Result.Success -> {
-            f(value)
-        }
-        is Result.Failure -> {
-        }
-    }
-    return this
-}
+inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> = fold({ this }, { f(it); this })
 
-inline fun <V, U> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V, U>, *> =
+inline fun <V, U, reified E : Throwable> Result<V, E>.fanout(other: () -> Result<U, E>): Result<Pair<V, U>, E> =
     flatMap { outer ->
         other().map { outer to it }
     }
