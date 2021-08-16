@@ -419,6 +419,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_result_in_Failure_just_the_same_as_companion_objects_function")
     fun `should result in Failure just the same as companion object's function`() {
         data class TestException(val errorCode: String, val errorMessage: String) : Exception(errorMessage)
 
@@ -429,6 +430,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_result_in_Success_just_the_same_as_companion_objects_function")
     fun `should result in Success just the same as companion object's function`() {
         val originalSuccess = Result.success("success")
         val extensionSuccess = "success".success()
