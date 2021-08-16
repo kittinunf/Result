@@ -23,27 +23,29 @@ version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSH
 kotlin {
     jvm()
     ios()
+    js {
+        nodejs()
+        binaries.executable()
+    }
 
     sourceSets {
-        all {}
-
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotlin.stdlib)
-            }
-        }
-
+        val commonMain by getting
         val commonTest by getting {
             dependencies {
                 implementation(libs.bundles.kotlin.test)
             }
         }
 
-        val jvmMain by getting {}
-
+        val jvmMain by getting
         val jvmTest by getting {
             dependencies {
                 implementation(libs.kotlin.test.junit)
+            }
+        }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test.js)
             }
         }
     }
