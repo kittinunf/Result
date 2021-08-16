@@ -105,14 +105,19 @@ inline fun <V, U> Result<V, *>.fanout(other: () -> Result<U, *>): Result<Pair<V,
         other().map { outer to it }
     }
 
-inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> =
-    fold(Result.success(mutableListOf<V>()) as Result<MutableList<V>, E>) { acc, result ->
-        acc.flatMap { combine ->
-            result.map {
-                combine.apply { add(it) }
-            }
-        }
+inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> = lift { successes, errors ->
+    when (errors.isEmpty()) {
+        true -> Result.success(successes)
+        else -> Result.failure(errors.first())
     }
+}
+
+inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(fn: (v: List<V>, e: List<E>) -> Result<List<V>, E>): Result<List<V>, E> =
+    fold(Pair<MutableList<V>, MutableList<E>>(mutableListOf(), mutableListOf())) { acc, result ->
+        result.success { acc.first.add(it) }
+        result.failure { acc.second.add(it) }
+        acc
+    }.let { fn(it.first, it.second) }
 
 inline fun <V, E : Throwable> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = try {
     when (this) {

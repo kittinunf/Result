@@ -330,6 +330,42 @@ class ResultTest {
     }
 
     @Test
+    fun `should lift success and failures to callback returning success`() {
+        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.lift { successes, errors ->
+            assertEquals(2, successes.size)
+            assertEquals(1, errors.size)
+            Result.success(successes)
+        }
+
+        assertIs<Result.Success<List<String>>>(rs)
+    }
+
+    @Test
+    fun `should lift success and failures to callback returning error`() {
+        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
+            Result.of<String, Exception> {
+                readFile(
+                    directory = "src/commonTest/resources/",
+                    fileName = "$it.txt"
+                )
+            }
+        }.lift { successes, errors ->
+            assertEquals(2, successes.size)
+            assertEquals(1, errors.size)
+            Result.failure(errors.first())
+        }
+
+        assertIs<Result.Failure<Throwable>>(rs)
+    }
+
+    @Test
     fun `should return true if predicate in any matches`() {
         val rs = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
 
