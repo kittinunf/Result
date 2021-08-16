@@ -370,13 +370,11 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_lift_success_and_failures_to_callback_returning_success")
     fun `should lift success and failures to callback returning success`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift { successes, errors ->
             assertEquals(2, successes.size)
@@ -388,13 +386,11 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_lift_success_and_failures_to_callback_returning_error")
     fun `should lift success and failures to callback returning error`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift { successes, errors ->
             assertEquals(2, successes.size)
