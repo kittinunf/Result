@@ -280,12 +280,14 @@ class ResultTest {
         assertIs<String>(s.getOrNull())
         assertEquals(11, transformedSuccess.get())
         assertEquals(null, transformedSuccess.getFailureOrNull())
+        assertIs<Int>(transformedSuccess.get())
 
         val f = Result.of<Int, Throwable> { 1 / 0 } //this should have arithmetic exception
 
-        val transformedFailure = f.mapBoth({ it > 1}, { RuntimeException("changed!") })
+        val transformedFailure = f.mapBoth({ it > 1 }, { RuntimeException("changed!") })
 
         assertIs<ArithmeticException>(f.getFailureOrNull())
+        assertIs<Boolean>(transformedFailure.get())
         assertEquals(null, transformedFailure.getOrNull())
         assertEquals("changed!", transformedFailure.getFailureOrNull()!!.message)
     }
