@@ -290,9 +290,7 @@ class ResultTest {
     @Test
     @JsName("should_be_able_to_transform_both_value_from_2_sides")
     fun `should be able to transform both value from 2 sides`() {
-        val s = Result.of<String, Throwable> {
-            "hello world"
-        }
+        val s = Result.of<String, Throwable> { "hello world" }
 
         val transformedSuccess = s.mapBoth({ it.length }, { IllegalStateException("changed!") })
 
@@ -301,11 +299,11 @@ class ResultTest {
         assertEquals(11, transformedSuccess.get())
         assertEquals(null, transformedSuccess.getFailureOrNull())
 
-        val f = Result.of<Int, Throwable> { 1 / 0 } //this should have arithmetic exception
+        val f = Result.of<Int, Throwable> { emptyList<Int>()[0] } // this should throw outofbounds
 
         val transformedFailure = f.mapBoth({ it > 1 }, { RuntimeException("changed!") })
 
-        assertIs<ArithmeticException>(f.getFailureOrNull())
+        assertIs<IndexOutOfBoundsException>(f.getFailureOrNull())
         assertIs<RuntimeException>(transformedFailure.getFailureOrNull())
         assertEquals(null, transformedFailure.getOrNull())
         assertEquals("changed!", transformedFailure.getFailureOrNull()!!.message)
