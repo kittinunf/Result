@@ -19,3 +19,16 @@ actual inline infix fun <T, V> T.runCatching(block: T.() -> V?): Result<V?, Thro
         Result.failure(Throwable(e.toString()))
     }
 }
+
+actual inline fun <U, reified E : Throwable> doTry(function: () -> Result<U, E>): Result<U, E> {
+    return try {
+        function()
+    } catch (ex: Throwable) {
+        when (ex) {
+            is E -> Result.failure(ex)
+            else -> throw ex
+        }
+    } catch (e: dynamic) {
+        throw Throwable(e.toString())
+    }
+}
