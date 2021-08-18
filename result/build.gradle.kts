@@ -23,6 +23,10 @@ version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSH
 kotlin {
     jvm()
     ios()
+    js {
+        nodejs()
+        binaries.executable()
+    }
 
     sourceSets {
         all {}
@@ -44,6 +48,12 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(libs.kotlin.test.junit)
+            }
+        }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test.js)
             }
         }
     }
@@ -74,6 +84,15 @@ tasks {
 
             csv.required.set(false)
         }
+    }
+
+    val copyTestResourceJs by registering(Copy::class) {
+        from("$projectDir/src/commonTest/resources")
+        into("${rootProject.buildDir}/js/packages/${rootProject.name}-${project.name}-test/src/commonTest/resources")
+    }
+
+    val jsTest by getting {
+        dependsOn(copyTestResourceJs)
     }
 }
 

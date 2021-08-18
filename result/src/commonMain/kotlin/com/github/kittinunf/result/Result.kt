@@ -185,7 +185,7 @@ sealed class Result<out V, out E : Throwable> {
         @Suppress("UNCHECKED_CAST")
         inline fun <V, reified E : Throwable> of(noinline f: () -> V?): Result<V, E> = try {
             success(f()) as Result<V, E>
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             when (ex) {
                 is E -> failure(ex)
                 else -> throw ex

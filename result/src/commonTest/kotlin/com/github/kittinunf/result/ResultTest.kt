@@ -1,5 +1,6 @@
 package com.github.kittinunf.result
 
+import kotlin.js.JsName
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -13,6 +14,7 @@ import kotlin.test.assertTrue
 class ResultTest {
 
     @Test
+    @JsName("should_create_value_with_success_from_construction_block")
     fun `should create value with success from construction block`() {
         val v = Result.of<Int, Throwable> { 1 }
 
@@ -22,6 +24,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_create_value_with_failure_from_construction_block")
     fun `should create value with failure from construction block`() {
         val v = Result.of<Int, Throwable> { throw RuntimeException() }
 
@@ -31,6 +34,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_get_return_value_and_get_failure_return_null_for_result_with_success")
     fun `should get return value and get failure return null for result with success`() {
         val s = Result.of<Int, IllegalStateException> { 42 }
 
@@ -40,6 +44,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_get_return_null_and_get_failure_return_error_for_result_with_failure")
     fun `should get return null and get failure return error for result with failure`() {
         val f = Result.of<String, IllegalStateException> { throw IllegalStateException("foo") }
 
@@ -49,6 +54,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_create_value_with_success")
     fun `should create value with success`() {
         val s = Result.success(42)
         val ss = Result.success(null)
@@ -60,6 +66,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_create_value_with_failure")
     fun `should create value with failure`() {
         val e = Result.failure(RuntimeException())
         val err = e.component2()
@@ -69,6 +76,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_get_the_alternative_value_if_failure_otherwise_get_the_value")
     fun `should get the alternative value if failure otherwise get the value`() {
         val s = Result.success(42)
         val f = Result.failure(RuntimeException())
@@ -81,6 +89,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_create_optional_value_with_either_success")
     fun `should create optional value with either success`() {
         val nullableStr: String? = null
         val str = "42"
@@ -93,6 +102,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_respond_to_isSuccess_and_isFailure_according_to_the_state")
     fun `should respond to isSuccess and isFailure according to the state`() {
         val str = "42"
 
@@ -109,6 +119,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_response_to_the_success_and_failure_block_according_to_the_state")
     fun `should response to the success and failure block according to the state`() {
         val str = "42"
 
@@ -142,6 +153,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_be_able_to_use_fold_to_check_for_value_for_both_success_and_or_failure")
     fun `should be able to use fold to check for value for both success and or failure`() {
         val success = Result.of<String, Throwable> { "success" }
         val failure = Result.failure(RuntimeException("failure"))
@@ -168,6 +180,7 @@ class ResultTest {
 
     @Test
     @Suppress("UNREACHABLE_CODE")
+    @JsName("should_map_to_another_value_of_the_result_type")
     fun `should map to another value of the result type`() {
 
         val success = Result.of<String, Throwable> { "success" }
@@ -185,6 +198,7 @@ class ResultTest {
 
     @Test
     @Suppress("UNREACHABLE_CODE")
+    @JsName("should_flatMap_with_another_result_type_and_flatten")
     fun `should flatMap with another result type and flatten`() {
         val success = Result.of<String, Throwable> { "success" }
         val failure = Result.failure(RuntimeException("failure"))
@@ -200,6 +214,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_mapError_to_another_value_of_the_result_type")
     fun `should mapError to another value of the result type`() {
         val success = Result.of<String, Throwable> { "success" }
         val failure = Result.failure(Exception("failure"))
@@ -215,6 +230,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_flatMapError_to_another_value_of_the_result_type_and_flatten")
     fun `should flatMapError to another value of the result type and flatten`() {
         val success = Result.of<String, Throwable> { "success" }
         val failure = Result.failure(RuntimeException("failure"))
@@ -230,6 +246,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_be_able_to_observe_error_with_onError")
     fun `should be able to observe error with onError`() {
         val success = Result.success("success")
         val failure = Result.failure(Exception("failure"))
@@ -250,6 +267,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_be_able_to_observe_success_with_onSuccess")
     fun `should be able to observe success with onSuccess`() {
         val success = Result.success("success")
         val failure = Result.failure(Exception("failure"))
@@ -270,10 +288,9 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_be_able_to_transform_both_value_from_2_sides")
     fun `should be able to transform both value from 2 sides`() {
-        val s = Result.of<String, Throwable> {
-            "hello world"
-        }
+        val s = Result.of<String, Throwable> { "hello world" }
 
         val transformedSuccess = s.mapBoth({ it.length }, { IllegalStateException("changed!") })
 
@@ -282,19 +299,20 @@ class ResultTest {
         assertEquals(11, transformedSuccess.get())
         assertEquals(null, transformedSuccess.getFailureOrNull())
 
-        val f = Result.of<Int, Throwable> { 1 / 0 } //this should have arithmetic exception
+        val f = Result.of<Int, Throwable> { emptyList<Int>()[0] } // this should throw outofbounds
 
         val transformedFailure = f.mapBoth({ it > 1 }, { RuntimeException("changed!") })
 
-        assertIs<ArithmeticException>(f.getFailureOrNull())
+        assertIs<IndexOutOfBoundsException>(f.getFailureOrNull())
         assertIs<RuntimeException>(transformedFailure.getFailureOrNull())
         assertEquals(null, transformedFailure.getOrNull())
         assertEquals("changed!", transformedFailure.getFailureOrNull()!!.message)
     }
 
     @Test
+    @JsName("should_be_able_to_fanout_for_success")
     fun `should be able to fanout for success`() {
-        val s1 = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
+        val s1 = Result.of<String, Throwable> { Resource("lorem_short.txt").read() }
         val s2 = Result.of<Int, Throwable> { 42 }
 
         val (value, error) = s1.fanout { s2 }
@@ -305,6 +323,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_result_in_error_for_left_or_right_is_a_failure")
     fun `should result in error for left or right is a failure`() {
         val err = Result.failure(IllegalStateException("foo foo"))
         val s = Result.success(42)
@@ -321,45 +340,39 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_lift_the_result_to_success_if_all_of_the_items_are_success")
     fun `should lift the result to success if all of the items are success`() {
         val rs = listOf("lorem_short", "lorem_long").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift()
 
         assertIs<Result.Success<List<String>>>(rs)
-        assertEquals(rs.get()[0], readFile("src/commonTest/resources", "lorem_short.txt"))
+        assertEquals(rs.get()[0], Resource("lorem_short.txt").read())
     }
 
     @Test
+    @JsName("should_lift_the_result_to_failure_if_any_of_the_item_is_failure")
     fun `should lift the result to failure if any of the item is failure`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift()
 
         assertIs<Result.Failure<*>>(rs)
         val msg = rs.error.message
         assertNotNull(msg)
-        assertContains(msg, "src/commonTest/resources/not_found.txt (No such file or directory)")
+        assertContains(msg, "No such file or directory", ignoreCase = true)
     }
 
     @Test
+    @JsName("should_lift_success_and_failures_to_callback_returning_success")
     fun `should lift success and failures to callback returning success`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift { successes, errors ->
             assertEquals(2, successes.size)
@@ -371,13 +384,11 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_lift_success_and_failures_to_callback_returning_error")
     fun `should lift success and failures to callback returning error`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
             Result.of<String, Exception> {
-                readFile(
-                    directory = "src/commonTest/resources/",
-                    fileName = "$it.txt"
-                )
+                Resource("$it.txt").read()
             }
         }.lift { successes, errors ->
             assertEquals(2, successes.size)
@@ -389,8 +400,9 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_return_true_if_predicate_in_any_matches")
     fun `should return true if predicate in any matches`() {
-        val rs = Result.of<String, Throwable> { readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt") }
+        val rs = Result.of<String, Throwable> { Resource("lorem_short.txt").read() }
 
         assertFalse(rs.any { it.isEmpty() })
         assertTrue(rs.any { it.count() <= 446 })
@@ -401,8 +413,9 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_result_in_Failure_just_the_same_as_companion_objects_function")
     fun `should result in Failure just the same as companion object's function`() {
-        data class TestException(val errorCode: String, val errorMessage: String): Exception(errorMessage)
+        data class TestException(val errorCode: String, val errorMessage: String) : Exception(errorMessage)
 
         val originalFailure = Result.failure(TestException("error_code", "error message"))
         val extensionFailure = TestException("error_code", "error message").failure()
@@ -411,6 +424,7 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_result_in_Success_just_the_same_as_companion_objects_function")
     fun `should result in Success just the same as companion object's function`() {
         val originalSuccess = Result.success("success")
         val extensionSuccess = "success".success()

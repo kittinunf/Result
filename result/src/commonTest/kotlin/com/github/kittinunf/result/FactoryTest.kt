@@ -1,11 +1,13 @@
 package com.github.kittinunf.result
 
+import kotlin.js.JsName
 import kotlin.test.Test
 import kotlin.test.assertIs
 
 class FactoryTest {
 
     @Test
+    @JsName("should_properly_catch_with_runCatching_as_success")
     fun `should properly catch with runCatching as success`() {
         val r1 = com.github.kittinunf.result.runCatching {
             42
@@ -23,6 +25,7 @@ class FactoryTest {
     }
 
     @Test
+    @JsName("should_properly_catch_with_runCatching_as_failure")
     fun `should properly catch with runCatching as failure`() {
         val r1 = com.github.kittinunf.result.runCatching {
             throw IllegalStateException("failure 1")
@@ -37,6 +40,7 @@ class FactoryTest {
     }
 
     @Test
+    @JsName("should_properly_catch_with_runCatching_with_block_parameters")
     fun `should properly catch with runCatching with block parameters`() {
         val sf = SimpleFile()
         val s = runCatching(sf::found)
@@ -47,6 +51,7 @@ class FactoryTest {
     }
 
     @Test
+    @JsName("should_properly_catch_with_runCatching_with_extension_parameters")
     fun `should properly catch with runCatching with extension parameters`() {
         val sf = SimpleFile()
         val s = sf runCatching { found() }
@@ -60,7 +65,7 @@ class FactoryTest {
 
     class SimpleFile {
         fun nullable() = null
-        fun found() = readFile(directory = "src/commonTest/resources/", fileName = "lorem_short.txt")
-        fun notFound() = readFile(directory = "src/commonTest/resources/", fileName = "not_found.txt")
+        fun found() = Resource("lorem_short.txt").read()
+        fun notFound() = Resource("not_found.txt").read()
     }
 }
