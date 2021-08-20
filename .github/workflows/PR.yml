@@ -38,10 +38,13 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Build
-        run: ./gradlew build --stacktrace
+        run: ./gradlew build jacocoTestReport --stacktrace
 
       - name: Upload allTests results
         uses: actions/upload-artifact@v2.2.3
         with:
           name: allTests
           path: ./**/build/reports/tests/allTests
+  
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
