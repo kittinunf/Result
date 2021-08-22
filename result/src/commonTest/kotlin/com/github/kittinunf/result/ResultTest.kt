@@ -176,7 +176,7 @@ class ResultTest {
         assertTrue(hasFoldInFailureCalled)
     }
 
-    private fun Nothing.count() = 0
+    private fun count() = 0
 
     @Test
     @Suppress("UNREACHABLE_CODE")
@@ -187,7 +187,7 @@ class ResultTest {
         val failure = Result.failure(RuntimeException("failure"))
 
         val v1 = success.map { it.count() }
-        val v2 = failure.map { it.count() }
+        val v2 = failure.map { count() }
 
         assertIs<Result.Success<Int>>(v1)
         assertEquals(v1.value, 7)
@@ -204,7 +204,7 @@ class ResultTest {
         val failure = Result.failure(RuntimeException("failure"))
 
         val v1 = success.flatMap { Result.of { it.last() } }
-        val v2 = failure.flatMap { Result.of { it.count() } }
+        val v2 = failure.flatMap { Result.of { count() } }
 
         assertIs<Result.Success<Char>>(v1)
         assertEquals(v1.value, 's')
