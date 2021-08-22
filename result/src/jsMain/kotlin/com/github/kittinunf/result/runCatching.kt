@@ -1,21 +1,11 @@
 package com.github.kittinunf.result
 
-actual inline fun <V> runCatching(block: () -> V?): Result<V?, Throwable> {
+actual inline fun <R> doTry(work: () -> R, errorHandler: (Throwable) -> R): R {
     return try {
-        Result.success(block())
-    } catch (e: Exception) {
-        Result.failure(e)
-    } catch (e: dynamic) {
-        Result.failure(Throwable(e.toString()))
-    }
-}
-
-actual inline fun <T, R> T.doTry(function: () -> R, errFunction: (Throwable) -> R): R {
-    return try {
-        function()
+        work()
     } catch (t: Throwable) {
-        errFunction(t)
+        errorHandler(t)
     } catch (d: dynamic) {
-        throw Throwable(d.toString())
+        errorHandler(Throwable(d.toString()))
     }
 }

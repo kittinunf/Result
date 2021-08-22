@@ -1,13 +1,17 @@
 package com.github.kittinunf.result
 
-expect inline fun <V> runCatching(block: () -> V?): Result<V?, Throwable>
-
-inline infix fun <T, V> T.runCatching(block: T.() -> V?): Result<V?, Throwable> = doTry(
-    function = {
+inline infix fun <T, V> T.runCatching(block: T.() -> V?): Result<V?, Throwable> =
+    doTry(work = {
         Result.success(block())
-    }
-) {
-    Result.failure(it)
-}
+    }, errorHandler = {
+        Result.failure(it)
+    })
 
-expect inline fun <T, R> T.doTry(function: () -> R, errFunction: (Throwable) -> R): R
+inline fun <V> runCatching(block: () -> V?): Result<V?, Throwable> =
+    doTry(work = {
+        Result.success(block())
+    }, errorHandler = {
+        Result.failure(it)
+    })
+
+expect inline fun <R> doTry(work: () -> R, errorHandler: (Throwable) -> R): R
