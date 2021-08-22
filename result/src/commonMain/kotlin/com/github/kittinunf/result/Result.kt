@@ -207,14 +207,15 @@ sealed class Result<out V, out E : Throwable> {
         fun <V> success(value: V) = Success(value)
 
         @Suppress("UNCHECKED_CAST")
-        inline fun <V, reified E : Throwable> of(noinline f: () -> V?): Result<V, E> = try {
-            success(f()) as Result<V, E>
-        } catch (ex: Throwable) {
-            when (ex) {
-                is E -> failure(ex)
-                else -> throw ex
-            }
-        }
+        inline fun <V, reified E : Throwable> of(noinline f: () -> V?): Result<V, E> =
+            doTry(work = {
+                success(f()) as Result<V, E>
+            }, errorHandler = {
+                when (it) {
+                    is E -> failure(it)
+                    else -> throw it
+                }
+            })
     }
 }
 
