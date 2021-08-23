@@ -356,7 +356,7 @@ class ResultTest {
     @JsName("should_lift_the_result_to_failure_if_any_of_the_item_is_failure")
     fun `should lift the result to failure if any of the item is failure`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Exception> {
+            Result.of<String, Throwable> {
                 Resource("$it.txt").read()
             }
         }.lift()
@@ -371,7 +371,7 @@ class ResultTest {
     @JsName("should_lift_success_and_failures_to_callback_returning_success")
     fun `should lift success and failures to callback returning success`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Exception> {
+            Result.of<String, Throwable> {
                 Resource("$it.txt").read()
             }
         }.lift { successes, errors ->
@@ -387,7 +387,7 @@ class ResultTest {
     @JsName("should_lift_success_and_failures_to_callback_returning_error")
     fun `should lift success and failures to callback returning error`() {
         val rs = listOf("lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Exception> {
+            Result.of<String, Throwable> {
                 Resource("$it.txt").read()
             }
         }.lift { successes, errors ->

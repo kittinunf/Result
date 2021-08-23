@@ -3,9 +3,9 @@ package com.github.kittinunf.result
 import com.github.kittinunf.result.Kind.Failure
 import com.github.kittinunf.result.Kind.Success
 
-fun <V: Any?> V.success(): Result.Success<V> = Result.success(this)
+fun <V : Any?> V.success(): Result.Success<V> = Result.success(this)
 
-fun <E: Throwable> E.failure(): Result.Failure<E> = Result.failure(this)
+fun <E : Throwable> E.failure(): Result.Failure<E> = Result.failure(this)
 
 inline fun <V> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
@@ -30,72 +30,70 @@ inline infix fun <V, E : Exception> Result<V, E>.getOrElse(fallback: (E) -> V): 
     is Result.Failure -> fallback(error)
 }
 
-inline fun <V, U, reified E : Throwable> Result<V, E>.map(transform: (V) -> U): Result<U, E> = doTry(
-    function = {
+inline fun <V, U, reified E : Throwable> Result<V, E>.map(transform: (V) -> U): Result<U, E> =
+    doTry(work = {
         when (this) {
             is Result.Success -> Result.success(transform(value))
             is Result.Failure -> Result.failure(error)
         }
-    }) {
-    when (it) {
-        is E -> Result.failure(it)
-        else -> throw it
-    }
-}
+    }, errorHandler = {
+        when (it) {
+            is E -> Result.failure(it)
+            else -> throw it
+        }
+    })
 
-inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapError(transform: (E) -> EE): Result<V, EE> = doTry(
-    function = {
+inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapError(transform: (E) -> EE): Result<V, EE> =
+    doTry(work = {
         when (this) {
             is Result.Success -> Result.success(value)
             is Result.Failure -> Result.failure(transform(error))
         }
-}) {
-    when (it) {
-        is EE -> Result.failure(it)
-        else -> throw it
-    }
-}
+    }, errorHandler = {
+        when (it) {
+            is EE -> Result.failure(it)
+            else -> throw it
+        }
+    })
 
-inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapBoth(transformSuccess: (V) -> U, transformFailure: (E) -> EE): Result<U, EE> = doTry(
-    function = {
+inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapBoth(transformSuccess: (V) -> U, transformFailure: (E) -> EE): Result<U, EE> =
+    doTry(work = {
         when (this) {
             is Result.Success -> Result.success(transformSuccess(value))
             is Result.Failure -> Result.failure(transformFailure(error))
         }
-    }
-) {
-    when (it) {
-        is EE -> Result.failure(it)
-        else -> throw it
-    }
-}
+    }, errorHandler = {
+        when (it) {
+            is EE -> Result.failure(it)
+            else -> throw it
+        }
+    })
 
-inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> = doTry(
-    function = {
+inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> =
+    doTry(work = {
         when (this) {
             is Result.Success -> transform(value)
             is Result.Failure -> Result.failure(error)
         }
-    }
-) {
-    when (it) {
-        is E -> Result.failure(it)
-        else -> throw it
-    }
-}
+    }, errorHandler = {
+        when (it) {
+            is E -> Result.failure(it)
+            else -> throw it
+        }
+    })
 
-inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatMapError(transform: (E) -> Result<V, EE>): Result<V, EE> = doTry(
-    function = {
+inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatMapError(transform: (E) -> Result<V, EE>): Result<V, EE> =
+    doTry(work = {
         when (this) {
             is Result.Success -> Result.success(value)
             is Result.Failure -> transform(error)
         }
-    }) {
-    when (it) {
-        is EE -> Result.failure(it)
-        else -> throw it
-    }
-}
+    }, errorHandler = {
+        when (it) {
+            is EE -> Result.failure(it)
+            else -> throw it
+        }
+    })
 
 inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> = fold({ f(it); this }, { this })
 
@@ -120,16 +118,15 @@ inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(fn: (v: List<V>, e
         acc
     }.let { fn(it.first, it.second) }
 
-inline fun <V, E : Throwable> Result<V, E>.any(predicate: (V) -> Boolean): Boolean = doTry(
-    function = {
+inline fun <V, E : Throwable> Result<V, E>.any(predicate: (V) -> Boolean): Boolean =
+    doTry(work = {
         when (this) {
             is Result.Success -> predicate(value)
             is Result.Failure -> false
         }
-    }
-) {
-    false
-}
+    }, errorHandler = {
+        false
+    })
 
 enum class Kind {
     Success,
@@ -192,14 +189,15 @@ sealed class Result<out V, out E : Throwable> {
         fun <V> success(value: V) = Success(value)
 
         @Suppress("UNCHECKED_CAST")
-        inline fun <V, reified E : Throwable> of(noinline f: () -> V?): Result<V, E> = try {
-            success(f()) as Result<V, E>
-        } catch (ex: Throwable) {
-            when (ex) {
-                is E -> failure(ex)
-                else -> throw ex
-            }
-        }
+        inline fun <V, reified E : Throwable> of(f: () -> V?): Result<V, E> =
+            doTry(work = {
+                success(f()) as Result<V, E>
+            }, errorHandler = {
+                when (it) {
+                    is E -> failure(it)
+                    else -> throw it
+                }
+            })
     }
 }
 
