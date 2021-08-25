@@ -2,6 +2,9 @@ package com.github.kittinunf.result
 
 import com.github.kittinunf.result.Kind.Failure
 import com.github.kittinunf.result.Kind.Success
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 fun <V : Any?> V.success(): Result.Success<V> = Result.success(this)
 
@@ -30,8 +33,12 @@ inline infix fun <V, E : Exception> Result<V, E>.getOrElse(fallback: (E) -> V): 
     is Result.Failure -> fallback(error)
 }
 
-inline fun <V, U, reified E : Throwable> Result<V, E>.map(transform: (V) -> U): Result<U, E> =
-    doTry(work = {
+@OptIn(ExperimentalContracts::class)
+inline fun <V, U, reified E : Throwable> Result<V, E>.map(transform: (V) -> U): Result<U, E> {
+    contract {
+        callsInPlace(transform, InvocationKind.EXACTLY_ONCE)
+    }
+    return doTry(work = {
         when (this) {
             is Result.Success -> Result.success(transform(value))
             is Result.Failure -> Result.failure(error)
@@ -42,9 +49,14 @@ inline fun <V, U, reified E : Throwable> Result<V, E>.map(transform: (V) -> U): 
             else -> throw it
         }
     })
+}
 
-inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapError(transform: (E) -> EE): Result<V, EE> =
-    doTry(work = {
+@OptIn(ExperimentalContracts::class)
+inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapError(transform: (E) -> EE): Result<V, EE> {
+    contract {
+        callsInPlace(transform, InvocationKind.EXACTLY_ONCE)
+    }
+    return doTry(work = {
         when (this) {
             is Result.Success -> Result.success(value)
             is Result.Failure -> Result.failure(transform(error))
@@ -55,6 +67,7 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapEr
             else -> throw it
         }
     })
+}
 
 inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapBoth(transformSuccess: (V) -> U, transformFailure: (E) -> EE): Result<U, EE> =
     doTry(work = {
@@ -69,8 +82,12 @@ inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.ma
         }
     })
 
-inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> =
-    doTry(work = {
+@OptIn(ExperimentalContracts::class)
+inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> {
+    contract {
+        callsInPlace(transform, InvocationKind.EXACTLY_ONCE)
+    }
+    return doTry(work = {
         when (this) {
             is Result.Success -> transform(value)
             is Result.Failure -> Result.failure(error)
@@ -81,9 +98,14 @@ inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> 
             else -> throw it
         }
     })
+}
 
-inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatMapError(transform: (E) -> Result<V, EE>): Result<V, EE> =
-    doTry(work = {
+@OptIn(ExperimentalContracts::class)
+inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatMapError(transform: (E) -> Result<V, EE>): Result<V, EE> {
+    contract {
+        callsInPlace(transform, InvocationKind.EXACTLY_ONCE)
+    }
+    return doTry(work = {
         when (this) {
             is Result.Success -> Result.success(value)
             is Result.Failure -> transform(error)
@@ -94,6 +116,7 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatM
             else -> throw it
         }
     })
+}
 
 inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> = fold({ f(it); this }, { this })
 
