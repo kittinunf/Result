@@ -14,9 +14,21 @@ inline fun <V> Result<V, *>.success(f: (V) -> Unit) = fold(f, {})
 
 inline fun <E : Throwable> Result<*, E>.failure(f: (E) -> Unit) = fold({}, f)
 
-fun Result<*, *>.isSuccess() = this is Result.Success
+@OptIn(ExperimentalContracts::class)
+fun <V, E : Throwable> Result<V, E>.isSuccess(): Boolean {
+    contract {
+        returns(true) implies (this@isSuccess is Result.Success)
+    }
+    return this is Result.Success
+}
 
-fun Result<*, *>.isFailure() = this is Result.Failure
+@OptIn(ExperimentalContracts::class)
+fun <V, E : Throwable> Result<V, E>.isFailure(): Boolean {
+    contract {
+        returns(true) implies (this@isFailure is Result.Failure)
+    }
+    return this is Result.Failure
+}
 
 fun <V, E : Throwable> Result<V, E>.getOrNull(): V? = when (this) {
     is Result.Success -> value
@@ -70,17 +82,17 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapEr
 }
 
 inline fun <V, U, reified E : Throwable, reified EE : Throwable> Result<V, E>.mapBoth(transformSuccess: (V) -> U, transformFailure: (E) -> EE): Result<U, EE> =
-    doTry(work = {
-        when (this) {
-            is Result.Success -> Result.success(transformSuccess(value))
-            is Result.Failure -> Result.failure(transformFailure(error))
-        }
-    }, errorHandler = {
-        when (it) {
-            is EE -> Result.failure(it)
-            else -> throw it
-        }
-    })
+        doTry(work = {
+            when (this) {
+                is Result.Success -> Result.success(transformSuccess(value))
+                is Result.Failure -> Result.failure(transformFailure(error))
+            }
+        }, errorHandler = {
+            when (it) {
+                is EE -> Result.failure(it)
+                else -> throw it
+            }
+        })
 
 @OptIn(ExperimentalContracts::class)
 inline fun <V, U, reified E : Throwable> Result<V, E>.flatMap(transform: (V) -> Result<U, E>): Result<U, E> {
@@ -123,9 +135,9 @@ inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, 
 inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> = fold({ this }, { f(it); this })
 
 inline fun <V, U, reified E : Throwable> Result<V, E>.fanout(other: () -> Result<U, E>): Result<Pair<V, U>, E> =
-    flatMap { outer ->
-        other().map { outer to it }
-    }
+        flatMap { outer ->
+            other().map { outer to it }
+        }
 
 inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> = lift { successes, errors ->
     when (errors.isEmpty()) {
@@ -135,21 +147,21 @@ inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>,
 }
 
 inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(fn: (v: List<V>, e: List<E>) -> Result<List<V>, E>): Result<List<V>, E> =
-    fold(Pair<MutableList<V>, MutableList<E>>(mutableListOf(), mutableListOf())) { acc, result ->
-        result.success { acc.first.add(it) }
-        result.failure { acc.second.add(it) }
-        acc
-    }.let { fn(it.first, it.second) }
+        fold(Pair<MutableList<V>, MutableList<E>>(mutableListOf(), mutableListOf())) { acc, result ->
+            result.success { acc.first.add(it) }
+            result.failure { acc.second.add(it) }
+            acc
+        }.let { fn(it.first, it.second) }
 
 inline fun <V, E : Throwable> Result<V, E>.any(predicate: (V) -> Boolean): Boolean =
-    doTry(work = {
-        when (this) {
-            is Result.Success -> predicate(value)
-            is Result.Failure -> false
-        }
-    }, errorHandler = {
-        false
-    })
+        doTry(work = {
+            when (this) {
+                is Result.Success -> predicate(value)
+                is Result.Failure -> false
+            }
+        }, errorHandler = {
+            false
+        })
 
 enum class Kind {
     Success,
@@ -213,14 +225,14 @@ sealed class Result<out V, out E : Throwable> {
 
         @Suppress("UNCHECKED_CAST")
         inline fun <V, reified E : Throwable> of(f: () -> V?): Result<V, E> =
-            doTry(work = {
-                success(f()) as Result<V, E>
-            }, errorHandler = {
-                when (it) {
-                    is E -> failure(it)
-                    else -> throw it
-                }
-            })
+                doTry(work = {
+                    success(f()) as Result<V, E>
+                }, errorHandler = {
+                    when (it) {
+                        is E -> failure(it)
+                        else -> throw it
+                    }
+                })
     }
 }
 

@@ -1,15 +1,7 @@
 package com.github.kittinunf.result
 
 import kotlin.js.JsName
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class ResultTest {
 
@@ -116,6 +108,31 @@ class ResultTest {
         val nns = Result.of<String, Throwable> { nullableStr }
         assertTrue(nns.isSuccess())
         assertNull(nns.getOrNull())
+    }
+
+    @Test
+    @JsName("should_response_to_isSuccess_and_isFailure_and_also_implies_that_contract_is_working_correctly")
+    fun `should response to isSuccess and isFailure and also implies that contract is working correctly`() {
+        val str = "42"
+
+        val s = Result.of<String, Throwable> { str }
+        val ns = Result.of<String, Throwable> { throw  IllegalStateException("42") }
+
+        if (s.isSuccess()) {
+            // contract should imply that s is Result.Success
+            s.value
+            assertEquals(42, s.value.toInt())
+        } else {
+            fail("This should not be called")
+        }
+
+        if (ns.isFailure()) {
+            // contract should imply that ns is Result.Failure
+            ns.error
+            assertEquals("42", ns.error.message)
+        } else {
+            fail("This should not be called")
+        }
     }
 
     @Test
