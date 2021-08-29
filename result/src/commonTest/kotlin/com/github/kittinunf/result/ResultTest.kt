@@ -125,7 +125,7 @@ class ResultTest {
         val str = "42"
 
         val s = Result.of<String, Throwable> { str }
-        val ns = Result.of<String, Throwable> { throw  IllegalStateException("42") }
+        val ns = Result.of<String, Throwable> { throw IllegalStateException("42") }
 
         if (s.isSuccess()) {
             // contract should imply that s is Result.Success
@@ -138,7 +138,7 @@ class ResultTest {
         if (ns.isFailure()) {
             // contract should imply that ns is Result.Failure
             ns.error
-            assertEquals("42", ns.error.message)
+            assertIs<IllegalStateException>(ns.error)
         } else {
             fail("This should not be called")
         }
