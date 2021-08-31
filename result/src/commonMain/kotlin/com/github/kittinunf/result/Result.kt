@@ -130,9 +130,21 @@ inline fun <V, reified E : Throwable, reified EE : Throwable> Result<V, E>.flatM
     })
 }
 
-inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> = fold({ f(it); this }, { this })
+@OptIn(ExperimentalContracts::class)
+inline fun <V, E : Throwable> Result<V, E>.onSuccess(f: (V) -> Unit): Result<V, E> {
+    contract {
+        callsInPlace(f, InvocationKind.EXACTLY_ONCE)
+    }
+    return fold({ f(it); this }, { this })
+}
 
-inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> = fold({ this }, { f(it); this })
+@OptIn(ExperimentalContracts::class)
+inline fun <V, E : Throwable> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> {
+    contract {
+        callsInPlace(f, InvocationKind.EXACTLY_ONCE)
+    }
+    return fold({ this }, { f(it); this })
+}
 
 inline fun <V, U, reified E : Throwable> Result<V, E>.fanout(other: () -> Result<U, E>): Result<Pair<V, U>, E> =
         flatMap { outer ->

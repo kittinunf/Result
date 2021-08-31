@@ -145,12 +145,12 @@ class ResultTest {
     }
 
     @Test
-    @JsName("should_response_to_map_that_implies_contract_is_working_for_first_value")
-    fun `should response to map that implies contact is working for first value`() {
+    @JsName("should_response_to_onSuccess_that_implies_contract_is_working_for_first_value")
+    fun `should response to onSuccess that implies contact is working for first value`() {
         val s = Result.of<Int, Throwable> { 0  }
 
         val i : Int
-        s.map {
+        s.onSuccess {
             i = 42
         }
         assertEquals(42, i)
