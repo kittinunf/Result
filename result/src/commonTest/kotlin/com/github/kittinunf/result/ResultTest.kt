@@ -145,6 +145,18 @@ class ResultTest {
     }
 
     @Test
+    @JsName("should_response_to_map_that_implies_contract_is_working_for_first_value")
+    fun `should response to map that implies contact is working for first value`() {
+        val s = Result.of<Int, Throwable> { 0  }
+
+        val i : Int
+        s.map {
+            i = 42
+        }
+        assertEquals(42, i)
+    }
+
+    @Test
     @JsName("should_response_to_the_success_and_failure_block_according_to_the_state")
     fun `should response to the success and failure block according to the state`() {
         val str = "42"
