@@ -29,7 +29,11 @@ kotlin {
     }
 
     sourceSets {
-        all {}
+        all {
+            languageSettings {
+                useExperimentalAnnotation("kotlin.RequiresOptIn")
+            }
+        }
 
         val commonMain by getting {
             dependencies {

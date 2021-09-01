@@ -10,6 +10,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class ResultTest {
 
@@ -116,6 +117,55 @@ class ResultTest {
         val nns = Result.of<String, Throwable> { nullableStr }
         assertTrue(nns.isSuccess())
         assertNull(nns.getOrNull())
+    }
+
+    @Test
+    @JsName("should_response_to_isSuccess_and_isFailure_and_also_implies_that_contract_is_working_correctly")
+    fun `should response to isSuccess and isFailure and also implies that contract is working correctly`() {
+        val str = "42"
+
+        val s = Result.of<String, Throwable> { str }
+        val ns = Result.of<String, Throwable> { throw IllegalStateException("42") }
+
+        if (s.isSuccess()) {
+            // contract should imply that s is Result.Success
+            s.value
+            assertEquals(42, s.value.toInt())
+        } else {
+            fail("This should not be called")
+        }
+
+        if (ns.isFailure()) {
+            // contract should imply that ns is Result.Failure
+            ns.error
+            assertIs<IllegalStateException>(ns.error)
+        } else {
+            fail("This should not be called")
+        }
+    }
+
+    @Test
+    @JsName("should_response_to_onSuccess_that_implies_contract_is_working_for_first_value")
+    fun `should response to onSuccess that implies contact is working for first value`() {
+        val s = Result.of<Int, Throwable> { 0  }
+
+        val i : Int
+        s.onSuccess {
+            i = 42
+        }
+        assertEquals(42, i)
+    }
+
+    @Test
+    @JsName("should_response_to_onFailure_that_implies_contract_is_working_for_first_value")
+    fun `should response to onFailure that implies contact is working for first value`() {
+        val s = Result.of<Int, Throwable> { throw IllegalStateException("40") }
+
+        val i : Int
+        s.onFailure {
+            i = 42
+        }
+        assertEquals(42, i)
     }
 
     @Test
