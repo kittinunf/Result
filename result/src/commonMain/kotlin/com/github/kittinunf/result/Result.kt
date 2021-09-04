@@ -40,7 +40,7 @@ fun <V, E : Throwable> Result<V, E>.getFailureOrNull(): E? = when (this) {
     is Result.Failure -> error
 }
 
-inline infix fun <V, E : Exception> Result<V, E>.getOrElse(fallback: (E) -> V): V = when (this) {
+inline infix fun <V, E : Throwable> Result<V, E>.getOrElse(fallback: (E) -> V): V = when (this) {
     is Result.Success -> value
     is Result.Failure -> fallback(error)
 }
