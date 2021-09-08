@@ -27,11 +27,12 @@ kotlin {
         nodejs()
         binaries.executable()
     }
+    iosSimulatorArm64()
 
     sourceSets {
         all {
             languageSettings {
-                useExperimentalAnnotation("kotlin.RequiresOptIn")
+                optIn("kotlin.RequiresOptIn")
             }
         }
 
@@ -47,7 +48,7 @@ kotlin {
             }
         }
 
-        val jvmMain by getting {}
+        val jvmMain by getting
 
         val jvmTest by getting {
             dependencies {
@@ -59,6 +60,16 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test.js)
             }
+        }
+
+        val iosMain by getting
+        val iosTest by getting
+
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Test by getting {
+            dependsOn(iosTest)
         }
     }
 }
