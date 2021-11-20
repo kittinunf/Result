@@ -5,7 +5,7 @@ on: [ pull_request ]
 jobs:
   test:
     name: Build
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Check out code
         uses: actions/checkout@v2
