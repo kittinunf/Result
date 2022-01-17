@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.6.0"
+kotlin = "1.6.10"
 jacoco = "0.8.7"
 
 [libraries]
