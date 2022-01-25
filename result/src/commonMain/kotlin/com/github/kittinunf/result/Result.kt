@@ -151,17 +151,15 @@ inline fun <V, U, reified E : Throwable> Result<V, E>.fanout(other: () -> Result
             other().map { outer to it }
         }
 
-inline operator fun <V, reified E : Throwable> List<Result<V, E>>.plus(results: List<Result<V, E>>) = lift { leftSuccesses, leftErrors ->
-    when (leftErrors.isEmpty()) {
-        true -> results.lift { rightSuccesses, rightErrors ->
-            when (rightErrors.isEmpty()) {
-                true -> Result.success(leftSuccesses + rightSuccesses)
-                else -> Result.failure(rightErrors.first())
+inline operator fun <V, reified E : Throwable> Result<List<V>, E>.plus(result: Result<List<V>, E>) =
+    when (this) {
+        is Result.Success ->
+            when (result) {
+                is Result.Success -> Result.success(this.value + result.value)
+                is Result.Failure -> Result.failure(result.error)
             }
-        }
-        else -> Result.failure(leftErrors.first())
+        is Result.Failure -> Result.failure(this.error)
     }
-}
 
 inline fun <V, reified E : Throwable> List<Result<V, E>>.lift(): Result<List<V>, E> = lift { successes, errors ->
     when (errors.isEmpty()) {
