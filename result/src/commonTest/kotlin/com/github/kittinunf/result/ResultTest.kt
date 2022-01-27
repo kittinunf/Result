@@ -481,4 +481,55 @@ class ResultTest {
 
         assertEquals(originalSuccess, extensionSuccess)
     }
+
+    @Test
+    @JsName("should_return_a_merged_list_given_two_Results_Success_containing_a_list")
+    fun `should return a merged list given two Results Success containing a list`() {
+        val result = Result.success(listOf("A", "B"))
+        val otherResult = Result.success(listOf("C","D"))
+
+        val mergedList = result + otherResult
+        assertIs<Result.Success<List<String>>>(mergedList)
+        assertEquals(mergedList.value, listOf("A", "B", "C", "D"))
+    }
+
+    @Test
+    @JsName("should_return_an_Error_given_a_Result_containing_a_Success_list_and_another_Result_Error")
+    fun `should return an Error given a Result containing a Success list and another Result Error`() {
+        val error = RuntimeException()
+
+        val result = Result.success(listOf("A", "B"))
+        val otherResult = Result.failure(error)
+
+        val mergedList = result + otherResult
+        assertIs<Result.Failure<RuntimeException>>(mergedList)
+        assertEquals(mergedList.error, error)
+    }
+
+    @Test
+    @JsName("should_return_an_Error_given_a_Result_Error_and_another_one_containing_a_Result_Success_list")
+    fun `should return an Error given a Result Error and another one containing a Result Success list`() {
+        val error = RuntimeException()
+
+        val result = Result.failure(error)
+        val otherResult = Result.success(listOf("B", "C"))
+
+        val mergedResult = result + otherResult
+        assertIs<Result.Failure<RuntimeException>>(mergedResult)
+        assertEquals(mergedResult.error, error)
+    }
+
+    @Test
+    @JsName("should_return_the_Error_from_the_first_Result_given_two_Result_Errors")
+    fun `should return the Error from the first Result given two Result Errors`() {
+        val firstError = RuntimeException()
+        val secondError = RuntimeException()
+
+        val result = Result.of<List<String>, Throwable> { throw firstError }
+        val otherResult = Result.of<List<String>, Throwable> { throw secondError }
+
+        val mergedResult = result + otherResult
+        assertIs<Result.Failure<RuntimeException>>(mergedResult)
+        assertEquals(mergedResult.error, firstError)
+    }
 }
