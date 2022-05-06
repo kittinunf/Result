@@ -30,6 +30,7 @@ class ResultTest {
         val v = Result.of<Int, Throwable> { throw RuntimeException() }
 
         assertNull(v.component1())
+        assertNotNull(v.component2())
         assertIs<Result.Failure<RuntimeException>>(v)
         assertEquals(Kind.Failure, v.kind)
     }
@@ -39,6 +40,8 @@ class ResultTest {
     fun `should get return value and get failure return null for result with success`() {
         val s = Result.of<Int, IllegalStateException> { 42 }
 
+        assertNotNull(s.component1())
+        assertNull(s.component2())
         assertNull(s.getFailureOrNull())
         assertNotNull(s.getOrNull())
         assertEquals(42, s.getOrNull())
