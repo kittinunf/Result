@@ -30,6 +30,7 @@ class ResultTest {
         val v = Result.of<Int, Throwable> { throw RuntimeException() }
 
         assertNull(v.component1())
+        assertNotNull(v.component2())
         assertIs<Result.Failure<RuntimeException>>(v)
         assertEquals(Kind.Failure, v.kind)
     }
@@ -39,6 +40,8 @@ class ResultTest {
     fun `should get return value and get failure return null for result with success`() {
         val s = Result.of<Int, IllegalStateException> { 42 }
 
+        assertNotNull(s.component1())
+        assertNull(s.component2())
         assertNull(s.getFailureOrNull())
         assertNotNull(s.getOrNull())
         assertEquals(42, s.getOrNull())
@@ -59,7 +62,7 @@ class ResultTest {
     fun `should create value with success`() {
         val s = Result.success(42)
         val ss = Result.success(null)
-        val value = s.component1()
+        val (value, _) = s
 
         assertNotNull(s.get())
         assertNull(ss.get())
@@ -70,9 +73,10 @@ class ResultTest {
     @JsName("should_create_value_with_failure")
     fun `should create value with failure`() {
         val e = Result.failure(RuntimeException())
-        val err = e.component2()
+        val (value, err) = e
 
-        assertNull(e.component1())
+        assertNull(value)
+        assertNotNull(e.failure())
         assertNotNull(err)
     }
 
@@ -147,9 +151,9 @@ class ResultTest {
     @Test
     @JsName("should_response_to_onSuccess_that_implies_contract_is_working_for_first_value")
     fun `should response to onSuccess that implies contact is working for first value`() {
-        val s = Result.of<Int, Throwable> { 0  }
+        val s = Result.of<Int, Throwable> { 0 }
 
-        val i : Int
+        val i: Int
         s.onSuccess {
             i = 42
         }
@@ -161,7 +165,7 @@ class ResultTest {
     fun `should response to onFailure that implies contact is working for first value`() {
         val s = Result.of<Int, Throwable> { throw IllegalStateException("40") }
 
-        val i : Int
+        val i: Int
         s.onFailure {
             i = 42
         }
