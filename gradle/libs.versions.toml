@@ -1,6 +1,6 @@
 [versions]
-kotlin = "1.6.20"
-jacoco = "0.8.7"
+kotlin = "1.7.10"
+jacoco = "0.8.8"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
