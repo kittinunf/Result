@@ -28,6 +28,8 @@ kotlin {
         binaries.executable()
     }
     iosSimulatorArm64()
+    macosArm64()
+    macosX64()
 
     sourceSets {
         all {
