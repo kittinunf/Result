@@ -12,12 +12,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-  
-      - name: Setup Gradle
+        
+      - name: Setup and execute Gradle 'build' task
         uses: gradle/gradle-build-action@v2
-
-      - name: Build
-        run: ./gradlew build --stacktrace
+        with:
+          arguments: build --stracktrace
 
       - name: Upload allTests results
         uses: actions/upload-artifact@v2.2.3
