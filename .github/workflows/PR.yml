@@ -16,7 +16,7 @@ jobs:
       - name: Setup and execute Gradle 'build' task
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build --stracktrace
+          arguments: build
 
       - name: Upload allTests results
         uses: actions/upload-artifact@v2.2.3
