@@ -233,7 +233,6 @@ class ResultTest {
     private fun count() = 0
 
     @Test
-    @Suppress("UNREACHABLE_CODE")
     @JsName("should_map_to_another_value_of_the_result_type")
     fun `should map to another value of the result type`() {
 
@@ -247,11 +246,10 @@ class ResultTest {
         assertEquals(v1.value, 7)
 
         assertIs<Result.Failure<Throwable>>(v2)
-        assertEquals(v2.getOrNull(), null)
+        assertEquals(v2.getOrNull<Int, RuntimeException>(), null)
     }
 
     @Test
-    @Suppress("UNREACHABLE_CODE")
     @JsName("should_flatMap_with_another_result_type_and_flatten")
     fun `should flatMap with another result type and flatten`() {
         val success = Result.of<String, Throwable> { "success" }
@@ -264,7 +262,7 @@ class ResultTest {
         assertEquals(v1.value, 's')
 
         assertIs<Result.Failure<Throwable>>(v2)
-        assertEquals(v2.getOrNull(), null)
+        assertEquals(v2.getOrNull<Int, RuntimeException>(), null)
     }
 
     @Test
@@ -305,8 +303,8 @@ class ResultTest {
         val success = Result.success("success")
         val failure = Result.failure(Exception("failure"))
 
-        var hasSuccessChanged = false
-        var hasFailureChanged = false
+        var hasSuccessChanged: Boolean
+        var hasFailureChanged: Boolean
 
         val v1 = success.onFailure { hasSuccessChanged = true }
         val v2 = failure.onFailure { hasFailureChanged = true }
@@ -326,8 +324,8 @@ class ResultTest {
         val success = Result.success("success")
         val failure = Result.failure(Exception("failure"))
 
-        var hasSuccessChanged = false
-        var hasFailureChanged = false
+        var hasSuccessChanged: Boolean
+        var hasFailureChanged: Boolean
 
         val v1 = success.onSuccess { hasSuccessChanged = true }
         val v2 = failure.onSuccess { hasFailureChanged = true }

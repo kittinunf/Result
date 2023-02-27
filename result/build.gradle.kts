@@ -23,8 +23,9 @@ version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSH
 kotlin {
     jvm()
     ios()
-    js {
+    js(IR) {
         nodejs()
+        browser()
         binaries.executable()
     }
     iosSimulatorArm64()
