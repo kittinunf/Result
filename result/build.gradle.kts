@@ -23,7 +23,7 @@ version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSH
 kotlin {
     jvm()
     ios()
-    js(LEGACY) {
+    js(IR) {
         nodejs()
         binaries.executable()
     }
