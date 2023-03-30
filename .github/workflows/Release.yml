@@ -40,9 +40,11 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Publish to MavenCentral
-        run: ./gradlew publish --max-workers 1 -Prelease=true
+        uses: gradle/gradle-build-action@v2
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        with:
+          arguments: publish --max-workers 1 -Prelease=true
