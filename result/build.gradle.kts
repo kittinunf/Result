@@ -24,7 +24,7 @@ kotlin {
     jvm()
     ios()
     js(IR) {
-        nodejs()
+        browser()
         binaries.executable()
     }
     iosSimulatorArm64()
