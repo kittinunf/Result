@@ -27,6 +27,10 @@ kotlin {
         browser()
         binaries.executable()
     }
+    wasm {
+        browser()
+        binaries.executable()
+    }
     iosSimulatorArm64()
     macosArm64()
     macosX64()
