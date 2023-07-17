@@ -32,11 +32,7 @@ kotlin {
     macosX64()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotlin.stdlib)
-            }
-        }
+        val commonMain by getting
 
         val commonTest by getting {
             dependencies {
