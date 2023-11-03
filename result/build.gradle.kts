@@ -22,7 +22,8 @@ version = if (isReleaseBuild) artifactPublishVersion else "master-$gitSha-SNAPSH
 
 kotlin {
     jvm()
-    ios()
+    iosX64()
+    iosArm64()
     js(IR) {
         browser()
         binaries.executable()
@@ -34,6 +35,17 @@ kotlin {
     iosSimulatorArm64()
     macosArm64()
     macosX64()
+
+    // Apply the default hierarchy again. It'll create, for example, the iosMain source set:
+    applyDefaultHierarchyTemplate()
+
+    targets.configureEach {
+        compilations.configureEach {
+            compilerOptions.configure {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting
@@ -56,39 +68,6 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test.js)
             }
-        }
-
-        val appleMain by creating {
-            dependsOn(commonMain)
-        }
-        val appleTest by creating {
-            dependsOn(commonTest)
-        }
-
-        val iosMain by getting {
-            dependsOn(appleMain)
-        }
-        val macosArm64Main by getting {
-            dependsOn(appleMain)
-        }
-        val macosX64Main by getting {
-            dependsOn(appleMain)
-        }
-        val iosSimulatorArm64Main by getting {
-            dependsOn(appleMain)
-        }
-
-        val iosTest by getting {
-            dependsOn(appleTest)
-        }
-        val iosSimulatorArm64Test by getting {
-            dependsOn(appleTest)
-        }
-        val macosX64Test by getting {
-            dependsOn(appleTest)
-        }
-        val macosArm64Test by getting {
-            dependsOn(appleTest)
         }
     }
 }
