@@ -227,9 +227,9 @@ the [ResultTest](./result/src/commonTest/kotlin/com/github/kittinunf/result/Resu
 
 If interested, here are more articles that one might enjoy.
 
-* http://fsharpforfunandprofit.com/posts/recipe-part2/
-* https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
-* https://github.com/swlaschin/Railway-Oriented-Programming-Example
+* [Recipe Part 2](http://fsharpforfunandprofit.com/posts/recipe-part2/)
+* [Approach Error Handing](https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling)
+* [Example](https://github.com/swlaschin/Railway-Oriented-Programming-Example)
 
 Credit to Scott Wlaschin
 
