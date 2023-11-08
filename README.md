@@ -1,6 +1,6 @@
 # Result
 
-[![Kotlin](https://img.shields.io/badge/kotlin-1.8.10-blue.svg)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.9.20-blue.svg)](http://kotlinlang.org)
 [![MavenCentral](https://maven-badges.herokuapp.com/maven-central/com.github.kittinunf.result/result-jvm/badge.svg)](https://search.maven.org/search?q=g:com.github.kittinunf.result)
 ![Run Gradle](https://github.com/kittinunf/Result/workflows/Run%20Gradle%20on%20Main/badge.svg?branch=master)
 [![Codecov](https://codecov.io/github/kittinunf/Result/coverage.svg?branch=master)](https://codecov.io/gh/kittinunf/Result)
@@ -227,9 +227,9 @@ the [ResultTest](./result/src/commonTest/kotlin/com/github/kittinunf/result/Resu
 
 If interested, here are more articles that one might enjoy.
 
-* http://fsharpforfunandprofit.com/posts/recipe-part2/
-* https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling
-* https://github.com/swlaschin/Railway-Oriented-Programming-Example
+* [Recipe Part 2](http://fsharpforfunandprofit.com/posts/recipe-part2/)
+* [Approach Error Handing](https://speakerdeck.com/swlaschin/railway-oriented-programming-a-functional-approach-to-error-handling)
+* [Example](https://github.com/swlaschin/Railway-Oriented-Programming-Example)
 
 Credit to Scott Wlaschin
 
