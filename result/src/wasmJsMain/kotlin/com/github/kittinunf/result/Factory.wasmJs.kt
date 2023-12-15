@@ -5,7 +5,5 @@ actual inline fun <R> doTry(work: () -> R, errorHandler: (Throwable) -> R): R {
         work()
     } catch (t: Throwable) {
         errorHandler(t)
-    } catch (d: dynamic) {
-        errorHandler(Throwable(d.toString()))
     }
 }

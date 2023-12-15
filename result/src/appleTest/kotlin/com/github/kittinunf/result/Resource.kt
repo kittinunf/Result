@@ -1,5 +1,6 @@
 package com.github.kittinunf.result
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class Resource actual constructor(actual val name: String) {
 
     actual fun exists(): Boolean = throw UnsupportedOperationException("Not implemented")
