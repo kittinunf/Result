@@ -23,4 +23,3 @@ inline fun <R> doTry(work: () -> R, errorHandler: (Throwable) -> R): R {
         errorHandler(t)
     }
 }
-

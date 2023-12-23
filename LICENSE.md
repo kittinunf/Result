@@ -1,4 +1,4 @@
-MIT License
+<h1>MIT License</h1>
 
 Copyright (c) 2017 Kittinun Vantasin
 
