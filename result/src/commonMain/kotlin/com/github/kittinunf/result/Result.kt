@@ -161,6 +161,7 @@ inline operator fun <V, reified E : Throwable> Result<List<V>, E>.plus(result: R
                 is Result.Success -> Result.success(this.value + result.value)
                 is Result.Failure -> Result.failure(result.error)
             }
+
         is Result.Failure -> Result.failure(this.error)
     }
 

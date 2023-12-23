@@ -1,16 +1,7 @@
 package com.github.kittinunf.result
 
 import kotlin.js.JsName
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
-import kotlin.test.fail
+import kotlin.test.*
 
 class ResultTest {
 
@@ -488,7 +479,7 @@ class ResultTest {
     @JsName("should_return_a_merged_list_given_two_Results_Success_containing_a_list")
     fun `should return a merged list given two Results Success containing a list`() {
         val result = Result.success(listOf("A", "B"))
-        val otherResult = Result.success(listOf("C","D"))
+        val otherResult = Result.success(listOf("C", "D"))
 
         val mergedList = result + otherResult
         assertIs<Result.Success<List<String>>>(mergedList)

@@ -12,5 +12,4 @@ actual class Resource actual constructor(name: String) {
     actual fun read(): String {
         TODO("Not yet implemented")
     }
-
 }
