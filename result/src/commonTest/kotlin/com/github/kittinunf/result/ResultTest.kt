@@ -13,7 +13,6 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 class ResultTest {
-
     @Test
     @JsName("should_create_value_with_success_from_construction_block")
     fun `should create value with success from construction block`() {
@@ -235,7 +234,6 @@ class ResultTest {
     @Test
     @JsName("should_map_to_another_value_of_the_result_type")
     fun `should map to another value of the result type`() {
-
         val success = Result.of<String, Throwable> { "success" }
         val failure = Result.failure(RuntimeException("failure"))
 
@@ -394,11 +392,12 @@ class ResultTest {
     @Test
     @JsName("should_lift_the_result_to_success_if_all_of_the_items_are_success")
     fun `should lift the result to success if all of the items are success`() {
-        val rs = listOf("lorem_short", "lorem_long").map {
-            Result.of<String, Exception> {
-                Resource("$it.txt").read()
-            }
-        }.lift()
+        val rs =
+            listOf("lorem_short", "lorem_long").map {
+                Result.of<String, Exception> {
+                    Resource("$it.txt").read()
+                }
+            }.lift()
 
         assertIs<Result.Success<List<String>>>(rs)
         assertEquals(rs.get()[0], Resource("lorem_short.txt").read())
@@ -407,11 +406,12 @@ class ResultTest {
     @Test
     @JsName("should_lift_the_result_to_failure_if_any_of_the_item_is_failure")
     fun `should lift the result to failure if any of the item is failure`() {
-        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Throwable> {
-                Resource("$it.txt").read()
-            }
-        }.lift()
+        val rs =
+            listOf("lorem_short", "lorem_long", "not_found").map {
+                Result.of<String, Throwable> {
+                    Resource("$it.txt").read()
+                }
+            }.lift()
 
         assertIs<Result.Failure<*>>(rs)
         val msg = rs.error.message
@@ -422,15 +422,16 @@ class ResultTest {
     @Test
     @JsName("should_lift_success_and_failures_to_callback_returning_success")
     fun `should lift success and failures to callback returning success`() {
-        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Throwable> {
-                Resource("$it.txt").read()
+        val rs =
+            listOf("lorem_short", "lorem_long", "not_found").map {
+                Result.of<String, Throwable> {
+                    Resource("$it.txt").read()
+                }
+            }.lift { successes, errors ->
+                assertEquals(2, successes.size)
+                assertEquals(1, errors.size)
+                Result.success(successes)
             }
-        }.lift { successes, errors ->
-            assertEquals(2, successes.size)
-            assertEquals(1, errors.size)
-            Result.success(successes)
-        }
 
         assertIs<Result.Success<List<String>>>(rs)
     }
@@ -438,15 +439,16 @@ class ResultTest {
     @Test
     @JsName("should_lift_success_and_failures_to_callback_returning_error")
     fun `should lift success and failures to callback returning error`() {
-        val rs = listOf("lorem_short", "lorem_long", "not_found").map {
-            Result.of<String, Throwable> {
-                Resource("$it.txt").read()
+        val rs =
+            listOf("lorem_short", "lorem_long", "not_found").map {
+                Result.of<String, Throwable> {
+                    Resource("$it.txt").read()
+                }
+            }.lift { successes, errors ->
+                assertEquals(2, successes.size)
+                assertEquals(1, errors.size)
+                Result.failure(errors.first())
             }
-        }.lift { successes, errors ->
-            assertEquals(2, successes.size)
-            assertEquals(1, errors.size)
-            Result.failure(errors.first())
-        }
 
         assertIs<Result.Failure<Throwable>>(rs)
     }
