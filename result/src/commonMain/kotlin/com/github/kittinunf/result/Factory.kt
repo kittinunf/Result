@@ -16,4 +16,11 @@ inline fun <V> runCatching(block: () -> V?): Result<V?, Throwable> {
     })
 }
 
-expect inline fun <R> doTry(work: () -> R, errorHandler: (Throwable) -> R): R
+inline fun <R> doTry(work: () -> R, errorHandler: (Throwable) -> R): R {
+    return try {
+        work()
+    } catch (t: Throwable) {
+        errorHandler(t)
+    }
+}
+
