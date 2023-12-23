@@ -70,27 +70,29 @@ tasks {
         }
     }
 
-    /*val copyTestResourceJs by registering(Copy::class) {
-        from("$projectDir/src/commonTest/resources")
-        into("${rootProject.buildDir}/js/packages/${rootProject.name}-${project.name}-test/src/commonTest/resources")
-    }*/
+    // val copyTestResourceJs by registering(Copy::class) {
+    // from("$projectDir/src/commonTest/resources")
+    // into("${rootProject.buildDir}/js/packages/${rootProject.name}-${project.name}-test/src/commonTest/resources")
+    // }
 
-    /*val jsTest by getting {
-        dependsOn(copyTestResourceJs)
-    }*/
+    // val jsTest by getting {
+    // dependsOn(copyTestResourceJs)
+    // }
 }
 
-fun String.runCommand(workingDir: File): String? = try {
-    val parts = split("\\s".toRegex())
-    val proc = ProcessBuilder(*parts.toTypedArray())
-        .directory(workingDir)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
-        .start()
+fun String.runCommand(workingDir: File): String? =
+    try {
+        val parts = split("\\s".toRegex())
+        val proc =
+            ProcessBuilder(*parts.toTypedArray())
+                .directory(workingDir)
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
 
-    proc.waitFor(30, TimeUnit.SECONDS)
-    proc.inputStream.bufferedReader().readText()
-} catch (e: IOException) {
-    e.printStackTrace()
-    null
-}
+        proc.waitFor(30, TimeUnit.SECONDS)
+        proc.inputStream.bufferedReader().readText()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
