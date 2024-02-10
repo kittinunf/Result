@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - main
-
+permissions: read-all
 jobs:
   publish:
     name: Build and publish - SNAPSHOT
