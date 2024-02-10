@@ -4,7 +4,7 @@ name: Release
 on:
   release:
     types: [released]
-
+permissions: read-all
 jobs:
   publish:
     name: Build and publish - Release
