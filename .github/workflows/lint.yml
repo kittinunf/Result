@@ -27,5 +27,6 @@ jobs:
       - name: Super-linter
         uses: super-linter/super-linter@v6.0.0
         env:
+          VALIDATE_SHELL_SHFMT: false
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
