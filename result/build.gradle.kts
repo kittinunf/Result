@@ -69,15 +69,6 @@ tasks {
             csv.required.set(false)
         }
     }
-
-    // val copyTestResourceJs by registering(Copy::class) {
-    // from("$projectDir/src/commonTest/resources")
-    // into("${rootProject.buildDir}/js/packages/${rootProject.name}-${project.name}-test/src/commonTest/resources")
-    // }
-
-    // val jsTest by getting {
-    // dependsOn(copyTestResourceJs)
-    // }
 }
 
 fun String.runCommand(workingDir: File): String? =
