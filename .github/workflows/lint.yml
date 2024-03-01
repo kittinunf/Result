@@ -1,55 +1,32 @@
 ---
-#################################
-#################################
-## Super Linter GitHub Actions ##
-#################################
-#################################
-name: Lint Code Base
+name: Lint
 
-#
-# Documentation:
-# https://help.github.com/en/articles/workflow-syntax-for-github-actions
-#
-
-#############################
-# Start the job on all push #
-#############################
-on:
-  push:
-    branches-ignore: [master, main]
-    # Remove the line above to run when pushing to master
-  #pull_request:
-    #branches: [master, main]
-
-###############
-# Set the Job #
-###############
+on:  # yamllint disable-line rule:truthy
+  push: null
+  pull_request: null
+permissions: read-all
 jobs:
   build:
-    # Name the Job
-    name: Lint Code Base
-    # Set the agent to run on
+    name: Lint
     runs-on: ubuntu-latest
 
-    ##################
-    # Load all steps #
-    ##################
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+
     steps:
-      ##########################
-      # Checkout the code base #
-      ##########################
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
           fetch-depth: 0
 
-      ################################
-      # Run Linter against code base #
-      ################################
-      - name: Lint Code Base
-        uses: docker://ghcr.io/github/super-linter:slim-v4
+      - name: Super-linter
+        uses: super-linter/super-linter@v6.0.0
         env:
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: master
+          VALIDATE_SHELL_SHFMT: false
+          # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,10 +1,11 @@
+---
 name: Run Gradle on Main
 on:
   push:
     branches:
       - master
       - main
-
+permissions: read-all
 jobs:
   publish:
     name: Build and publish - SNAPSHOT
@@ -19,10 +20,10 @@ jobs:
       - name: Publish to MavenCentral
         uses: gradle/gradle-build-action@v2
         env:
-           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         with:
           arguments: publishAllPublicationsToSonatypeRepository --max-workers 1
 

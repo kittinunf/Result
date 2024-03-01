@@ -1,7 +1,8 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import java.io.IOException
 
 plugins {
-    kotlin("multiplatform")
+    kotlin("multiplatform") version "1.9.21"
 
     java
     jacoco
@@ -24,52 +25,26 @@ kotlin {
     jvm()
     iosX64()
     iosArm64()
-    js(IR) {
-        browser()
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        nodejs()
         binaries.executable()
     }
+
     iosSimulatorArm64()
     macosArm64()
     macosX64()
 
-    // Apply the default hierarchy again. It'll create, for example, the iosMain source set:
-    applyDefaultHierarchyTemplate()
-
-    targets.configureEach {
-        compilations.configureEach {
-            compilerOptions.configure {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
-            }
-        }
-    }
-
     sourceSets {
-        val commonMain by getting
-
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.bundles.kotlin.test)
-            }
-        }
-
-        val jvmMain by getting
-
-        val jvmTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test.junit)
-            }
-        }
-
-        val jsTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test.js)
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }
 
 jacoco {
-    toolVersion = libs.versions.jacoco.get()
+    toolVersion = "0.8.11"
 }
 
 tasks {
@@ -94,28 +69,21 @@ tasks {
             csv.required.set(false)
         }
     }
-
-    val copyTestResourceJs by registering(Copy::class) {
-        from("$projectDir/src/commonTest/resources")
-        into("${rootProject.buildDir}/js/packages/${rootProject.name}-${project.name}-test/src/commonTest/resources")
-    }
-
-    val jsTest by getting {
-        dependsOn(copyTestResourceJs)
-    }
 }
 
-fun String.runCommand(workingDir: File): String? = try {
-    val parts = split("\\s".toRegex())
-    val proc = ProcessBuilder(*parts.toTypedArray())
-        .directory(workingDir)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
-        .start()
+fun String.runCommand(workingDir: File): String? =
+    try {
+        val parts = split("\\s".toRegex())
+        val proc =
+            ProcessBuilder(*parts.toTypedArray())
+                .directory(workingDir)
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
 
-    proc.waitFor(30, TimeUnit.SECONDS)
-    proc.inputStream.bufferedReader().readText()
-} catch (e: IOException) {
-    e.printStackTrace()
-    null
-}
+        proc.waitFor(30, TimeUnit.SECONDS)
+        proc.inputStream.bufferedReader().readText()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }

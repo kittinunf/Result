@@ -1,6 +1,7 @@
+---
 name: Run Gradle on PRs
 on: pull_request
-
+permissions: read-all
 jobs:
   gradle:
     runs-on: macos-latest
@@ -16,7 +17,7 @@ jobs:
       - name: Setup and execute Gradle 'build' task
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build -x jsBrowserTest
+          arguments: build -x wasmJsNodeTest
 
       - name: Upload allTests results
         uses: actions/upload-artifact@v2.2.3
