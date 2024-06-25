@@ -37,6 +37,7 @@ kotlin {
     iosSimulatorArm64()
     macosArm64()
     macosX64()
+    watchosX64()
 
     sourceSets {
         commonTest.dependencies {
